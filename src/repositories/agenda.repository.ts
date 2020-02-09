@@ -19,10 +19,10 @@ export class AgendaRepository {
   public getOne(id: number, language: LANGUAGE): Promise<AgendaItem> {
     const select = this.getSelect();
     if(language === 'nl') {
-      select.push('titleNL', 'contentNL');
+      select.push('titleNL', 'descriptionNL', 'imageUrl');
 
     } else {
-      select.push('titleEN', 'contentEN');
+      select.push('titleEN', 'descriptionEN');
     }
 
     return AgendaItem.findOne({where: {id}, select});
