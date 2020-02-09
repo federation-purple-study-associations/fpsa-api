@@ -4,30 +4,33 @@ import { ApiProperty } from '@nestjs/swagger';
 @Entity()
 export class AgendaItem extends BaseEntity {
     @PrimaryGeneratedColumn()
-    @ApiProperty()
     id: number;
 
     @Column()
-    @ApiProperty()
     location: string;
 
     @Column()
-    @ApiProperty({type: String, format: 'date'})
     date: Date;
 
     @Column()
     @ApiProperty()
+    imageUrl: string;
+
+    @Column({length: 63})
     titleNL: string;
 
-    @Column()
-    @ApiProperty()
+    @Column({length: 63})
     titleEN: string;
 
-    @Column()
-    @ApiProperty()
+    @Column({length: 255})
+    summaryNL: string;
+
+    @Column({length: 255})
+    summaryEN: string;
+
+    @Column({length: 65535})
     desciptionNL: string;
 
-    @Column()
-    @ApiProperty()
+    @Column({length: 65535})
     desciptionEN: string;
 }

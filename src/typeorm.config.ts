@@ -8,12 +8,12 @@ export = {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    entities: [ resolve(__dirname, 'entities/**/*.entity.ts') ],
-    migrations: [ resolve(__dirname, 'migrations/*.ts') ],
+    entities: [ resolve(__dirname, 'entities/**.entity.{ts,js}') ],
+    migrations: [ resolve(__dirname, 'migrations/**.{ts,js}') ],
     migrationsRun: true,
     logging: false,
     cli: {
         migrationsDir: 'src/migrations',
-        entitiesDir: 'scr/entities',
+        entitiesDir: 'src/entities',
     }
 }
