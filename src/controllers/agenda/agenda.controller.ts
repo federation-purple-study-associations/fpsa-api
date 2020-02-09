@@ -2,7 +2,7 @@ import { Controller, Post, Get, HttpCode, Query, Param, Body, Res } from '@nestj
 import { createWriteStream, mkdirSync, existsSync, createReadStream } from 'fs';
 import { resolve, extname } from 'path';
 import { AgendaRepository } from '../../repositories/agenda.repository';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LANGUAGE } from '../../constants';
 import { AgendaTransformer } from '../../transformers/agenda.transformer';
 import { AgendaSummaryDTO } from '../../dto/agenda/agenda.summary';
@@ -10,6 +10,7 @@ import { AgendaDetailsDTO } from '../../dto/agenda/agenda.details';
 import { NewAgendaDTO } from '../../dto/agenda/agenda.new';
 
 @Controller('agenda')
+@ApiTags('agenda')
 export class AgendaController {
 
   constructor(
@@ -63,7 +64,7 @@ export class AgendaController {
   @Post()
   @HttpCode(201)
   @ApiOperation({
-    operationId: 'AgendaGetOne',
+    operationId: 'AgendaCreateNew',
     summary: 'getOne',
     description: 'This call can be used to get the one agenda item of FPSA',
   })
