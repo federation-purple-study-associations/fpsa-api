@@ -4,6 +4,7 @@ WORKDIR /backend
 
 COPY package.json .
 COPY package-lock.json .
+COPY .env .
 
 RUN npm i --production
 
