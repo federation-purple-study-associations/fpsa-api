@@ -4,7 +4,7 @@ import { LANGUAGE } from '../constants';
 
 @Injectable()
 export class AgendaRepository {
-  public getAll(language: LANGUAGE): Promise<AgendaItem[]> {
+  public getAll(language: LANGUAGE, skip: number, take: number): Promise<AgendaItem[]> {
     const select = this.getSelect();
     if(language === 'nl') {
       select.push('titleNL', 'summaryNL');
@@ -13,7 +13,7 @@ export class AgendaRepository {
       select.push('titleEN', 'summaryEN');
     }
 
-    return AgendaItem.find({select});
+    return AgendaItem.find({select, skip, take, order: {date: 'ASC'}});
   }
 
   public getOne(id: number, language: LANGUAGE): Promise<AgendaItem> {

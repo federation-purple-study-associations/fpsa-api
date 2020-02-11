@@ -26,8 +26,8 @@ export class AgendaController {
   })
   @ApiResponse({ status: 200, description: 'All agenda items', type: AgendaSummaryDTO, isArray: true })
   @ApiResponse({ status: 500, description: 'Internal server error...' })
-  async getAll(@Query('lang') language: LANGUAGE): Promise<AgendaSummaryDTO[]> {
-    const items = await this.agendaRepository.getAll(language);
+  async getAll(@Query('lang') language: LANGUAGE, @Query('skip') skip: number, @Query('size') size: number): Promise<AgendaSummaryDTO[]> {
+    const items = await this.agendaRepository.getAll(language, skip, size);
     return AgendaTransformer.toSummary(items);
   }
 
