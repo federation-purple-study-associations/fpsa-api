@@ -10,5 +10,5 @@ RUN npm i --production
 ADD ./dist ./dist
 COPY package.json ./dist
 
-CMD node dist/src/main.js
+CMD node dist/main.js
 EXPOSE 3000/tcp
