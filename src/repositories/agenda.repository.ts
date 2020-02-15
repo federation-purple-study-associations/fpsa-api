@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AgendaItem } from '../entities/agenda.item.entity';
+import { AgendaItem } from '../entities/agenda/agenda.item.entity';
 import { LANGUAGE } from '../constants';
 
 @Injectable()

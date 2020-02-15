@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { SwaggerModule } from '@nestjs/swagger';
 import * as fileUpload from 'fastify-file-upload';
+import * as cookies from 'fastify-cookie';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import swaggerOptions from './swagger/swagger.document';
@@ -13,6 +14,12 @@ async function bootstrap() {
 
   // Enable multipar for file uploads
   app.register(fileUpload);
+
+  // Enable cookies for authorization
+  app.register(cookies, {
+    secret: process.env.COOKIE_SECRET, // for cookies signature
+    parseOptions: {}     // options for parsing cookies
+  })
 
   // Enable model validation
   app.useGlobalPipes(new ValidationPipe());

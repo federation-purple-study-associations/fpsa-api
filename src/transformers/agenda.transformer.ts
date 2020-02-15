@@ -1,4 +1,4 @@
-import { AgendaItem } from '../entities/agenda.item.entity';
+import { AgendaItem } from '../entities/agenda/agenda.item.entity';
 import { AgendaSummaryDTO } from '../dto/agenda/agenda.summary';
 import { AgendaDetailsDTO } from '../dto/agenda/agenda.details';
 import { NewAgendaDTO } from '../dto/agenda/agenda.new';
