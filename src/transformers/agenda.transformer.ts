@@ -4,6 +4,7 @@ import { AgendaDetailsDTO } from '../dto/agenda/agenda.details';
 import { NewAgendaDTO } from '../dto/agenda/agenda.new';
 import { extname } from 'path';
 import * as uuid from 'uuid/v4';
+import { UpdateAgendaDTO } from '../dto/agenda/agenda.update';
 
 export class AgendaTransformer {
     static toSummary(list: AgendaItem[]): AgendaSummaryDTO[] {
@@ -33,6 +34,20 @@ export class AgendaTransformer {
 
     static fromNew(body: NewAgendaDTO): AgendaItem {
         const agenda = new AgendaItem();
+        agenda.location = body.location;
+        agenda.date = body.date;
+        agenda.titleNL = body.titleNL;
+        agenda.titleEN = body.titleEN;
+        agenda.summaryNL = body.summaryNL;
+        agenda.summaryEN = body.summaryEN;
+        agenda.descriptionNL = body.descriptionNL;
+        agenda.descriptionEN = body.descriptionEN;
+        agenda.imageUrl = uuid() + extname(body.image.name);
+
+        return agenda;
+    }
+
+    static update(agenda: AgendaItem, body: UpdateAgendaDTO) {
         agenda.location = body.location;
         agenda.date = body.date;
         agenda.titleNL = body.titleNL;
