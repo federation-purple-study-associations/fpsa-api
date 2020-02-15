@@ -6,6 +6,8 @@ import typeormConfig = require('./typeorm.config');
 import { LanguageInterceptor } from './interceptors/language.interceptor';
 import { UserController } from './controllers/user/user.controller';
 import { UserRepository } from './repositories/user.repository';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthorizationGuard } from './decorators/auth.decorator';
 
 @Module({
   imports: [TypeOrmModule.forRoot(typeormConfig as TypeOrmModuleOptions)],
@@ -14,6 +16,10 @@ import { UserRepository } from './repositories/user.repository';
     UserController
   ],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthorizationGuard,
+    },
     LanguageInterceptor,
     AgendaRepository,
     UserRepository

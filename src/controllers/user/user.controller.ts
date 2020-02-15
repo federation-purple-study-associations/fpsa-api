@@ -33,7 +33,7 @@ export class UserController {
         expires.setDate(expires.getDate() + 1);
 
         response
-            .setCookie('auth', jwtToken, process.env.env !== 'Testing' ? { domain: '.fpsa.nl', expires } : { expires })
+            .setCookie('auth', jwtToken, process.env.env !== 'Testing' ? { domain: '.fpsa.nl', expires, path: '/' } : { expires, path: '/' })
             .send();
     }
 }

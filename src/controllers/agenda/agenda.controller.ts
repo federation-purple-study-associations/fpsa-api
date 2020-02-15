@@ -8,6 +8,7 @@ import { AgendaTransformer } from '../../transformers/agenda.transformer';
 import { AgendaSummaryDTO } from '../../dto/agenda/agenda.summary';
 import { AgendaDetailsDTO } from '../../dto/agenda/agenda.details';
 import { NewAgendaDTO } from '../../dto/agenda/agenda.new';
+import { Auth } from '../../decorators/auth.decorator';
 
 @Controller('agenda')
 @ApiTags('agenda')
@@ -62,6 +63,7 @@ export class AgendaController {
   }
   
   @Post()
+  @Auth('Test')
   @HttpCode(201)
   @ApiOperation({
     operationId: 'AgendaCreateNew',
