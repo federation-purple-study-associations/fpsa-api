@@ -8,12 +8,15 @@ import { UserController } from './controllers/user/user.controller';
 import { UserRepository } from './repositories/user.repository';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthorizationGuard } from './decorators/auth.decorator';
+import { StatisticRepository } from './repositories/statistic.repository';
+import { StatisticsController } from './controllers/statistics/statistics.controller';
 
 @Module({
   imports: [TypeOrmModule.forRoot(typeormConfig as TypeOrmModuleOptions)],
   controllers: [
     AgendaController,
-    UserController
+    UserController,
+    StatisticsController,
   ],
   providers: [
     {
@@ -22,7 +25,8 @@ import { AuthorizationGuard } from './decorators/auth.decorator';
     },
     LanguageInterceptor,
     AgendaRepository,
-    UserRepository
+    UserRepository,
+    StatisticRepository,
   ],
 })
 export class AppModule {}

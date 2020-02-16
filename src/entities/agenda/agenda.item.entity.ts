@@ -28,9 +28,9 @@ export class AgendaItem extends BaseEntity {
     @Column({length: 255})
     summaryEN: string;
 
-    @Column({length: 65535})
+    @Column({type: 'mediumtext'})
     descriptionNL: string;
 
-    @Column({length: 65535})
+    @Column({type: 'mediumtext'})
     descriptionEN: string;
 }

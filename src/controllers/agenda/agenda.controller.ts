@@ -71,7 +71,7 @@ export class AgendaController {
   @HttpCode(202)
   @ApiOperation({
     operationId: 'AgendaCreateNew',
-    summary: 'getOne',
+    summary: 'create',
     description: 'This call can be used to get the one agenda item of FPSA',
   })
   @ApiResponse({ status: 202, description: 'Agenda item created' })

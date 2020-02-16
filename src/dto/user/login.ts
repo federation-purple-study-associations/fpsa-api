@@ -1,13 +1,10 @@
-import { IsNotEmpty, IsEmail } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
+// No checks in this DTO, because the db will do those checks
 export class LoginDTO {
     @ApiProperty({type: String, format: 'email'})
-    @IsNotEmpty()
-    @IsEmail()
     public email: string;
 
     @ApiProperty({type: String, format: 'password'})
-    @IsNotEmpty()
     public password: string;
 }
