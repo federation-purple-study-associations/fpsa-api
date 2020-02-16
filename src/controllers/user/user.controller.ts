@@ -1,9 +1,11 @@
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { Controller, Post, HttpCode, Body, Res, BadRequestException } from '@nestjs/common';
+import { Controller, Post, HttpCode, Body, Res, BadRequestException, Get } from '@nestjs/common';
 import { LoginDTO } from '../../dto/user/login';
 import { UserRepository } from '../../repositories/user.repository';
 import { UserTransformer } from '../../transformers/user.transformer';
 import * as bcrypt from 'bcrypt';
+import { Me } from '../../decorators/me.decorator';
+import { User } from '../../entities/user/user.entity';
 
 @Controller('user')
 @ApiTags('user')
@@ -11,6 +13,20 @@ export class UserController {
     constructor(
         private readonly userRepository: UserRepository,
     ) {}
+
+    @Get('me')
+    @HttpCode(200)
+    @ApiOperation({
+        operationId: 'me',
+        summary: 'getMe',
+        description: 'This call can be used to get yourself',
+    })
+    @ApiResponse({ status: 200, description: 'Got ya!', type: User })
+    @ApiResponse({ status: 401, description: 'Your are not logged in...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public getMe(@Me() me: Promise<User>): Promise<User> {
+        return me;
+    }
 
     @Post('login')
     @HttpCode(202)
@@ -27,6 +43,9 @@ export class UserController {
         if (!user || !(await bcrypt.compare(body.password, user.password))) {
             throw new BadRequestException('Email or password is incorrect...');
         }
+
+        user.lastLogin = new Date();
+        this.userRepository.save(user);
 
         const jwtToken = UserTransformer.toJwtToken(user);
         const expires = new Date();

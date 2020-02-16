@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AgendaItem } from '../entities/agenda/agenda.item.entity';
 import { LANGUAGE } from '../constants';
-import { MoreThanOrEqual } from 'typeorm';
+import { MoreThanOrEqual, BaseEntity } from 'typeorm';
 
 @Injectable()
 export class AgendaRepository {
@@ -33,12 +33,12 @@ export class AgendaRepository {
     return AgendaItem.findOne({where: {id}});
   }
 
-  public save(agenda: AgendaItem): Promise<AgendaItem> {
-    return agenda.save();
+  public save<T extends BaseEntity>(entity: T): Promise<T> {
+    return entity.save();
   }
 
-  public delete(agenda: AgendaItem): Promise<AgendaItem> {
-    return agenda.remove();
+  public delete<T extends BaseEntity>(entity: T): Promise<T> {
+    return entity.remove();
   }
 
   private getSelect(): any[] {
