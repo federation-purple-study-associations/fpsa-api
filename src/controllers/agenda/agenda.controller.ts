@@ -143,25 +143,28 @@ export class AgendaController {
       throw new NotFoundException('Agenda item not found...');
     }
 
-    // Create path if needed
-    const dir = resolve(process.env.STORAGE_PATH, 'agenda');
-    !existsSync(dir) && mkdirSync(dir);
+    if (body.image) {
+      console.log(body.image)
+      // Create path if needed
+      const dir = resolve(process.env.STORAGE_PATH, 'agenda');
+      !existsSync(dir) && mkdirSync(dir);
 
-    // Delete old image to preserve storage space
-    try {
-      unlinkSync(resolve(dir, agendaItem.imageUrl));
-    } catch(e) {}
+      // Delete old image to preserve storage space
+      try {
+        unlinkSync(resolve(dir, agendaItem.imageUrl));
+      } catch(e) {}
+
+      // Add new image
+      const stream = createWriteStream(resolve(dir, agendaItem.imageUrl), {encoding: 'binary'});
+      stream.once('open', () => {
+          stream.write(body.image.data);
+          stream.end();
+      });
+    }
 
     // Update database
-    AgendaTransformer.update(agendaItem, body);
+    AgendaTransformer.update(agendaItem, body, !!body.image);
     await this.agendaRepository.save(agendaItem);
-
-    // Add new image
-    const stream = createWriteStream(resolve(dir, agendaItem.imageUrl), {encoding: 'binary'});
-    stream.once('open', () => {
-        stream.write(body.image.data);
-        stream.end();
-    });
   }
 
   @Delete(':id')

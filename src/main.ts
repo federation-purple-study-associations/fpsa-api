@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { SwaggerModule } from '@nestjs/swagger';
-import * as fileUpload from 'fastify-file-upload';
+import * as multipart from 'fastify-multipart';
 import * as cookies from 'fastify-cookie';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
@@ -13,7 +13,10 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
 
   // Enable multipart for file uploads
-  app.register(fileUpload);
+  app.register(multipart, {
+    addToBody: true,
+    sharedSchemaId: 'MultipartFileType'
+  });
 
   // Enable cookies for authorization
   app.register(cookies, {
