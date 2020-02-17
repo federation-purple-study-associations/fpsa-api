@@ -5,6 +5,10 @@ import { MoreThanOrEqual, BaseEntity } from 'typeorm';
 
 @Injectable()
 export class AgendaRepository {
+  public count(): Promise<number> {
+    return AgendaItem.count({where: { date: MoreThanOrEqual(new Date())}});
+  }
+
   public getAll(language: LANGUAGE, skip: number, take: number): Promise<AgendaItem[]> {
     const select = this.getSelect();
     if(language === 'nl') {
