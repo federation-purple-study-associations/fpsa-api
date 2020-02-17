@@ -12,7 +12,7 @@ import { LanguageInterceptor } from './interceptors/language.interceptor';
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
 
-  // Enable multipar for file uploads
+  // Enable multipart for file uploads
   app.register(fileUpload);
 
   // Enable cookies for authorization

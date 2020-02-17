@@ -2,7 +2,7 @@ import { Controller, Post, Get, HttpCode, Query, Param, Body, Res, Delete, NotFo
 import { createWriteStream, mkdirSync, existsSync, createReadStream, unlinkSync } from 'fs';
 import { resolve, extname } from 'path';
 import { AgendaRepository } from '../../repositories/agenda.repository';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags, ApiConsumes } from '@nestjs/swagger';
 import { LANGUAGE } from '../../constants';
 import { AgendaTransformer } from '../../transformers/agenda.transformer';
 import { AgendaDetailsDTO } from '../../dto/agenda/agenda.details';
@@ -98,6 +98,7 @@ export class AgendaController {
   @Post()
   @Auth('Agenda:Write')
   @HttpCode(202)
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({
     operationId: 'AgendaCreateNew',
     summary: 'create',
@@ -125,6 +126,7 @@ export class AgendaController {
   @Put(':id')
   @Auth('Agenda:Write')
   @HttpCode(202)
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({
     operationId: 'AgendaUpdate',
     summary: 'update',
@@ -135,7 +137,7 @@ export class AgendaController {
   @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
   @ApiResponse({ status: 404, description: 'Agenda item not found...' })
   @ApiResponse({ status: 500, description: 'Internal server error...' })
-  async update(@Param('id') id: number, @Body() body: UpdateAgendaDTO) {
+  async update(@Param('id') id: number, @Body() body: UpdateAgendaDTO): Promise<void> {
     const agendaItem = await this.agendaRepository.getOneFull(id);
     if (!agendaItem) {
       throw new NotFoundException('Agenda item not found...');
@@ -146,7 +148,9 @@ export class AgendaController {
     !existsSync(dir) && mkdirSync(dir);
 
     // Delete old image to preserve storage space
-    unlinkSync(resolve(dir, agendaItem.imageUrl));
+    try {
+      unlinkSync(resolve(dir, agendaItem.imageUrl));
+    } catch(e) {}
 
     // Update database
     AgendaTransformer.update(agendaItem, body);
