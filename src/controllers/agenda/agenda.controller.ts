@@ -65,7 +65,7 @@ export class AgendaController {
   @ApiOperation({
     operationId: 'AgendaGetOriginalOne',
     summary: 'getOriginalOne',
-    description: 'This call can be used to get the one agenda item of FPSA',
+    description: 'This call can be used to get one agenda item of FPSA',
   })
   @ApiResponse({ status: 200, description: 'The agenda item', type: AgendaItem })
   @ApiResponse({ status: 404, description: 'The agenda item is not found...' })
@@ -91,6 +91,10 @@ export class AgendaController {
   @ApiResponse({ status: 500, description: 'Internal server error...' })
   async getPhoto(@Query('id') id: number, @Res() res): Promise<void> {
     const item = await this.agendaRepository.getOne(id, 'nl');
+    if (!item) {
+      throw new NotFoundException('This agenda item is not found...');
+    }
+
     const stream = createReadStream(resolve(process.env.STORAGE_PATH, 'agenda', item.imageUrl))
     res.type('image/' + extname(item.imageUrl).substr(1)).send(stream)
   }
@@ -144,12 +148,8 @@ export class AgendaController {
     }
 
     if (body.image) {
-      console.log(body.image)
-      // Create path if needed
-      const dir = resolve(process.env.STORAGE_PATH, 'agenda');
-      !existsSync(dir) && mkdirSync(dir);
-
       // Delete old image to preserve storage space
+      const dir = resolve(process.env.STORAGE_PATH, 'agenda');
       try {
         unlinkSync(resolve(dir, agendaItem.imageUrl));
       } catch(e) {}
@@ -185,11 +185,8 @@ export class AgendaController {
       throw new NotFoundException('Agenda item not found...');
     }
 
-    // Create path if needed
+     // Delete old image to preserve storage space
     const dir = resolve(process.env.STORAGE_PATH, 'agenda');
-    !existsSync(dir) && mkdirSync(dir);
-
-    // Delete old image to preserve storage space
     unlinkSync(resolve(dir, agendaItem.imageUrl));
 
     this.agendaRepository.delete(agendaItem);

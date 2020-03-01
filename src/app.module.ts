@@ -12,6 +12,8 @@ import { StatisticRepository } from './repositories/statistic.repository';
 import { StatisticsController } from './controllers/statistics/statistics.controller';
 import { ScheduleModule } from '@nestjs/schedule';
 import { StatisticsJob } from './jobs/statistics.job';
+import { BoardController } from './controllers/board/board.controller';
+import { BoardRepository } from './repositories/board.repository';
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { StatisticsJob } from './jobs/statistics.job';
     AgendaController,
     UserController,
     StatisticsController,
+    BoardController,
   ],
   providers: [
     StatisticsJob,
@@ -33,6 +36,7 @@ import { StatisticsJob } from './jobs/statistics.job';
     AgendaRepository,
     UserRepository,
     StatisticRepository,
+    BoardRepository,
   ],
 })
 export class AppModule {}
