@@ -18,7 +18,7 @@ export class BoardRepository {
     }
 
     public getOne(id: number, language: LANGUAGE): Promise<Board> {
-        const select: any[] = ['id'];
+        const select: any[] = ['id', 'photoUrl'];
         if(language === 'nl') {
             select.push('titleNL', 'textNL');
     
