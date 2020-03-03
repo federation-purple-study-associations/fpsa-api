@@ -7,8 +7,7 @@ import { BoardTransformer } from '../../transformers/board.transformer';
 import { createReadStream, existsSync, mkdirSync, createWriteStream, unlinkSync } from 'fs';
 import { resolve, extname } from 'path';
 import { Auth } from '../../decorators/auth.decorator';
-import { NewBoardDTO } from '../../dto/board/board.new';
-import { UpdateBoardDTO } from '../../dto/board/board.update';
+import { WriteBoardDTO } from '../../dto/board/board.write';
 import { Board } from '../../entities/board/board.entity';
 
 @Controller('board')
@@ -81,17 +80,18 @@ export class BoardController {
     @ApiResponse({ status: 400, description: 'Validation error...' })
     @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    async createNew(@Body() body: NewBoardDTO): Promise<void> {
-        const agendaItem = BoardTransformer.fromNew(body);
-        await this.boardRepository.save(agendaItem);
+    async createNew(@Body() body: WriteBoardDTO): Promise<void> {
+        console.log(body)
+        const board = BoardTransformer.fromNew(body);
+        await this.boardRepository.save(board);
 
         // Create path if needed
         const dir = resolve(process.env.STORAGE_PATH, 'board');
         !existsSync(dir) && mkdirSync(dir);
 
-        const stream = createWriteStream(resolve(dir, agendaItem.photoUrl), {encoding: 'binary'});
+        const stream = createWriteStream(resolve(dir, board.photoUrl), {encoding: 'binary'});
         stream.once('open', () => {
-            stream.write(body.image.data);
+            stream.write(body.image[0].data);
             stream.end();
         });
     }
@@ -110,7 +110,7 @@ export class BoardController {
     @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
     @ApiResponse({ status: 404, description: 'Board not found...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    async update(@Param('id') id: number, @Body() body: UpdateBoardDTO): Promise<void> {
+    async update(@Param('id') id: number, @Body() body: WriteBoardDTO): Promise<void> {
         const board = await this.boardRepository.getOneFull(id);
         if (!board) {
             throw new NotFoundException('Board not found...');
@@ -126,7 +126,7 @@ export class BoardController {
             // Add new image
             const stream = createWriteStream(resolve(dir, board.photoUrl), {encoding: 'binary'});
             stream.once('open', () => {
-                stream.write(body.image.data);
+                stream.write(body.image[0].data);
                 stream.end();
             });
         }
@@ -154,10 +154,10 @@ export class BoardController {
             throw new NotFoundException('Board not found...');
         }
 
+        this.boardRepository.delete(agendaItem);
+
         // Delete old image to preserve storage space
         const dir = resolve(process.env.STORAGE_PATH, 'board');
         unlinkSync(resolve(dir, agendaItem.photoUrl));
-
-        this.boardRepository.delete(agendaItem);
     }
 }

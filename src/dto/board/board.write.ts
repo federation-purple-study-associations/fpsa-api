@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, MaxLength } from 'class-validator';
 import { Exclude } from 'class-transformer';
 
-export class NewBoardDTO {
+export class WriteBoardDTO {
     @ApiProperty({maxLength: 63})
     @IsNotEmpty()
     @MaxLength(63)
@@ -13,17 +13,17 @@ export class NewBoardDTO {
     @MaxLength(63)
     titleEN: string;
 
-    @ApiProperty({maxLength: 255})
+    @ApiProperty({ maxLength: 65535 })
     @IsNotEmpty()
-    @MaxLength(255)
+    @MaxLength(65535)
     textNL: string;
 
-    @ApiProperty({maxLength: 255})
+    @ApiProperty({ maxLength: 65535 })
     @IsNotEmpty()
-    @MaxLength(255)
+    @MaxLength(65535)
     textEN: string;
 
-    @ApiProperty({ type: 'string', format: 'binary' })
+    @ApiProperty({ type: 'string', format: 'binary', required: false })
     @Exclude()
-    image: any;
+    image: any[];
 }
