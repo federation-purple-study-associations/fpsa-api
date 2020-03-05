@@ -1,6 +1,6 @@
-import { Entity, BaseEntity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm';
-import { Scope } from './scope.entity';
+import { Entity, BaseEntity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from './role.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -23,7 +23,6 @@ export class User extends BaseEntity {
     @ApiProperty({type: String, format: 'date', required: false})
     public lastLogin: Date;
 
-    @ManyToMany(() => Scope, scope => scope.users)
-    @JoinTable()
-    public scopes: Scope[];
+    @ManyToOne(() => Role, role => role.users)
+    public role: Role;
 }

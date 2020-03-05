@@ -1,5 +1,5 @@
 import { Entity, BaseEntity, Column, PrimaryGeneratedColumn, ManyToMany } from 'typeorm';
-import { User } from './user.entity';
+import { Role } from './role.entity';
 
 @Entity()
 export class Scope extends BaseEntity {
@@ -9,6 +9,6 @@ export class Scope extends BaseEntity {
     @Column()
     public scope: string;
 
-    @ManyToMany(() => User, user => user.scopes)
-    public users: User[];
+    @ManyToMany(() => Role, role => role.scopes)
+    public roles: Role[];
 }
