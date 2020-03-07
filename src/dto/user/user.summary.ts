@@ -9,4 +9,7 @@ export class UserSummaryDTO {
 
     @ApiProperty()
     public email: string;
+
+    @ApiProperty()
+    public role: string;
 }

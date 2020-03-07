@@ -11,12 +11,14 @@ import { UserSummaryDTO } from '../../dto/user/user.summary';
 import { UserNewDTO } from '../../dto/user/user.new';
 import { UserUpdateDTO } from '../../dto/user/user.update';
 import { Role } from '../../entities/user/role.entity';
+import { EmailService } from '../../services/email/email.service';
 
 @Controller('user')
 @ApiTags('user')
 export class UserController {
     constructor(
         private readonly userRepository: UserRepository,
+        private readonly emailService: EmailService,
     ) {}
 
     @Get('me')
@@ -115,7 +117,10 @@ export class UserController {
             throw new BadRequestException('Invalid role...');
         }
 
-        await this.userRepository.save(UserTransformer.toUser(body, role));
+        const user = await this.userRepository.save(UserTransformer.toUser(body, role));
+        const confirmation = await this.userRepository.createConfirmation(user);
+
+        this.emailService.sendRegistrationConfirmation(user, confirmation);
     }
 
     @Put(':id')
@@ -167,6 +172,6 @@ export class UserController {
             throw new NotFoundException('User not found...');
         }
 
-        this.userRepository.delete(user);
+        await this.userRepository.delete(user);
     }
 }

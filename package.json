@@ -8,8 +8,8 @@
     "url": "https://github.com/federation-purple-study-associations/fpsa-api"
   },
   "scripts": {
-    "build": "nest build",
-    "start": "rm -rf dist && nest start",
+    "build": "rm -rf ./dist && tsc -p tsconfig.build.json && ./node_modules/copyfiles/copyfiles -u 1 \"**/*.hbs\" dist/src",
+    "start": "ts-node src/main.ts",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config src/typeorm.config.ts",
     "generate-services": "ts-node src/swagger/swagger.builder.ts && ./node_modules/@openapitools/openapi-generator-cli//bin/openapi-generator generate -g typescript-inversify -i swagger-spec.json -o ../fpsa-site/src/openapi --additional-properties=\"useRxJS6=true\""
   },
@@ -20,6 +20,7 @@
     "@nestjs/schedule": "^0.2.0",
     "@nestjs/swagger": "^4.2.6",
     "@nestjs/typeorm": "^6.2.0",
+    "@sendgrid/mail": "^6.5.4",
     "bcrypt": "^3.0.8",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.11.0",
@@ -27,6 +28,7 @@
     "fastify-cookie": "^3.6.0",
     "fastify-multipart": "^1.0.5",
     "fastify-swagger": "^2.5.0",
+    "handlebars": "^4.7.3",
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
     "reflect-metadata": "^0.1.13",
@@ -44,6 +46,7 @@
     "@types/supertest": "^2.0.8",
     "@typescript-eslint/eslint-plugin": "^2.12.0",
     "@typescript-eslint/parser": "^2.12.0",
+    "copyfiles": "^2.1.1",
     "eslint": "^6.7.2",
     "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-import": "^2.19.1",

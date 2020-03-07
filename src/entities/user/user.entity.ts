@@ -1,6 +1,7 @@
-import { Entity, BaseEntity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, BaseEntity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from './role.entity';
+import { Confirmation } from './confirmation.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -24,8 +25,12 @@ export class User extends BaseEntity {
     public lastLogin: Date;
 
     @Column({ nullable: true })
+    @ApiProperty()
     public roleId: number;
 
     @ManyToOne(() => Role, role => role.users)
     public role: Role;
+
+    @OneToMany(() => Confirmation, conf => conf.user)
+    public confirmations: Confirmation[];
 }

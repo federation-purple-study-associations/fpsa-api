@@ -14,6 +14,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { StatisticsJob } from './jobs/statistics.job';
 import { BoardController } from './controllers/board/board.controller';
 import { BoardRepository } from './repositories/board.repository';
+import { EmailService } from './services/email/email.service';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { BoardRepository } from './repositories/board.repository';
     UserRepository,
     StatisticRepository,
     BoardRepository,
+    EmailService,
   ],
 })
 export class AppModule {}
