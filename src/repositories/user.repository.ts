@@ -19,6 +19,10 @@ export class UserRepository {
         return User.findOne({ where: {id} });
     }
 
+    public getConfirmation(token: string): Promise<Confirmation> {
+        return Confirmation.findOne({where: {token}, relations: ['user']});
+    }
+
     public getRole(id: number): Promise<Role> {
         return Role.findOne({ where: {id} });
     }

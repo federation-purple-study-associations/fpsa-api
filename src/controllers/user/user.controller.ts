@@ -12,6 +12,7 @@ import { UserNewDTO } from '../../dto/user/user.new';
 import { UserUpdateDTO } from '../../dto/user/user.update';
 import { Role } from '../../entities/user/role.entity';
 import { EmailService } from '../../services/email/email.service';
+import { UserActivateDTO } from '../../dto/user/user.activate';
 
 @Controller('user')
 @ApiTags('user')
@@ -55,6 +56,38 @@ export class UserController {
         this.userRepository.save(user);
 
         const jwtToken = UserTransformer.toJwtToken(user);
+        const expires = new Date();
+        expires.setDate(expires.getDate() + 1);
+
+        response
+            .setCookie('auth', jwtToken, process.env.env !== 'Testing' ? { domain: '.fpsa.nl', expires, path: '/' } : { expires, path: '/' })
+            .send();
+    }
+
+    @Post('activate')
+    @HttpCode(200)
+    @ApiOperation({
+        operationId: 'Activate',
+        summary: 'activate',
+        description: 'This call can be used to activate an account using a confirmation token',
+    })
+    @ApiResponse({ status: 200, description: 'Account activated!' })
+    @ApiResponse({ status: 400, description: 'Validation error...' })
+    @ApiResponse({ status: 404, description: 'Token invalid...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async activate(@Body() body: UserActivateDTO, @Res() response: any) {
+        const confirmation = await this.userRepository.getConfirmation(body.token);
+        if (!confirmation) {
+            throw new NotFoundException('Token invalid...');
+        }
+
+        confirmation.user.password = await bcrypt.hash(body.password, 10);
+        await Promise.all([
+            this.userRepository.save(confirmation.user),
+            this.userRepository.delete(confirmation),
+        ]);
+
+        const jwtToken = UserTransformer.toJwtToken(confirmation.user);
         const expires = new Date();
         expires.setDate(expires.getDate() + 1);
 
