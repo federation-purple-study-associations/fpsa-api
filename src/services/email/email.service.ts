@@ -8,7 +8,7 @@ import { Confirmation } from '../../entities/user/confirmation.entity';
 export class EmailService {
 
     private readonly handlebarTemplate: HandlebarsTemplateDelegate;
-    private readonly defaultFromEmailAddress = 'info@fpsa.nl';
+    private readonly defaultFromEmailAddress = { email: 'info@fpsa.nl', name: 'Federation of Purple Study Associations'};
 
     constructor() {
         sendgridClient.setApiKey(process.env.SENDGRID_APIKEY);
@@ -52,7 +52,7 @@ export class EmailService {
         );
     }
 
-    private sendMail(from: string, to: string, subject: string, html: string): Promise<any> {
+    private sendMail(from: {email: string, name: string}, to: string, subject: string, html: string): Promise<any> {
         return sendgridClient.send({
             to,
             from,
