@@ -12,7 +12,7 @@ export class User extends BaseEntity {
     @ApiProperty()
     public email: string;
 
-    @Column({ select: false })
+    @Column({ select: false, nullable: true })
     public password: string;
 
     @Column()
@@ -22,6 +22,9 @@ export class User extends BaseEntity {
     @Column({nullable: true})
     @ApiProperty({type: String, format: 'date', required: false})
     public lastLogin: Date;
+
+    @Column({ nullable: true })
+    public roleId: number;
 
     @ManyToOne(() => Role, role => role.users)
     public role: Role;
