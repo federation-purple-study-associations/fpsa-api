@@ -1,8 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsUUID, Matches } from 'class-validator';
 
 export class UserActivateDTO {
+    // Min 8 char long, 1 lowercase, 1 uppercase and 1 number
     @IsNotEmpty()
+    @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/)
     @ApiProperty({type: String, format: 'password'})
     public password: string;
 

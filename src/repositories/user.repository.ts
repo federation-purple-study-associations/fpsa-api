@@ -20,7 +20,7 @@ export class UserRepository {
     }
 
     public getConfirmation(token: string): Promise<Confirmation> {
-        return Confirmation.findOne({where: {token}, relations: ['user']});
+        return Confirmation.findOne({where: {token}, relations: ['user', 'user.role', 'user.role.scopes']});
     }
 
     public getRole(id: number): Promise<Role> {
