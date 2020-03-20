@@ -9,7 +9,7 @@ spec:
   accessModes:
   - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: manual
+  storageClassName: local-storage
   hostPath:
     path: {{storage}}
 
@@ -21,7 +21,7 @@ metadata:
   name: backend-volume-claim
   namespace: fpsa
 spec:
-  storageClassName: manual
+  storageClassName: local-storage
   accessModes:
     - ReadWriteMany
   resources:
