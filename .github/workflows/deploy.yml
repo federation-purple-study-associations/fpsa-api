@@ -50,7 +50,14 @@ jobs:
       run: chmod +x .github/workflows/templater.sh
     
     - name: Build template
-      run: .github/workflows/templater.sh template.yaml > filledin.yaml
+      env:
+        DB_USER: ${{secrets.DB_USER}}
+        DB_PW: ${{secrets.DB_PW}}
+        Cookie_secret: ${{secrets.COOKIE_SECRET}}
+        JWT_SECRET: ${{secrets.JWT_SECRET}}
+        Sendgrid: ${{SENDGRID}}
+        storage_path: ${{STORAGE}}
+      run: db_user=$DB_USER db_password=$DB_USER JWT_SECRET=$Jwt_secret COOKIE_SECRET=$Cookie_secret sendgrid_password=$Sendgrid storage=$storage_path .github/workflows/templater.sh template.yaml > filledin.yaml
     
     - name: deploy to cluster
       uses: steebchen/kubectl@master
