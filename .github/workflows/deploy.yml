@@ -33,6 +33,5 @@ jobs:
       uses: steebchen/kubectl@master
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-        KUBECTL_VERSION: 1.17
       with:
         args: create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
