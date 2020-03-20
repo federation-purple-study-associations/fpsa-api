@@ -27,6 +27,14 @@ jobs:
     - run: npm i
     - run: npm run build
 # Dockerize project
+    - name: Docker login
+      run: docker login -u {{secrets.DOCKER_USERNAME}} -p {{secrets.DOCKER_PASSWORD}}
+    
+    - name: Docker build
+      run: docker build -t svfpsa/site --pull -f Dockerfile .;
+    
+    - name: Docker publish
+      run: docker run -d svfpsa/site;
 
 # Deploy container
 #     - name: templater make runnable
