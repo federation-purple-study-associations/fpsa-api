@@ -55,7 +55,7 @@ jobs:
         DB_PW: ${{secrets.DB_PW}}
         Cookie_secret: ${{secrets.COOKIE_SECRET}}
         JWT_SECRET: ${{secrets.JWT_SECRET}}
-        Sendgrid: ${{SENDGRID}}
+        Sendgrid: ${{secrets.SENDGRID}}
         storage_path: ${{STORAGE}}
       run: db_user=$DB_USER db_password=$DB_USER JWT_SECRET=$Jwt_secret COOKIE_SECRET=$Cookie_secret sendgrid_password=$Sendgrid storage=$storage_path .github/workflows/templater.sh template.yaml > filledin.yaml
     
