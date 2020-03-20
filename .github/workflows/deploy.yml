@@ -54,7 +54,7 @@ jobs:
         JWT_SECRET: ${{secrets.JWT_SECRET}}
         Sendgrid: ${{secrets.SENDGRID}}
         storage_path: ${{secrets.STORAGE}}
-      run: db_user=$DB_USER db_password=$DB_USER JWT_SECRET=$JWT_SECRET COOKIE_SECRET=$Cookie_secret sendgrid_password=$Sendgrid storage=$storage_path backend_version=${{steps.package-version.outputs.version}} .github/workflows/templater.sh template.yaml > filledin.yaml
+      run: db_user=$DB_USER db_password=$DB_PW JWT_SECRET=$JWT_SECRET COOKIE_SECRET=$Cookie_secret sendgrid_password=$Sendgrid storage=$storage_path backend_version=${{steps.package-version.outputs.version}} .github/workflows/templater.sh template.yaml > filledin.yaml
     
     - name: deploy to cluster
       uses: steebchen/kubectl@master
