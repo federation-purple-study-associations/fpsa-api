@@ -40,10 +40,10 @@ jobs:
       run: docker login -u $Username -p $Password
     
     - name: Docker build
-      run: docker build -t svfpsa/site:${{ steps.package-version.outputs.version }} --pull -f Dockerfile .;
+      run: docker build -t svfpsa/backend:${{ steps.package-version.outputs.version }} --pull -f Dockerfile .;
     
     - name: Docker publish
-      run: docker push svfpsa/site:${{ steps.package-version.outputs.version }}
+      run: docker push svfpsa/backend:${{ steps.package-version.outputs.version }}
 
 # Deploy container
     - name: templater make runnable
