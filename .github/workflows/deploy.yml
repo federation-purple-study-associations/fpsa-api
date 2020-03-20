@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x]
+        node-version: [12.x]
 
     steps:
     - uses: actions/checkout@v2
@@ -29,9 +29,9 @@ jobs:
     - run: npm run build
       env:
         CI: true
-    - name: deploy to cluster
-      uses: steebchen/kubectl@master
-      env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
+#    - name: deploy to cluster
+#      uses: steebchen/kubectl@master
+#      env:
+#        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+#      with:
+#        args: create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
