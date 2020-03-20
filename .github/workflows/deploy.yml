@@ -26,6 +26,11 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm i
     - run: npm run build
+    - run: npm run test --if-present
+    
+    - name: Read package.json
+      uses: tyankatsu0105/read-package-version-actions@v1
+      id: package-version
 
 # Dockerize project
     - name: Docker login
@@ -35,21 +40,21 @@ jobs:
       run: docker login -u $Username -p $Password
     
     - name: Docker build
-      run: docker build -t svfpsa/site --pull -f Dockerfile .;
+      run: docker build -t svfpsa/site:${{ steps.package-version.outputs.version }} --pull -f Dockerfile .;
     
     - name: Docker publish
-      run: docker run -d svfpsa/site;
+      run: docker push svfpsa/site:${{ steps.package-version.outputs.version }}
 
 # Deploy container
-#     - name: templater make runnable
-#       run: chmod +x .github/workflows/templater.sh
+    - name: templater make runnable
+      run: chmod +x .github/workflows/templater.sh
     
-#     - name: Build template
-#       run: .github/workflows/templater.sh template.yaml > filledin.yaml
+    - name: Build template
+      run: .github/workflows/templater.sh template.yaml > filledin.yaml
     
-#     - name: deploy to cluster
-#       uses: steebchen/kubectl@master
-#       env:
-#         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-#       with:
-#         args: apply -f filledin.yaml
+    - name: deploy to cluster
+      uses: steebchen/kubectl@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      with:
+        args: apply -f filledin.yaml
