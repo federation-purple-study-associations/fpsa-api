@@ -26,9 +26,13 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm i
     - run: npm run build
+
 # Dockerize project
     - name: Docker login
-      run: docker login -u {{secrets.DOCKER_USERNAME}} -p {{secrets.DOCKER_PASSWORD}}
+      env:
+        Username: ${{secrets.DOCKER_USERNAME}}
+        Password: ${{secrets.DOCKER_PASSWORD}}
+      run: docker login -u $Username -p $Password
     
     - name: Docker build
       run: docker build -t svfpsa/site --pull -f Dockerfile .;
