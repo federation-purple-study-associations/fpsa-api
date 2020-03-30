@@ -42,7 +42,8 @@ export class AgendaTransformer {
         agenda.summaryEN = body.summaryEN;
         agenda.descriptionNL = body.descriptionNL;
         agenda.descriptionEN = body.descriptionEN;
-        agenda.imageUrl = uuid() + extname(body.image.filename);
+        agenda.imageUrl = uuid() + extname(body.image[0].filename);
+        agenda.isDraft = body.isDraft === 'true';
 
         return agenda;
     }
@@ -56,9 +57,10 @@ export class AgendaTransformer {
         agenda.summaryEN = body.summaryEN;
         agenda.descriptionNL = body.descriptionNL;
         agenda.descriptionEN = body.descriptionEN;
+        agenda.isDraft = body.isDraft === 'true';
         
         if (needUpdateFilePath) {
-            agenda.imageUrl = uuid() + extname(body.image.filename);
+            agenda.imageUrl = uuid() + extname(body.image[0].filename);
         }
 
         return agenda;

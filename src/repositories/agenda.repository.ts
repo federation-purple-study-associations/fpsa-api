@@ -18,7 +18,7 @@ export class AgendaRepository {
       select.push('titleEN', 'summaryEN');
     }
 
-    return AgendaItem.find({select, skip, take, order: {date: 'ASC'}, where: { date: MoreThanOrEqual(new Date())}});
+    return AgendaItem.find({select, skip, take, order: {date: 'ASC'}, where: { date: MoreThanOrEqual(new Date()), isDraft: false }});
   }
 
   public getOne(id: number, language: LANGUAGE): Promise<AgendaItem> {

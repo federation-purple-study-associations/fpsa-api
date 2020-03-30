@@ -41,6 +41,10 @@ export class UpdateAgendaDTO {
     @MaxLength(65535)
     descriptionEN: string;
 
+    @ApiProperty()
+    @IsNotEmpty()
+    isDraft: 'true' | 'false';
+
     @ApiProperty({ type: 'string', format: 'binary', required: false })
     @Exclude()
     image: any;

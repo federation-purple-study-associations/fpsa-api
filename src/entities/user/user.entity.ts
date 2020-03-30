@@ -2,6 +2,7 @@ import { Entity, BaseEntity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMan
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from './role.entity';
 import { Confirmation } from './confirmation.entity';
+import { LANGUAGE } from '../../constants';
 
 @Entity()
 export class User extends BaseEntity {
@@ -23,6 +24,10 @@ export class User extends BaseEntity {
     @Column({nullable: true})
     @ApiProperty({type: String, format: 'date', required: false})
     public lastLogin: Date;
+
+    @Column({default: false})
+    @ApiProperty()
+    public recieveEmailUpdatesEvents: boolean;
 
     @Column({ nullable: true })
     @ApiProperty()

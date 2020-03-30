@@ -3,6 +3,7 @@ import * as sendgridClient from '@sendgrid/mail';
 import * as Handlebars from 'handlebars';
 import { User } from '../../entities/user/user.entity';
 import { Confirmation } from '../../entities/user/confirmation.entity';
+import { AgendaItem } from '../../entities/agenda/agenda.item.entity';
 
 @Injectable()
 export class EmailService {
@@ -50,6 +51,22 @@ export class EmailService {
                 baseUrl: process.env.URL_SITE,
             }),
         );
+    }
+
+    public async sendEventEmail(agendaItem: AgendaItem, users: User[]): Promise<void> {
+        for (const user of users) {
+            await this.sendMail(
+                this.defaultFromEmailAddress,
+                user.email,
+                'NIEUW EVENEMENT: ' + agendaItem.titleNL,
+                this.handlebarTemplate({
+                    template: 'new-event',
+                    event: agendaItem,
+                    user,
+                    baseUrl: process.env.URL_SITE,
+                }),
+            );
+        }
     }
 
     private sendMail(from: {email: string, name: string}, to: string, subject: string, html: string): Promise<any> {

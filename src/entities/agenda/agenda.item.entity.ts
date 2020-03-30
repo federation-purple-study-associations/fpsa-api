@@ -41,4 +41,8 @@ export class AgendaItem extends BaseEntity {
     @Column({type: 'mediumtext'})
     @ApiProperty({ maxLength: 65535 })
     descriptionEN: string;
+
+    @Column({default: false})
+    @ApiProperty()
+    isDraft: boolean;
 }

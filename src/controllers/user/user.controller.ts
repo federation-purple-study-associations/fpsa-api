@@ -25,7 +25,7 @@ export class UserController {
     @Get('me')
     @HttpCode(200)
     @ApiOperation({
-        operationId: 'me',
+        operationId: 'getMe',
         summary: 'getMe',
         description: 'This call can be used to get yourself',
     })
@@ -34,6 +34,21 @@ export class UserController {
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public getMe(@Me() me: Promise<User>): Promise<User> {
         return me;
+    }
+
+    @Post('me')
+    @HttpCode(202)
+    @ApiOperation({
+        operationId: 'updateMe',
+        summary: 'updateMe',
+        description: 'This call can be used to update your own settings',
+    })
+    @ApiResponse({ status: 202, description: 'Updated you!' })
+    @ApiResponse({ status: 400, description: 'Validation error...' })
+    @ApiResponse({ status: 401, description: 'Your are not logged in...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async updateMe(@Me() mePromise: Promise<User>, @Body() body: User) {
+        this.userRepository.save(UserTransformer.updateMe(await mePromise, body));
     }
 
     @Post('login')

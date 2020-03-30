@@ -50,6 +50,13 @@ export class UserTransformer {
         return user;
     }
 
+    public static updateMe(me: User, update: User) {
+        me.email = update.email;
+        me.recieveEmailUpdatesEvents = update.recieveEmailUpdatesEvents;
+
+        return me;
+    }
+
     public static decodeJwt(token: string): JwtPayload {
         return jwt.verify(token, process.env.JWT_SECRET);
     }

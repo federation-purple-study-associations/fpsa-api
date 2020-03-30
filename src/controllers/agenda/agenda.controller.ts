@@ -1,5 +1,6 @@
 import { Controller, Post, Get, HttpCode, Query, Param, Body, Res, Delete, NotFoundException, Put } from '@nestjs/common';
 import { createWriteStream, mkdirSync, existsSync, createReadStream, unlinkSync } from 'fs';
+import * as path from 'path';
 import { resolve, extname } from 'path';
 import { AgendaRepository } from '../../repositories/agenda.repository';
 import { ApiOperation, ApiResponse, ApiTags, ApiConsumes } from '@nestjs/swagger';
@@ -11,6 +12,9 @@ import { Auth } from '../../decorators/auth.decorator';
 import { AgendaAllDTO } from '../../dto/agenda/agenda.all';
 import { UpdateAgendaDTO } from '../../dto/agenda/agenda.update';
 import { AgendaItem } from '../../entities/agenda/agenda.item.entity';
+import { EmailService } from '../../services/email/email.service';
+import { UserRepository } from '../../repositories/user.repository';
+import { User } from '../../entities/user/user.entity';
 
 @Controller('agenda')
 @ApiTags('agenda')
@@ -18,6 +22,8 @@ export class AgendaController {
 
   constructor(
     private readonly agendaRepository: AgendaRepository,
+    private readonly userRepository: UserRepository,
+    private readonly emailService: EmailService,
   ) {}
 
   @Get()
@@ -120,11 +126,20 @@ export class AgendaController {
     const dir = resolve(process.env.STORAGE_PATH, 'agenda');
     !existsSync(dir) && mkdirSync(dir);
 
-    const stream = createWriteStream(resolve(dir, agendaItem.imageUrl), {encoding: 'binary'});
-    stream.once('open', () => {
-        stream.write(body.image.data);
-        stream.end();
+    await new Promise((resolve) => {
+      const stream = createWriteStream(path.resolve(dir, agendaItem.imageUrl), {encoding: 'binary'});
+      stream.once('open', () => {
+          stream.write(body.image[0].data);
+          stream.end();
+          resolve();
+      });
     });
+
+    // Send email if agenda item is not a draft
+    if (!agendaItem.isDraft) {
+      const users: User[] = await this.userRepository.getAllWhoWantsEventNotification();
+      this.emailService.sendEventEmail(agendaItem, users);
+    }
   }
 
   @Put(':id')
@@ -155,16 +170,27 @@ export class AgendaController {
       } catch(e) {}
 
       // Add new image
-      const stream = createWriteStream(resolve(dir, agendaItem.imageUrl), {encoding: 'binary'});
-      stream.once('open', () => {
-          stream.write(body.image.data);
-          stream.end();
+      await new Promise((resolve) => {
+        const stream = createWriteStream(path.resolve(dir, agendaItem.imageUrl), {encoding: 'binary'});
+        stream.once('open', () => {
+            stream.write(body.image[0].data);
+            stream.end();
+            resolve();
+        });
       });
     }
+
+    const wasDraft: boolean = agendaItem.isDraft;
 
     // Update database
     AgendaTransformer.update(agendaItem, body, !!body.image);
     await this.agendaRepository.save(agendaItem);
+
+    // Send email if agenda item is not a draft ANY MORE
+    if (wasDraft && body.isDraft === 'false') {
+      const users: User[] = await this.userRepository.getAllWhoWantsEventNotification();
+      this.emailService.sendEventEmail(agendaItem, users);
+    }
   }
 
   @Delete(':id')

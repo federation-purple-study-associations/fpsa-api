@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '../entities/user/user.entity';
-import { BaseEntity } from 'typeorm';
+import { BaseEntity, IsNull, Not } from 'typeorm';
 import { Role } from '../entities/user/role.entity';
 import { Confirmation } from '../entities/user/confirmation.entity';
 import { v4 as uuidv4 } from 'uuid';
@@ -13,6 +13,10 @@ export class UserRepository {
 
     public getAll(): Promise<User[]> {
         return User.find({ relations: ['role'], order: { roleId: 'ASC' } });
+    }
+
+    public getAllWhoWantsEventNotification(): Promise<User[]> {
+        return User.find({ where: {recieveEmailUpdatesEvents: true, password: Not(IsNull())} });
     }
 
     public getOne(id: number): Promise<User> {
