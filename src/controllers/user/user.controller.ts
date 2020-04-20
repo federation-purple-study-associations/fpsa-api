@@ -247,7 +247,7 @@ export class UserController {
         summary: 'getAll',
         description: 'This call can be used to get all applications',
     })
-    @ApiResponse({ status: 200, description: 'Application accepted!' })
+    @ApiResponse({ status: 200, description: 'Application accepted!', type: Application, isArray: true })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public getAllApplications(): Promise<Application[]> {
         return this.userRepository.getAllApplications();
@@ -255,7 +255,7 @@ export class UserController {
 
     @Post('application/:id/accept')
     @Auth('User:Write')
-    @HttpCode(202)
+    @HttpCode(200)
     @ApiOperation({
         operationId: 'ApplicationAccept',
         summary: 'accept',
@@ -276,12 +276,12 @@ export class UserController {
         const user = await this.userRepository.save(UserTransformer.fromApplication(application));
         const confirmation = await this.userRepository.createConfirmation(user);
 
-        this.emailService.sendRegistrationConfirmation(user, confirmation);
+        await this.emailService.sendRegistrationConfirmation(user, confirmation);
     }
 
     @Post('application/:id/decline')
     @Auth('User:Write')
-    @HttpCode(202)
+    @HttpCode(200)
     @ApiOperation({
         operationId: 'ApplicationDecline',
         summary: 'decline',
@@ -297,6 +297,6 @@ export class UserController {
             throw new NotFoundException('Application could not be found...')
         }
 
-        this.userRepository.delete(application);
+        await this.userRepository.delete(application);
     }
 }
