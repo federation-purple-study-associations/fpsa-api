@@ -37,6 +37,7 @@ export class UserTransformer {
         const user = new User();
         user.fullName = dto.fullName;
         user.email = dto.email;
+        user.academy = dto.academy;
         user.role = role;
         
         return user;
@@ -72,6 +73,7 @@ export class UserTransformer {
         const user = new User();
         user.email = application.email;
         user.fullName = application.name;
+        user.academy = application.academy;
         user.roleId = 2;
 
         return user;
@@ -81,6 +83,7 @@ export class UserTransformer {
         const application = new Application();
         application.email = body.email;
         application.name = body.name;
+        application.academy = body.academy;
 
         return application;
     }

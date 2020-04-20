@@ -14,4 +14,12 @@ export class Application extends BaseEntity {
     @Column()
     @ApiProperty()
     public email: string;
+
+    @Column()
+    @ApiProperty()
+    public academy: string;
+
+    @Column()
+    @ApiProperty({type: String, format: 'date', required: false})
+    public handedIn: Date;
 }

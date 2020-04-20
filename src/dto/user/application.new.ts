@@ -10,4 +10,8 @@ export class NewApplication {
     @IsEmail()
     @ApiProperty()
     public email: string;
+
+    @IsNotEmpty()
+    @ApiProperty()
+    public academy: string;
 }

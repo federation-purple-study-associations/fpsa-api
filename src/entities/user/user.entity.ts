@@ -21,6 +21,10 @@ export class User extends BaseEntity {
     @ApiProperty()
     public fullName: string;
 
+    @Column()
+    @ApiProperty()
+    public academy: string;
+
     @Column({nullable: true})
     @ApiProperty({type: String, format: 'date', required: false})
     public lastLogin: Date;

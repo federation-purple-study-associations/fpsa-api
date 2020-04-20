@@ -10,6 +10,10 @@ export class UserNewDTO {
     @IsNotEmpty()
     public email: string;
 
+    @IsNotEmpty()
+    @ApiProperty()
+    public academy: string;
+
     @ApiProperty()
     @IsNotEmpty()
     public roleId: number;

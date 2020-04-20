@@ -1,6 +1,6 @@
 {
   "name": "fpsa-api",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "The API for the FPSA website",
   "author": "Bastiaan Verhaar",
   "license": "GPL-2.0",
@@ -30,6 +30,7 @@
     "fastify-swagger": "^2.5.0",
     "handlebars": "^4.7.3",
     "jsonwebtoken": "^8.5.1",
+    "moment": "^2.24.0",
     "mysql": "^2.18.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.5.4",
