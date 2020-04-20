@@ -5,6 +5,8 @@ import { UserSummaryDTO } from '../dto/user/user.summary';
 import { UserNewDTO } from '../dto/user/user.new';
 import { Role } from '../entities/user/role.entity';
 import { UserUpdateDTO } from '../dto/user/user.update';
+import { Application } from '../entities/user/application.entity';
+import { NewApplication } from '../dto/user/application.new';
 
 export class UserTransformer {
     public static toJwtToken(user: User) {
@@ -64,5 +66,22 @@ export class UserTransformer {
     public static hasScope(token: string, scope: string) {
         const decodeToken: JwtPayload = jwt.verify(token, process.env.JWT_SECRET);
         return decodeToken.scopes.includes(scope);
+    }
+
+    public static fromApplication(application: Application): User {
+        const user = new User();
+        user.email = application.email;
+        user.fullName = application.name;
+        user.roleId = 2;
+
+        return user;
+    }
+
+    public static toApplication(body: NewApplication) {
+        const application = new Application();
+        application.email = body.email;
+        application.name = body.name;
+
+        return application;
     }
 }

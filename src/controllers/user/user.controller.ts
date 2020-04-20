@@ -13,6 +13,8 @@ import { UserUpdateDTO } from '../../dto/user/user.update';
 import { Role } from '../../entities/user/role.entity';
 import { EmailService } from '../../services/email/email.service';
 import { UserActivateDTO } from '../../dto/user/user.activate';
+import { NewApplication } from '../../dto/user/application.new';
+import { Application } from '../../entities/user/application.entity';
 
 @Controller('user')
 @ApiTags('user')
@@ -52,13 +54,13 @@ export class UserController {
     }
 
     @Post('login')
-    @HttpCode(202)
+    @HttpCode(200)
     @ApiOperation({
         operationId: 'Login',
         summary: 'login',
         description: 'This call can be used to gain access to the resources of FPSA, if you have the scopes for it',
     })
-    @ApiResponse({ status: 202, description: 'Logged in!' })
+    @ApiResponse({ status: 200, description: 'Logged in!' })
     @ApiResponse({ status: 400, description: 'Email or password is incorrect...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async login(@Body() body: LoginDTO, @Res() response: any) {
@@ -221,5 +223,80 @@ export class UserController {
         }
 
         await this.userRepository.delete(user);
+    }
+
+    @Post('application')
+    @HttpCode(202)
+    @ApiOperation({
+        operationId: 'ApplicationCreate',
+        summary: 'create',
+        description: 'This call can be used to create an application',
+    })
+    @ApiResponse({ status: 202, description: 'Application accepted!' })
+    @ApiResponse({ status: 400, description: 'Validation error...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public addApplication(@Body() body: NewApplication): void {
+        this.userRepository.save(UserTransformer.toApplication(body));
+    }
+
+    @Get('application')
+    @Auth('User:Read')
+    @HttpCode(200)
+    @ApiOperation({
+        operationId: 'ApplicationGetAll',
+        summary: 'getAll',
+        description: 'This call can be used to get all applications',
+    })
+    @ApiResponse({ status: 200, description: 'Application accepted!' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public getAllApplications(): Promise<Application[]> {
+        return this.userRepository.getAllApplications();
+    }
+
+    @Post('application/:id/accept')
+    @Auth('User:Write')
+    @HttpCode(202)
+    @ApiOperation({
+        operationId: 'ApplicationAccept',
+        summary: 'accept',
+        description: 'This call can be used to accept an application',
+    })
+    @ApiResponse({ status: 202, description: 'Application accepted!' })
+    @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
+    @ApiResponse({ status: 404, description: 'Application not found...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async acceptApplication(@Param('id') id: number): Promise<void> {
+        const application = await this.userRepository.getApplication(id);
+        if (!application) {
+            throw new NotFoundException('Application could not be found...')
+        }
+
+        this.userRepository.delete(application);
+
+        const user = await this.userRepository.save(UserTransformer.fromApplication(application));
+        const confirmation = await this.userRepository.createConfirmation(user);
+
+        this.emailService.sendRegistrationConfirmation(user, confirmation);
+    }
+
+    @Post('application/:id/decline')
+    @Auth('User:Write')
+    @HttpCode(202)
+    @ApiOperation({
+        operationId: 'ApplicationDecline',
+        summary: 'decline',
+        description: 'This call can be used to decline an application',
+    })
+    @ApiResponse({ status: 202, description: 'Application declined!' })
+    @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
+    @ApiResponse({ status: 404, description: 'Application not found...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async declineApplication(@Param('id') id: number): Promise<void> {
+        const application = await this.userRepository.getApplication(id);
+        if (!application) {
+            throw new NotFoundException('Application could not be found...')
+        }
+
+        this.userRepository.delete(application);
     }
 }

@@ -4,6 +4,7 @@ import { BaseEntity, IsNull, Not } from 'typeorm';
 import { Role } from '../entities/user/role.entity';
 import { Confirmation } from '../entities/user/confirmation.entity';
 import { v4 as uuidv4 } from 'uuid';
+import { Application } from '../entities/user/application.entity';
 
 @Injectable()
 export class UserRepository {
@@ -37,6 +38,14 @@ export class UserRepository {
         confirmation.token = uuidv4();
 
         return this.save(confirmation);
+    }
+
+    public getAllApplications(): Promise<Application[]> {
+        return Application.find();
+    }
+
+    public getApplication(id: number): Promise<Application> {
+        return Application.findOne({where: {id}});
     }
 
     public save<T extends BaseEntity>(entity: T): Promise<T> {
