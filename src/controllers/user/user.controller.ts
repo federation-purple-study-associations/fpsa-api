@@ -237,7 +237,12 @@ export class UserController {
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async addApplication(@Body() body: NewApplication): Promise<void> {
         const application = await this.userRepository.save(UserTransformer.toApplication(body));
-        this.emailService.sendApplicationConfirmation(application);
+        
+        // Does not need to be awaiten, in order to increase response times
+        Promise.all([
+            this.emailService.sendApplicationConfirmation(application),
+            this.emailService.sendApplicationToBoard(application)
+        ]);
     }
 
     @Get('application')

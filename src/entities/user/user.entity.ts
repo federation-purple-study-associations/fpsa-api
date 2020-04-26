@@ -1,8 +1,7 @@
 import { Entity, BaseEntity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiOperation } from '@nestjs/swagger';
 import { Role } from './role.entity';
 import { Confirmation } from './confirmation.entity';
-import { LANGUAGE } from '../../constants';
 
 @Entity()
 export class User extends BaseEntity {
@@ -24,6 +23,14 @@ export class User extends BaseEntity {
     @Column()
     @ApiProperty()
     public academy: string;
+
+    @Column()
+    @ApiProperty()
+    public establishment: string;
+
+    @Column()
+    @ApiProperty()
+    public kvk: number;
 
     @Column({nullable: true})
     @ApiProperty({type: String, format: 'date', required: false})

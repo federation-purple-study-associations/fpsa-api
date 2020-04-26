@@ -1,5 +1,5 @@
 import { PageView } from '../entities/statistic/page.views.entity';
-import { BaseEntity } from 'typeorm';
+import { BaseEntity, MoreThanOrEqual } from 'typeorm';
 
 export class StatisticRepository {
     public getPageViewToday(): Promise<PageView> {
@@ -10,7 +10,10 @@ export class StatisticRepository {
     }
 
     public getPageViews(): Promise<PageView[]> {
-        return PageView.find({ order: {date: 'ASC'}});
+        const date = new Date();
+        date.setFullYear(date.getFullYear() - 1);
+
+        return PageView.find({ order: {date: 'ASC'}, where: {date: MoreThanOrEqual(date)}});
     }
 
     public save<T extends BaseEntity>(entity: T): Promise<T> {

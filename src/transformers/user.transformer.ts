@@ -39,6 +39,8 @@ export class UserTransformer {
         user.email = dto.email;
         user.academy = dto.academy;
         user.role = role;
+        user.kvk = dto.kvk;
+        user.establishment = dto.establishment;
         
         return user;
     }
@@ -46,6 +48,10 @@ export class UserTransformer {
     public static update(dto: UserUpdateDTO, user: User, role?: Role) {
         user.fullName = dto.fullName;
         user.email = dto.email;
+        user.academy = dto.academy;
+        user.kvk = dto.kvk;
+        user.establishment = dto.establishment;
+
         if (role) {
             user.role = role;
         }
@@ -74,6 +80,9 @@ export class UserTransformer {
         user.email = application.email;
         user.fullName = application.name;
         user.academy = application.academy;
+        user.kvk = application.kvk;
+        user.establishment = application.establishment;
+        
         user.roleId = 2;
 
         return user;
@@ -82,9 +91,27 @@ export class UserTransformer {
     public static toApplication(body: NewApplication) {
         const application = new Application();
         application.email = body.email;
-        application.name = body.name;
+        application.name = UserTransformer.checkName(body.name);
         application.academy = body.academy;
+        application.kvk = body.kvk;
+        application.establishment = body.establishment;
 
         return application;
+    }
+
+    /**
+     * This function will make sure that the name of a study association will be forced to: s.v. {NAME}, if it isn't
+     * @param name Name of study association
+     */
+    private static checkName(name: string): string {
+        if (name.substr(0, 5) === 's.v. ') {
+            return name;
+        
+        } else if (name.substr(0, 3) === 'sv ' || name.substr(0, 4) === 's.v ' || name.substr(0, 4) === 'sv. ') {
+            return 's.v. ' + name.substring(3);
+        
+        } else {
+            return 's.v. ' + name;
+        }
     }
 }

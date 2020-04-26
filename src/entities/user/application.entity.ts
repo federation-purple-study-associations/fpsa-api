@@ -20,6 +20,14 @@ export class Application extends BaseEntity {
     public academy: string;
 
     @Column()
+    @ApiProperty()
+    public establishment: string;
+
+    @Column()
+    @ApiProperty()
+    public kvk: number;
+
+    @Column()
     @ApiProperty({type: String, format: 'date', required: false})
     public handedIn: Date;
 }

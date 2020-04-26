@@ -70,6 +70,18 @@ export class EmailService {
         }
     }
 
+    public async sendApplicationToBoard(application: Application): Promise<void> {
+        await this.sendMail(
+            { email: application.email, name: application.name },
+            this.defaultFromEmailAddress.email,
+            'Nieuwe aanmelding ontvangen: ' + application.name,
+            this.handlebarTemplate({
+                template: 'application-to-board',
+                application
+            })
+        )
+    }
+
     public async sendApplicationConfirmation(application: Application): Promise<void> {
         await this.sendMail(
             this.defaultFromEmailAddress,
@@ -110,11 +122,6 @@ export class EmailService {
     }
 
     private sendMail(from: {email: string, name: string}, to: string, subject: string, html: string): Promise<any> {
-        return sendgridClient.send({
-            to,
-            from,
-            subject,
-            html,
-        });
+        return sendgridClient.send({ to, from, subject, html, });
     }
 }
