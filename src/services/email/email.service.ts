@@ -77,7 +77,8 @@ export class EmailService {
             'Nieuwe aanmelding ontvangen: ' + application.name,
             this.handlebarTemplate({
                 template: 'application-to-board',
-                application
+                application,
+                handedIn: moment(application.handedIn).format('DD-MM-YYYY HH:mm')
             })
         )
     }
