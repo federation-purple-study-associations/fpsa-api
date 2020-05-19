@@ -18,15 +18,15 @@ spec:
         tier: api
     spec:
       volumes:
-        - name: backend-storage
+        - name: {{ .Chart.Name }}-storage
           persistentVolumeClaim:
-            claimName: backend-volume-claim
+            claimName: {{ .Chart.Name }}-volume-claim
       containers:
       - name: {{ .Chart.Name }}
         image: svfpsa/backend:{{.Values.tag}}
         volumeMounts:
           - mountPath: {{.Values.storagePath}}
-            name: backend-storage
+            name: {{ .Chart.Name }}-storage
         env:
         - name: DB_HOST
           valueFrom:
