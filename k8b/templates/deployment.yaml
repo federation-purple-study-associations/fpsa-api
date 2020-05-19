@@ -1,28 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend
+  name: {{ .Chart.Name }}-deployment
   namespace: fpsa
 spec:
   selector:
     matchLabels:
-      app: fpsa-backend
-      tier: backend
+      app: {{ .Chart.Name }}
+      tier: api
   replicas: 1
   template:
     metadata:
-      name: fpsa-backend
+      name: {{ .Chart.Name }}
       namespace: fpsa
       labels:
-        app: fpsa-backend
-        tier: backend
+        app: {{ .Chart.Name }}
+        tier: api
     spec:
       volumes:
         - name: backend-storage
           persistentVolumeClaim:
             claimName: backend-volume-claim
       containers:
-      - name: fpsa-backend
+      - name: {{ .Chart.Name }}
         image: svfpsa/backend:{{.Values.tag}}
         volumeMounts:
           - mountPath: {{.Values.storagePath}}

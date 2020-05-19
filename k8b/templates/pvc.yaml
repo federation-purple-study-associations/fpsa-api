@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: backend-volume-claim
+  name: {{ .Chart.Name }}-volume-claim
   namespace: fpsa
 spec:
   storageClassName: local-storage

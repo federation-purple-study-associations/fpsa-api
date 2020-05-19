@@ -1,2 +1,7 @@
 storagePath: /var/storage/backend
 frontendUrl: https://fpsa.nl/
+
+autoscaling:
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 50
