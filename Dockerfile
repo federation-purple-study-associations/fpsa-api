@@ -1,4 +1,4 @@
-FROM node:12
+FROM node:lts
 
 WORKDIR /backend
 
@@ -7,7 +7,7 @@ COPY package-lock.json .
 
 RUN npm i --production
 
-ADD ./dist ./dist
+COPY ./dist ./dist
 COPY package.json ./dist
 
 CMD node dist/main.js
