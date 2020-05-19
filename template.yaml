@@ -67,9 +67,15 @@ spec:
         - name: DB_PORT
           value: "3306"
         - name: DB_USER
-          value: "{{db_user}}"
+          valueFrom:
+            secretKeyRef:
+              name: db
+              key: DB_USER
         - name: DB_PASSWORD
-          value: "{{db_password}}"
+          valueFrom:
+            secretKeyRef:
+              name: db
+              key: DB_PASSWORD
         - name: DB_NAME
           value: fpsa
         - name: JWT_SECRET
