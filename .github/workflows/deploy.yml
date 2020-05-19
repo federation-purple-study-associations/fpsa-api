@@ -21,8 +21,10 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm i
-    - run: npm run build
+    - name: Install packages
+      run: npm i
+    - name: build project
+      run: npm run build
 
 # Dockerize project
     - name: Docker login
@@ -49,4 +51,4 @@ jobs:
         values: |
           tag: $GITHUB_SHA
       env:
-        KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
+        KUBECONFIG_FILE: '${{ secrets.KUBE_CONFIG_DATA }}'
