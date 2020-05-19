@@ -17,7 +17,6 @@
     "@nestjs/common": "^6.11.6",
     "@nestjs/core": "^6.11.6",
     "@nestjs/platform-fastify": "^6.11.6",
-    "@nestjs/schedule": "^0.2.0",
     "@nestjs/swagger": "^4.2.6",
     "@nestjs/typeorm": "^6.2.0",
     "@sendgrid/mail": "^6.5.4",
