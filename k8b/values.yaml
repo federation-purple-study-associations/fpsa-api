@@ -3,5 +3,5 @@ frontendUrl: https://fpsa.nl/
 
 autoscaling:
     minReplicas: 1
-    maxReplicas: 2
+    maxReplicas: 5
     targetCPUUtilizationPercentage: 50
