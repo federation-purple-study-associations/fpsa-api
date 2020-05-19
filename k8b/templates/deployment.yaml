@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: fpsa
+spec:
+  selector:
+    matchLabels:
+      app: fpsa-backend
+      tier: backend
+  replicas: 1
+  template:
+    metadata:
+      name: fpsa-backend
+      namespace: fpsa
+      labels:
+        app: fpsa-backend
+        tier: backend
+    spec:
+      volumes:
+        - name: backend-storage
+          persistentVolumeClaim:
+            claimName: backend-volume-claim
+      containers:
+      - name: fpsa-backend
+        image: svfpsa/backend:{{.Values.tag}}
+        volumeMounts:
+          - mountPath: {{.Values.storagePath}}
+            name: backend-storage
+        env:
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: db
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: db
+              key: DB_PORT
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: db
+              key: DB_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db
+              key: DB_PASSWORD
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: db
+              key: DB_NAME
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: jwt
+              key: JWT_SECRET
+        - name: COOKIE_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: cookies
+              key: COOKIE_SECRET
+        - name: SENDGRID_APIKEY
+          valueFrom:
+            secretKeyRef:
+              name: sendgrid
+              key: SENDGRID_APIKEY
+        - name: env
+          value: PRODUCTION
+        - name: URL_SITE
+          value: "{{.Values.frontendUrl}}"
+        - name: STORAGE_PATH
+          value: "{{.Values.storagePath}}"
+        ports:
+        - containerPort: 3000

@@ -23,7 +23,6 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm i
     - run: npm run build
-    - run: npm run test --if-present
 
 # Dockerize project
     - name: Docker login
@@ -39,20 +38,15 @@ jobs:
       run: docker push svfpsa/backend:$GITHUB_SHA
 
 # Deploy container
-    - name: templater make runnable
-      run: chmod +x .github/workflows/templater.sh
-    
-    - name: Build template
-      env:
-        Cookie_secret: ${{secrets.COOKIE_SECRET}}
-        JWT_SECRET: ${{secrets.JWT_SECRET}}
-        Sendgrid: ${{secrets.SENDGRID}}
-        storage_path: ${{secrets.STORAGE}}
-      run: JWT_SECRET=$JWT_SECRET COOKIE_SECRET=$Cookie_secret sendgrid_password=$Sendgrid storage=$storage_path backend_version=$GITHUB_SHA .github/workflows/templater.sh template.yaml > filledin.yaml
-    
-    - name: deploy to cluster
-      uses: steebchen/kubectl@master
-      env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+    - name: Deploy
+      uses: 'deliverybot/helm@master'
       with:
-        args: apply -f filledin.yaml
+        release: 'fpsa-api'
+        namespace: 'fpsa'
+        chart: 'k8b'
+        helm: 'helm3'
+        token: '${{ github.token }}'
+        values: |
+          tag: $GITHUB_SHA
+      env:
+        KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
