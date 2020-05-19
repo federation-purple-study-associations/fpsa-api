@@ -24,10 +24,6 @@ jobs:
     - run: npm i
     - run: npm run build
     - run: npm run test --if-present
-    
-    - name: Read package.json
-      uses: tyankatsu0105/read-package-version-actions@v1
-      id: package-version
 
 # Dockerize project
     - name: Docker login
@@ -37,7 +33,7 @@ jobs:
       run: docker login -u $Username -p $Password
     
     - name: Docker build
-      run: docker build -t svfpsa/backend:$GITHUB_SHA --pull -f Dockerfile .;
+      run: docker build -t svfpsa/backend:$GITHUB_SHA -f Dockerfile .;
     
     - name: Docker publish
       run: docker push svfpsa/backend:$GITHUB_SHA
