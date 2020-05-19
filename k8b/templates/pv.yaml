@@ -3,6 +3,7 @@ kind: PersistentVolume
 metadata:
   name: {{ .Chart.Name }}-volume
   namespace: fpsa
+  finalizers: []
 spec:
   capacity:
     storage: 20Gi
