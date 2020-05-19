@@ -7,6 +7,6 @@ spec:
   type: NodePort
   selector:
     app: {{ .Chart.Name }}
-    tier: backend
+    tier: api
   ports:
     - port: 3000
