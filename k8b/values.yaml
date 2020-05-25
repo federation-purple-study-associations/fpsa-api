@@ -1,5 +1,6 @@
 storagePath: /var/storage/backend
 frontendUrl: https://fpsa.nl/
+backendUrl: https://api.fpsa.nl/
 
 autoscaling:
     minReplicas: 1

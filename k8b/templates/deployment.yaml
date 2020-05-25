@@ -72,6 +72,8 @@ spec:
           value: PRODUCTION
         - name: URL_SITE
           value: "{{.Values.frontendUrl}}"
+        - name: URL_API
+          value: "{{.Values.backendUrl}}"
         - name: STORAGE_PATH
           value: "{{.Values.storagePath}}"
         ports:
