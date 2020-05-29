@@ -6,6 +6,7 @@ import { Confirmation } from '../../entities/user/confirmation.entity';
 import { AgendaItem } from '../../entities/agenda/agenda.item.entity';
 import { Application } from '../../entities/user/application.entity';
 import * as moment from 'moment';
+import { readdirSync } from 'fs';
 
 @Injectable()
 export class EmailService {
@@ -17,7 +18,7 @@ export class EmailService {
 
         // Load all partials for Handlebars
         const partials = {};
-        require('fs').readdirSync(__dirname + '/templates').forEach(function(file) {
+        readdirSync(__dirname + '/templates').forEach(function(file) {
             if (file.match(/\.hbs$/) !== null) {
               const name = file.replace('.hbs', '');
               partials[name] = require('./templates/' + file);

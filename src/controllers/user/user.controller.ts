@@ -237,12 +237,9 @@ export class UserController {
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async addApplication(@Body() body: NewApplication): Promise<void> {
         const application = await this.userRepository.save(UserTransformer.toApplication(body));
-        
-        // Does not need to be awaiten, in order to increase response times
-        Promise.all([
-            this.emailService.sendApplicationConfirmation(application),
-            this.emailService.sendApplicationToBoard(application)
-        ]);
+
+        await this.emailService.sendApplicationConfirmation(application);
+        await this.emailService.sendApplicationToBoard(application);
     }
 
     @Get('application')
@@ -282,10 +279,8 @@ export class UserController {
         const user = await this.userRepository.save(UserTransformer.fromApplication(application));
         const confirmation = await this.userRepository.createConfirmation(user);
 
-        await Promise.all([
-            this.emailService.sendRegistrationConfirmation(user, confirmation),
-            this.emailService.sendApplicationAccepted(application),
-        ]);
+        await this.emailService.sendRegistrationConfirmation(user, confirmation);
+        await this.emailService.sendApplicationAccepted(application);
     }
 
     @Post('application/:id/decline')
@@ -306,9 +301,7 @@ export class UserController {
             throw new NotFoundException('Application could not be found...')
         }
 
-        await Promise.all([
-            this.userRepository.delete(application),
-            this.emailService.sendApplicationDeclined(application),
-        ]);
+        await this.userRepository.delete(application);
+        await this.emailService.sendApplicationDeclined(application);
     }
 }
