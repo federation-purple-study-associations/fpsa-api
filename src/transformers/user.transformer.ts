@@ -95,6 +95,7 @@ export class UserTransformer {
         application.academy = body.academy;
         application.kvk = body.kvk;
         application.establishment = body.establishment;
+        application.handedIn = new Date();
 
         return application;
     }
