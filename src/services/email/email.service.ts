@@ -5,7 +5,7 @@ import { User } from '../../entities/user/user.entity';
 import { Confirmation } from '../../entities/user/confirmation.entity';
 import { AgendaItem } from '../../entities/agenda/agenda.item.entity';
 import { Application } from '../../entities/user/application.entity';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 import { readdirSync } from 'fs';
 
 @Injectable()
@@ -79,7 +79,7 @@ export class EmailService {
             this.handlebarTemplate({
                 template: 'application-to-board',
                 application,
-                handedIn: moment(application.handedIn).format('DD-MM-YYYY HH:mm')
+                handedIn: moment(application.handedIn).tz("Europe/Amsterdam").format('DD-MM-YYYY HH:mm')
             })
         )
     }
@@ -105,7 +105,7 @@ export class EmailService {
             this.handlebarTemplate({
                 template: 'application-decline',
                 name: application.name,
-                date: moment(application.handedIn).format('DD-MM-YYYY'),
+                date: moment(application.handedIn).tz("Europe/Amsterdam").format('DD-MM-YYYY'),
             }),
         );
     }
@@ -118,7 +118,7 @@ export class EmailService {
             this.handlebarTemplate({
                 template: 'application-accept',
                 name: application.name,
-                date: moment(application.handedIn).format('DD-MM-YYYY'),
+                date: moment(application.handedIn).tz("Europe/Amsterdam").format('DD-MM-YYYY'),
             }),
         );
     }
