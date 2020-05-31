@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import * as sendgridClient from '@sendgrid/mail';
 import * as Handlebars from 'handlebars';
 import { User } from '../../entities/user/user.entity';
 import { Confirmation } from '../../entities/user/confirmation.entity';
@@ -7,14 +6,25 @@ import { AgendaItem } from '../../entities/agenda/agenda.item.entity';
 import { Application } from '../../entities/user/application.entity';
 import * as moment from 'moment-timezone';
 import { readdirSync } from 'fs';
+import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class EmailService {
     private readonly handlebarTemplate: HandlebarsTemplateDelegate;
-    private readonly defaultFromEmailAddress = { email: 'info@fpsa.nl', name: 'Federation of Purple Study Associations'};
+    private readonly defaultFromEmailAddress = '"Federation of Purple Study Associations" info@fpsa.nl';
+    private readonly mailer: nodemailer.Transporter;
 
     constructor() {
-        sendgridClient.setApiKey(process.env.SENDGRID_APIKEY);
+        this.mailer = nodemailer.createTransport({
+            host: process.env.SMTP_HOST,
+            port: +process.env.SMTP_PORT,
+            pool: true,
+            secure: true,
+            auth: {
+              user: process.env.SMTP_USERNAME,
+              pass: process.env.SMTP_PASSWORD,
+            }
+          });
 
         // Load all partials for Handlebars
         const partials = {};
@@ -43,7 +53,6 @@ export class EmailService {
 
     public sendRegistrationConfirmation(user: User, confirmation: Confirmation): Promise<any> {
         return this.sendMail(
-            this.defaultFromEmailAddress,
             user.email,
             'Bevestig uw FPSA account',
             this.handlebarTemplate({
@@ -58,7 +67,6 @@ export class EmailService {
     public async sendEventEmail(agendaItem: AgendaItem, users: User[]): Promise<void> {
         for (const user of users) {
             await this.sendMail(
-                this.defaultFromEmailAddress,
                 user.email,
                 'NIEUW EVENEMENT: ' + agendaItem.titleNL,
                 this.handlebarTemplate({
@@ -73,21 +81,20 @@ export class EmailService {
 
     public async sendApplicationToBoard(application: Application): Promise<void> {
         await this.sendMail(
-            { email: application.email, name: application.name },
-            this.defaultFromEmailAddress.email,
+            this.defaultFromEmailAddress,
             'Nieuwe aanmelding ontvangen: ' + application.name,
             this.handlebarTemplate({
                 template: 'application-to-board',
                 application,
                 handedIn: moment(application.handedIn).tz("Europe/Amsterdam").format('DD-MM-YYYY HH:mm')
-            })
+            }),
+            '"' + application.name + '" ' + application.email,
         )
     }
 
     public async sendApplicationConfirmation(application: Application): Promise<void> {
         await this.sendMail(
-            this.defaultFromEmailAddress,
-            application.email,
+            '"' + application.name + '" ' + application.email,
             'Aanmelding ontvangen!',
             this.handlebarTemplate({
                 template: 'application-confirmation',
@@ -99,8 +106,7 @@ export class EmailService {
 
     public async sendApplicationDeclined(application: Application): Promise<void> {
         await this.sendMail(
-            this.defaultFromEmailAddress,
-            application.email,
+            '"' + application.name + '" ' + application.email,
             'Status aanmelding',
             this.handlebarTemplate({
                 template: 'application-decline',
@@ -112,8 +118,7 @@ export class EmailService {
 
     public async sendApplicationAccepted(application: Application): Promise<void> {
         await this.sendMail(
-            this.defaultFromEmailAddress,
-            application.email,
+            '"' + application.name + '" ' + application.email,
             'Status aanmelding',
             this.handlebarTemplate({
                 template: 'application-accept',
@@ -123,7 +128,13 @@ export class EmailService {
         );
     }
 
-    private sendMail(from: {email: string, name: string}, to: string, subject: string, html: string): Promise<any> {
-        return sendgridClient.send({ to, from, subject, html, });
+    private sendMail(to: string, subject: string, html: string, replyTo?: string): Promise<any> {
+        return this.mailer.sendMail({
+            from: this.defaultFromEmailAddress,
+            to,
+            subject,
+            html,
+            replyTo,
+        })
     }
 }

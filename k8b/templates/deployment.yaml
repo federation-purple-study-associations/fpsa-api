@@ -63,11 +63,26 @@ spec:
             secretKeyRef:
               name: cookies
               key: COOKIE_SECRET
-        - name: SENDGRID_APIKEY
+        - name: SMTP_HOST
           valueFrom:
             secretKeyRef:
-              name: sendgrid
-              key: SENDGRID_APIKEY
+              name: mailing
+              key: SMTP_HOST
+        - name: SMTP_PORT
+          valueFrom:
+            secretKeyRef:
+              name: mailing
+              key: SMTP_PORT
+        - name: SMTP_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mailing
+              key: SMTP_USERNAME
+        - name: SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mailing
+              key: SMTP_PASSWORD
         - name: env
           value: PRODUCTION
         - name: URL_SITE
