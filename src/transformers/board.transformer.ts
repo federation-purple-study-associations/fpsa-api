@@ -12,6 +12,7 @@ export class BoardTransformer {
                 id: item.id,
                 title: item.titleNL || item.titleEN,
                 text: item.textNL || item.textEN,
+                hasPolicyPlan: !!item.policyPlanUrl,
             });
         }
 

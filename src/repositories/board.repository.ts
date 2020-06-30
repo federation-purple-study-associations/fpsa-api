@@ -6,7 +6,7 @@ import { BaseEntity } from 'typeorm';
 @Injectable()
 export class BoardRepository {
     public getAll(language: LANGUAGE, skip: number, take: number): Promise<Board[]> {
-        const select: any[] = ['id'];
+        const select: any[] = ['id', 'policyPlanUrl'];
         if(language === 'nl') {
             select.push('titleNL', 'textNL');
     

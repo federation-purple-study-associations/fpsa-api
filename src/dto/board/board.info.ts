@@ -9,4 +9,7 @@ export class BoardInfoDTO {
 
     @ApiProperty()
     public text: string;
+
+    @ApiProperty()
+    public hasPolicyPlan: boolean;
 }
