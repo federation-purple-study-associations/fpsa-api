@@ -28,6 +28,7 @@
     "fastify-swagger": "^2.5.0",
     "handlebars": "^4.7.3",
     "jsonwebtoken": "^8.5.1",
+    "mime-types": "^2.1.27",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.31",
     "mysql": "^2.18.1",

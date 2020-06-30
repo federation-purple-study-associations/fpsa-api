@@ -25,4 +25,7 @@ export class Board extends BaseEntity {
 
     @Column()
     public photoUrl: string;
+
+    @Column({nullable: true})
+    public policyPlanUrl: string;
 }

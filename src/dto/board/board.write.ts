@@ -26,4 +26,8 @@ export class WriteBoardDTO {
     @ApiProperty({ type: 'string', format: 'binary', required: false })
     @Exclude()
     image: any[];
+
+    @ApiProperty({ type: 'string', format: 'binary', required: false })
+    @Exclude()
+    policy: any[];
 }

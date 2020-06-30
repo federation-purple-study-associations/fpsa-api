@@ -5,14 +5,18 @@ import { BoardInfoDTO } from '../../dto/board/board.info';
 import { BoardRepository } from '../../repositories/board.repository';
 import { BoardTransformer } from '../../transformers/board.transformer';
 import { createReadStream, existsSync, mkdirSync, createWriteStream, unlinkSync } from 'fs';
-import { resolve, extname } from 'path';
+import { resolve } from 'path';
 import { Auth } from '../../decorators/auth.decorator';
 import { WriteBoardDTO } from '../../dto/board/board.write';
 import { Board } from '../../entities/board/board.entity';
+import * as mime from 'mime-types';
 
 @Controller('board')
 @ApiTags('board')
 export class BoardController {
+    private readonly photoUrl = resolve(process.env.STORAGE_PATH, 'board', 'photo');
+    private readonly policyUrl = resolve(process.env.STORAGE_PATH, 'board', 'policy');
+
     constructor(
         private readonly boardRepository: BoardRepository,
     ) {}
@@ -54,17 +58,37 @@ export class BoardController {
     @ApiOperation({
         operationId: 'BoardGetPhoto',
         summary: 'getPhoto',
-        description: 'This call can be used to get the photo of the specific board of FPSA',
+        description: 'This call can be used to get the photo of the specific board',
     })
-    @ApiResponse({ status: 200, description: 'All boards', type: BoardInfoDTO, isArray: true })
+    @ApiResponse({ status: 200, description: 'Board photo' })
+    @ApiResponse({ status: 404, description: 'This board is not found...' })
     public async getPicture(@Query('id') id: number, @Res() res: any): Promise<void>  {
         const item = await this.boardRepository.getOne(id, 'nl');
         if (!item) {
             throw new NotFoundException('This board is not found...');
         }
 
-        const stream = createReadStream(resolve(process.env.STORAGE_PATH, 'board', item.photoUrl))
-        res.type('image/' + extname(item.photoUrl).substr(1)).send(stream)
+        const stream = createReadStream(resolve(this.photoUrl, item.photoUrl));
+        res.type(mime.lookup(item.photoUrl)).send(stream);
+    }
+
+    @Get('policy')
+    @HttpCode(200)
+    @ApiOperation({
+        operationId: 'BoardGetPolicy',
+        summary: 'getPolicy',
+        description: 'This call can be used to get the policy plan of the specific board',
+    })
+    @ApiResponse({ status: 200, description: 'Board photo' })
+    @ApiResponse({ status: 404, description: 'This board is not found or has no policy plan...' })
+    public async getPolicy(@Query('id') id: number, @Res() res: any): Promise<void>  {
+        const item = await this.boardRepository.getOne(id, 'nl');
+        if (!item || !item.policyPlanUrl) {
+            throw new NotFoundException('This board is not found or has no policy plan...');
+        }
+
+        const stream = createReadStream(resolve(this.policyUrl, item.policyPlanUrl));
+        res.type(mime.lookup(item.policyPlanUrl)).send(stream);
     }
 
     @Post()
@@ -81,19 +105,28 @@ export class BoardController {
     @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     async createNew(@Body() body: WriteBoardDTO): Promise<void> {
-        console.log(body)
         const board = BoardTransformer.fromNew(body);
         await this.boardRepository.save(board);
 
         // Create path if needed
-        const dir = resolve(process.env.STORAGE_PATH, 'board');
-        !existsSync(dir) && mkdirSync(dir);
+        !existsSync(this.photoUrl) && mkdirSync(this.photoUrl, { recursive: true });
 
-        const stream = createWriteStream(resolve(dir, board.photoUrl), {encoding: 'binary'});
+        const stream = createWriteStream(resolve(this.photoUrl, board.photoUrl), {encoding: 'binary'});
         stream.once('open', () => {
             stream.write(body.image[0].data);
             stream.end();
         });
+
+        // A policy plan is not required in order to create a board
+        if (body.policy) {
+            !existsSync(this.policyUrl) && mkdirSync(this.policyUrl, { recursive: true });
+
+            const streamPolicy = createWriteStream(resolve(this.policyUrl, board.policyPlanUrl), {encoding: 'binary'});
+            streamPolicy.once('open', () => {
+                streamPolicy.write(body.policy[0].data);
+                streamPolicy.end();
+            });
+        }
     }
 
     @Put(':id')
@@ -118,21 +151,34 @@ export class BoardController {
 
         if (body.image) {
             // Delete old image to preserve storage space
-            const dir = resolve(process.env.STORAGE_PATH, 'board');
             try {
-                unlinkSync(resolve(dir, board.photoUrl));
+                unlinkSync(resolve(this.photoUrl, board.photoUrl));
             } catch(e) {}
 
             // Add new image
-            const stream = createWriteStream(resolve(dir, board.photoUrl), {encoding: 'binary'});
+            const stream = createWriteStream(resolve(this.photoUrl, board.photoUrl), {encoding: 'binary'});
             stream.once('open', () => {
                 stream.write(body.image[0].data);
                 stream.end();
             });
         }
 
+        if (body.policy) {
+            // Delete old policy plan to preserve storage space
+            try {
+                unlinkSync(resolve(this.policyUrl, board.policyPlanUrl));
+            } catch(e) {}
+
+            // Add new policy plan
+            const stream = createWriteStream(resolve(this.policyUrl, board.policyPlanUrl), {encoding: 'binary'});
+            stream.once('open', () => {
+                stream.write(body.policy[0].data);
+                stream.end();
+            });
+        }
+
         // Update database
-        BoardTransformer.update(board, body, !!body.image);
+        BoardTransformer.update(board, body, !!body.image, !!body.policy);
         await this.boardRepository.save(board);
     }
 
@@ -156,8 +202,8 @@ export class BoardController {
 
         this.boardRepository.delete(agendaItem);
 
-        // Delete old image to preserve storage space
-        const dir = resolve(process.env.STORAGE_PATH, 'board');
-        unlinkSync(resolve(dir, agendaItem.photoUrl));
+        // Delete the image & policy plan to preserve storage space
+        unlinkSync(resolve(this.photoUrl, agendaItem.photoUrl));
+        unlinkSync(resolve(this.policyUrl, agendaItem.policyPlanUrl));
     }
 }
