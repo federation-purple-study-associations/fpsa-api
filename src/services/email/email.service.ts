@@ -73,7 +73,7 @@ export class EmailService {
                     template: 'new-event',
                     event: agendaItem,
                     user,
-                    baseUrl: process.env.URL_API,
+                    baseUrl: process.env.URL_SITE,
                 }),
             );
         }
