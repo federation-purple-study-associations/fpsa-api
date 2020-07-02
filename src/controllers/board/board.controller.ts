@@ -212,7 +212,7 @@ export class BoardController {
         this.boardRepository.delete(agendaItem);
 
         // Delete the image & policy plan to preserve storage space
-        unlinkSync(resolve(this.photoUrl, agendaItem.photoUrl));
-        unlinkSync(resolve(this.policyUrl, agendaItem.policyPlanUrl));
+        // unlinkSync(resolve(this.photoUrl, agendaItem.photoUrl));
+        // unlinkSync(resolve(this.policyUrl, agendaItem.policyPlanUrl));
     }
 }
