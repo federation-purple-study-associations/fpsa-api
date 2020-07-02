@@ -5,11 +5,12 @@ import { BoardInfoDTO } from '../../dto/board/board.info';
 import { BoardRepository } from '../../repositories/board.repository';
 import { BoardTransformer } from '../../transformers/board.transformer';
 import { createReadStream, existsSync, mkdirSync, createWriteStream, unlinkSync } from 'fs';
-import { resolve } from 'path';
+import { resolve, extname } from 'path';
 import { Auth } from '../../decorators/auth.decorator';
 import { WriteBoardDTO } from '../../dto/board/board.write';
 import { Board } from '../../entities/board/board.entity';
 import * as mime from 'mime-types';
+import * as uuid from 'uuid/v4';
 
 @Controller('board')
 @ApiTags('board')
@@ -148,15 +149,20 @@ export class BoardController {
         if (!board) {
             throw new NotFoundException('Board not found...');
         }
+        let photoUrl = board.photoUrl;
+        let policyUrl = board.policyPlanUrl;
 
         if (body.image) {
             // Delete old image to preserve storage space
             try {
-                unlinkSync(resolve(this.photoUrl, board.photoUrl));
+                unlinkSync(resolve(this.photoUrl, photoUrl));
             } catch(e) {}
 
+            // Update url name
+            photoUrl = uuid() + extname(body.image[0].filename);
+
             // Add new image
-            const stream = createWriteStream(resolve(this.photoUrl, board.photoUrl), {encoding: 'binary'});
+            const stream = createWriteStream(resolve(this.photoUrl, photoUrl), {encoding: 'binary'});
             stream.once('open', () => {
                 stream.write(body.image[0].data);
                 stream.end();
@@ -166,11 +172,14 @@ export class BoardController {
         if (body.policy) {
             // Delete old policy plan to preserve storage space
             try {
-                unlinkSync(resolve(this.policyUrl, board.policyPlanUrl));
+                unlinkSync(resolve(this.policyUrl, policyUrl));
             } catch(e) {}
 
+            // Update url name
+            policyUrl = uuid() + extname(body.policy[0].filename);
+
             // Add new policy plan
-            const stream = createWriteStream(resolve(this.policyUrl, board.policyPlanUrl), {encoding: 'binary'});
+            const stream = createWriteStream(resolve(this.policyUrl, policyUrl), {encoding: 'binary'});
             stream.once('open', () => {
                 stream.write(body.policy[0].data);
                 stream.end();
@@ -178,7 +187,7 @@ export class BoardController {
         }
 
         // Update database
-        BoardTransformer.update(board, body, !!body.image, !!body.policy);
+        BoardTransformer.update(board, body, photoUrl, policyUrl);
         await this.boardRepository.save(board);
     }
 

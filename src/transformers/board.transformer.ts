@@ -37,19 +37,13 @@ export class BoardTransformer {
         return board;
     }
 
-    static update(board: Board, body: WriteBoardDTO, needUpdatePhoto: boolean, needUpdatePolicy: boolean) {
+    static update(board: Board, body: WriteBoardDTO, newPhotoName: string, newPolicyName: string) {
         board.titleNL = body.titleNL;
         board.titleEN = body.titleEN;
         board.textNL = body.textNL;
         board.textEN = body.textEN;
-        
-        if (needUpdatePhoto) {
-            board.photoUrl = uuid() + extname(body.image[0].filename);
-        }
-
-        if (needUpdatePolicy) {
-            board.policyPlanUrl = uuid() + extname(body.policy[0].filename);
-        }
+        board.photoUrl = newPhotoName;
+        board.policyPlanUrl = newPolicyName;
 
         return board;
     }
