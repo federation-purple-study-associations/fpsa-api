@@ -16,10 +16,7 @@ export class EmailService {
 
     constructor() {
         this.mailer = nodemailer.createTransport({
-            host: process.env.SMTP_HOST,
-            port: +process.env.SMTP_PORT,
-            pool: true,
-            secure: true,
+            service: "Outlook365",
             auth: {
               user: process.env.SMTP_USERNAME,
               pass: process.env.SMTP_PASSWORD,
