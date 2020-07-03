@@ -63,16 +63,6 @@ spec:
             secretKeyRef:
               name: cookies
               key: COOKIE_SECRET
-        - name: SMTP_HOST
-          valueFrom:
-            secretKeyRef:
-              name: mailing
-              key: SMTP_HOST
-        - name: SMTP_PORT
-          valueFrom:
-            secretKeyRef:
-              name: mailing
-              key: SMTP_PORT
         - name: SMTP_USERNAME
           valueFrom:
             secretKeyRef:
