@@ -1,4 +1,4 @@
-import { Controller, Post, HttpCode, Body, GoneException, InternalServerErrorException, Get, Query, ConflictException, Put, Param, NotFoundException, Delete, BadRequestException } from "@nestjs/common";
+import { Controller, Post, HttpCode, Body, GoneException, InternalServerErrorException, Get, Query, ConflictException, Put, Param, NotFoundException, Delete, BadRequestException, UseInterceptors } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiParam } from "@nestjs/swagger";
 import { SaveAuthorizationDTO } from "../../dto/accountancy/saveAuthorization.dto";
 import axios from 'axios';
@@ -19,9 +19,11 @@ import { AddMutationDTO } from "../../dto/accountancy/add.mutation.dto";
 import { NotImportedMutationDTO } from "../../dto/accountancy/not.imported.mutation.dto";
 import { ImportMutationDTO } from "../../dto/accountancy/import.mutation.dto";
 import { AccountancyTransformer } from "../../transformers/accountancy.transformer";
+import { AccountancyInterceptor } from "../../interceptor/accountancy.interceptor";
 
 @Controller('accountancy')
 @ApiTags('accountancy')
+@UseInterceptors(AccountancyInterceptor)
 export class AccountancyController {
 
     constructor(
@@ -32,7 +34,7 @@ export class AccountancyController {
 
     @Post('activate')
     @HttpCode(200)
-    @Auth('accountancy:write')
+    @Auth('Accountancy:Write')
     @ApiOperation({
         operationId: 'ActivateApi',
         summary: 'Activates the Accountancy api',
@@ -82,7 +84,7 @@ export class AccountancyController {
 
     @Post('refresh')
     @HttpCode(200)
-    @Auth('accountancy:write')
+    @Auth('Accountancy:Write')
     @ApiOperation({
         operationId: 'Refresh',
         summary: 'Refreshes the accountancy',
@@ -111,7 +113,7 @@ export class AccountancyController {
 
     @Get('incomeStatement')
     @HttpCode(200)
-    @Auth('accountancy:read')
+    @Auth('Accountancy:Read')
     @ApiOperation({
         operationId: 'GetIncomeStatements',
         summary: 'Gets the income statements',
@@ -128,7 +130,7 @@ export class AccountancyController {
 
     @Post('/incomeStatement')
     @HttpCode(200)
-    @Auth('accountancy:write')
+    @Auth('Accountancy:Write')
     @ApiOperation({
         operationId: 'AddIncomeStatement',
         summary: 'Adds an income statement',
@@ -165,7 +167,7 @@ export class AccountancyController {
 
     @Put('/incomeStatement/:id')
     @HttpCode(200)
-    @Auth('accountancy:write')
+    @Auth('Accountancy:Write')
     @ApiOperation({
         operationId: 'EditIncomeStatement',
         summary: 'Edits an income statement',
@@ -197,7 +199,7 @@ export class AccountancyController {
 
     @Delete('/incomeStatement/:id')
     @HttpCode(200)
-    @Auth('accountancy:delete')
+    @Auth('Accountancy:Delete')
     @ApiOperation({
         operationId: 'DeleteIncomeStatement',
         summary: 'Deletes the income statement',
@@ -219,7 +221,7 @@ export class AccountancyController {
 
     @Get('balance')
     @HttpCode(200)
-    // @Auth('accountancy:read')
+    @Auth('Accountancy:Read')
     @ApiOperation({
         operationId: 'GetBalance',
         summary: 'Gets the balance',
@@ -236,7 +238,7 @@ export class AccountancyController {
 
     @Post('/balance')
     @HttpCode(200)
-    @Auth('accountancy:write')
+    @Auth('Accountancy:Write')
     @ApiOperation({
         operationId: 'AddBalance',
         summary: 'Adds a balance / payment method',
@@ -275,7 +277,7 @@ export class AccountancyController {
 
     @Put('/balance/:id')
     @HttpCode(200)
-    @Auth('accountancy:write')
+    @Auth('Accountancy:Write')
     @ApiOperation({
         operationId: 'EditBalance',
         summary: 'Edits a balance / payment method',
@@ -309,7 +311,7 @@ export class AccountancyController {
 
     @Delete('/balance/:id')
     @HttpCode(200)
-    @Auth('accountancy:delete')
+    @Auth('Accountancy:Delete')
     @ApiOperation({
         operationId: 'DeleteBalance',
         summary: 'Deletes the balance / payment method',
@@ -331,7 +333,7 @@ export class AccountancyController {
 
     @Post('mutation')
     @HttpCode(200)
-    @Auth('accountancy:write')
+    @Auth('Accountancy:Write')
     @ApiOperation({
         operationId: 'AddMutation',
         summary: 'Adds a mutation',
@@ -374,7 +376,7 @@ export class AccountancyController {
 
     @Get('import')
     @HttpCode(200)
-    @Auth('accountancy:read')
+    @Auth('Accountancy:Read')
     @ApiOperation({
         operationId: 'GetNotImportedMutations',
         summary: 'Gets the mutations that are not imported yet',
@@ -389,7 +391,7 @@ export class AccountancyController {
 
     @Put('/import/:id')
     @HttpCode(200)
-    @Auth('accountancy:write')
+    @Auth('Accountancy:Write')
     @ApiOperation({
         operationId: 'importMutation',
         summary: 'Imports a mutation',
