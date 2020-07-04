@@ -22,7 +22,7 @@ export class UserController {
     constructor(
         private readonly userRepository: UserRepository,
         private readonly emailService: EmailService,
-    ) {}
+    ) { }
 
     @Get('me')
     @HttpCode(200)

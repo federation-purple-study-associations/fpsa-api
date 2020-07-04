@@ -13,6 +13,10 @@ import { StatisticsController } from './controllers/statistics/statistics.contro
 import { BoardController } from './controllers/board/board.controller';
 import { BoardRepository } from './repositories/board.repository';
 import { EmailService } from './services/email/email.service';
+import { AccountancyController } from './controllers/accountancy/accountancy.controller';
+import { AccountancyService } from './services/accountancy/accountancy.service';
+import { FileService } from './services/file/file.service';
+import { AccountancyRepository } from './repositories/accountancy.repository';
 
 @Module({
   imports: [
@@ -23,6 +27,7 @@ import { EmailService } from './services/email/email.service';
     UserController,
     StatisticsController,
     BoardController,
+    AccountancyController,
   ],
   providers: [
     {
@@ -34,7 +39,10 @@ import { EmailService } from './services/email/email.service';
     UserRepository,
     StatisticRepository,
     BoardRepository,
+    AccountancyRepository,
     EmailService,
+    AccountancyService,
+    FileService,
   ],
 })
 export class AppModule {}
