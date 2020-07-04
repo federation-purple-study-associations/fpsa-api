@@ -45,7 +45,7 @@ export class AccountancyController {
     @ApiResponse({ status: 403, description: 'You do not have the permission to do this...' })
     @ApiResponse({ status: 410, description: 'Authorization code already used...'})
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    async activateAccountancy(@Body() body: SaveAuthorizationDTO) {
+    async activateAccountancy(@Body() body: SaveAuthorizationDTO): Promise<void> {
         // Redeem Authorization code and saves the access & refresh token
         try {
             const response: AccessResponse = (await axios.post(process.env.RABOBANK_URL + '/oauth2/token',
@@ -93,7 +93,7 @@ export class AccountancyController {
     @ApiResponse({ status: 200, description: 'The Accountancy api is activated!' })
     @ApiResponse({ status: 403, description: 'You do not have the permission to do this...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    refreshMutations() {
+    refreshMutations(): Promise<void> {
         return this.accountancyService.updateMutations();
     }
 
