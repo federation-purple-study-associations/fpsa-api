@@ -1,11 +1,11 @@
 import { Board } from '../entities/board/board.entity';
-import { BoardInfoDTO } from '../dto/board/board.info';
+import { BoardInfoDTO, BoardInfoTotalDTO } from '../dto/board/board.info';
 import { WriteBoardDTO } from '../dto/board/board.write';
 import { extname } from 'path';
 import * as uuid from 'uuid/v4';
 
 export class BoardTransformer {
-    static toInfo(list: Board[]): BoardInfoDTO[] {
+    static toInfo(list: Board[], total: number): BoardInfoTotalDTO {
         const output: BoardInfoDTO[] = [];
         for (const item of list) {
             output.push({
@@ -16,7 +16,10 @@ export class BoardTransformer {
             });
         }
 
-        return output;
+        return {
+            total,
+            boards: output,
+        };
     }
 
     static fromNew(model: WriteBoardDTO): Board {

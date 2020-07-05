@@ -20,6 +20,7 @@ import { NotImportedMutationDTO } from "../../dto/accountancy/not.imported.mutat
 import { ImportMutationDTO } from "../../dto/accountancy/import.mutation.dto";
 import { AccountancyTransformer } from "../../transformers/accountancy.transformer";
 import { AccountancyInterceptor } from "../../interceptor/accountancy.interceptor";
+import { MutationDTO, MutationResponseDTO } from "../../dto/accountancy/mutation.dto";
 
 @Controller('accountancy')
 @ApiTags('accountancy')
@@ -309,6 +310,42 @@ export class AccountancyController {
         await this.accountancyRepository.deletePaymentMethod(balance);
     }
 
+    @Get('mutation')
+    @HttpCode(200)
+    @Auth('Accountancy:Read')
+    @ApiOperation({
+        operationId: 'GetMutations',
+        summary: 'Gets the mutations',
+        description: '',
+    })
+    @ApiQuery({name: 'skip', type: Number, required: true})
+    @ApiQuery({name: 'take', type: Number, required: true})
+    @ApiQuery({name: 'till', type: String, required: false})
+    @ApiQuery({name: 'from', type: String, required: false})
+    @ApiQuery({name: 'paymentMethode', type: Number, required: false})
+    @ApiQuery({name: 'incomeStatement', type: Number, required: false})
+    @ApiResponse({ status: 200, description: 'Mutations!', type: MutationResponseDTO })
+    @ApiResponse({ status: 400, description: 'Validation error on one of the parameters...' })
+    @ApiResponse({ status: 403, description: 'You do not have the permission to do this...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    async getMutations(
+        @Query('from') from?: string,
+        @Query('till') till?: string,
+        @Query('skip') skip?: number,
+        @Query('take') take?: number,
+        @Query('paymentMethode') paymentMethod?: number,
+        @Query('incomeStatement') incomeStatement?: number,
+    ): Promise<MutationResponseDTO> {
+        const fromDate: Date = (from ? new Date(from) : undefined);
+        const tillDate: Date = (till ? new Date(till) : undefined);
+
+        const promises = await Promise.all([
+            this.accountancyRepository.readAllMutations(skip, take, fromDate, tillDate, paymentMethod, incomeStatement),
+            this.accountancyRepository.countMutations(fromDate, tillDate, paymentMethod, incomeStatement),
+        ]);
+        return AccountancyTransformer.mutation(...promises);
+    }
+
     @Post('mutation')
     @HttpCode(200)
     @Auth('Accountancy:Write')
@@ -364,7 +401,7 @@ export class AccountancyController {
     @ApiResponse({ status: 403, description: 'You do not have the permission to do this...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     async getNotImportedMutations(): Promise<NotImportedMutationDTO[]> {
-        return AccountancyTransformer.mutation(await this.accountancyRepository.readAllNotImportedMutations());
+        return AccountancyTransformer.mutationNotImported(await this.accountancyRepository.readAllNotImportedMutations());
     }
 
     @Put('/import/:id')

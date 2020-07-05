@@ -4,6 +4,7 @@ import { Mutation } from "../entities/accountancy/mutation.entity";
 import { PaymentMethod } from "../entities/accountancy/payment.method.entity";
 import { BalanceDTO } from "../dto/accountancy/balance.dto";
 import { NotImportedMutationDTO } from "../dto/accountancy/not.imported.mutation.dto";
+import { MutationDTO, MutationResponseDTO } from "src/dto/accountancy/mutation.dto";
 
 export class AccountancyTransformer {
     public static incomeStatment(array: IncomeStatement[]) {
@@ -49,7 +50,28 @@ export class AccountancyTransformer {
         return response;
     }
 
-    public static mutation(array: Mutation[]) {
+    public static mutation(array: Mutation[], count: number): MutationResponseDTO {
+        const response: MutationDTO[] = [];
+
+        for (const mutation of array) {
+            const dto: MutationDTO = {
+                id: mutation.id,
+                description: mutation.description,
+                debtorIban: mutation.debtorIban,
+                amount: mutation.amount,
+                date: mutation.date,
+                entryReference: mutation.entryReference,
+            };
+
+            response.push(dto);
+        }
+        return {
+            total: count,
+            mutations: response,
+        };
+    }
+
+    public static mutationNotImported(array: Mutation[]) {
         const response: NotImportedMutationDTO[] = [];
 
         for (const mutation of array) {

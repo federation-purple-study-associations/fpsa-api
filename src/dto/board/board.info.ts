@@ -13,3 +13,11 @@ export class BoardInfoDTO {
     @ApiProperty()
     public hasPolicyPlan: boolean;
 }
+
+export class BoardInfoTotalDTO {
+    @ApiProperty({type: BoardInfoDTO, isArray: true})
+    public boards: BoardInfoDTO[];
+
+    @ApiProperty()
+    public total: number;
+}
