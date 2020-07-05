@@ -119,13 +119,13 @@ export class AccountancyController {
         summary: 'Gets the income statements',
         description: '',
     })
-    @ApiQuery({name: 'till', type: String, required: true}) // format: date
+    @ApiQuery({name: 'till', type: String, required: false}) // format: date
     @ApiQuery({name: 'name', type: String, required: false})
     @ApiResponse({ status: 200, description: 'Income statements', type: IncomeStatementDTO, isArray: true })
     @ApiResponse({ status: 403, description: 'You do not have the permission to do this...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    async getIncomeStatements(@Query('till') till: string, @Query('name') name?: string): Promise<IncomeStatementDTO[]> {
-        return AccountancyTransformer.incomeStatment(await this.accountancyRepository.readAllIncomeStatements(new Date(till), name));
+    async getIncomeStatements(@Query('till') till?: string, @Query('name') name?: string): Promise<IncomeStatementDTO[]> {
+        return AccountancyTransformer.incomeStatment(await this.accountancyRepository.readAllIncomeStatements(till ? new Date(till) : null, name));
     }
 
     @Post('/incomeStatement')
@@ -146,21 +146,10 @@ export class AccountancyController {
             throw new ConflictException('This income statement code already exists...');
         }
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const mutation = new Mutation();
-        mutation.amount = 0;
-        mutation.date = today;
-        mutation.debtorIban = '';
-        mutation.description = 'Init income statement';
-        mutation.imported = true;
-        await this.accountancyRepository.saveMutation(mutation);
-
         const incomeStatement = new IncomeStatement();
         incomeStatement.name = body.name;
         incomeStatement.code = body.code;
-        incomeStatement.mutations = [mutation];
+        incomeStatement.mutations = [];
 
         return this.accountancyRepository.saveIncomeStatement(incomeStatement);
     }
@@ -227,13 +216,13 @@ export class AccountancyController {
         summary: 'Gets the balance',
         description: '',
     })
-    @ApiQuery({name: 'till', type: String, required: true})
+    @ApiQuery({name: 'till', type: String, required: false})
     @ApiQuery({name: 'name', type: String, required: false})
     @ApiResponse({ status: 200, description: 'Balance', type: BalanceDTO, isArray: true })
     @ApiResponse({ status: 403, description: 'You do not have the permission to do this...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    async getBalance(@Query('till') till: string, @Query('name') name?: string): Promise<BalanceDTO[]> {
-        return AccountancyTransformer.balance(await this.accountancyRepository.readAllPaymentMethods(new Date(till), name));
+    async getBalance(@Query('till') till?: string, @Query('name') name?: string): Promise<BalanceDTO[]> {
+        return AccountancyTransformer.balance(await this.accountancyRepository.readAllPaymentMethods(till ? new Date(till) : null, name));
     }
 
     @Post('/balance')
@@ -254,23 +243,12 @@ export class AccountancyController {
             throw new ConflictException('This balance code already exists...');
         }
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const mutation = new Mutation();
-        mutation.amount = 0;
-        mutation.date = today;
-        mutation.debtorIban = '';
-        mutation.description = 'Init payment method';
-        mutation.imported = true;
-        await this.accountancyRepository.saveMutation(mutation);
-
         const balance = new PaymentMethod();
         balance.name = body.name;
         balance.code = body.code;
         balance.startAssets = body.startAssets;
         balance.startLiabilities = body.startLiabilities;
-        balance.mutations = [ mutation ];
+        balance.mutations = [];
 
         return this.accountancyRepository.savePaymentMethod(balance);
     }

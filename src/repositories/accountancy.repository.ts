@@ -5,11 +5,14 @@ import { Mutation } from "../entities/accountancy/mutation.entity";
 
 @Injectable()
 export class AccountancyRepository {
-    public readAllIncomeStatements(till: Date, name?: string): Promise<IncomeStatement[]> {
+    public readAllIncomeStatements(till?: Date, name?: string): Promise<IncomeStatement[]> {
         return IncomeStatement.find({
-            join: { alias: 'incomeStatement', innerJoinAndSelect: { mutations: 'incomeStatement.mutations'}},
+            join: { alias: 'incomeStatement', leftJoinAndSelect: { mutations: 'incomeStatement.mutations'}},
             where: qb => {
-                qb.where('mutations.date <= :date', { date: till});
+                if (till) {
+                    qb.where('mutations.date <= :date', { date: till});
+                }
+
                 if (name) {
                     qb.where('incomeStatement.name LIKE :name', { name: `%${name}%` } );
                 }
@@ -17,17 +20,19 @@ export class AccountancyRepository {
             });
     }
 
-    public readAllPaymentMethods(till: Date, name?: string): Promise<PaymentMethod[]> {
+    public readAllPaymentMethods(till?: Date, name?: string): Promise<PaymentMethod[]> {
         return PaymentMethod.find({
-            join: { alias: 'paymentMethod', innerJoinAndSelect: { mutations: 'paymentMethod.mutations'}},
+            join: { alias: 'paymentMethod', leftJoinAndSelect: { mutations: 'paymentMethod.mutations'}},
             where: qb => {
-                qb.where('mutations.date <= :date', { date: till});
+                if (till) {
+                    qb.where('mutations.date <= :date', { date: till});
+                }
 
                 if (name) {
                     qb.where('paymentMethod.name LIKE :name', { name: `%${name}%` } );
                 }
             },
-            });
+        });
     }
 
     public readAllNotImportedMutations(): Promise<Mutation[]> {
