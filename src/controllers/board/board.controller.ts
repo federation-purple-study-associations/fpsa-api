@@ -1,7 +1,7 @@
 import { Controller, Get, Query, HttpCode, Res, NotFoundException, Post, Body, Param, Delete, Put } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes } from '@nestjs/swagger';
 import { LANGUAGE } from '../../constants';
-import { BoardInfoDTO, BoardInfoTotalDTO } from '../../dto/board/board.info';
+import { BoardInfoTotalDTO } from '../../dto/board/board.info';
 import { BoardRepository } from '../../repositories/board.repository';
 import { BoardTransformer } from '../../transformers/board.transformer';
 import { createReadStream, existsSync, mkdirSync, createWriteStream, unlinkSync } from 'fs';
