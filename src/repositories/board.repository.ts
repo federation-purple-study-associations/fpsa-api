@@ -33,6 +33,10 @@ export class BoardRepository {
         return Board.findOne({where: { id } });
     }
 
+    public count(): Promise<number> {
+        return Board.count();
+    }
+
     public save<T extends BaseEntity>(entity: T): Promise<T> {
         return entity.save();
     }

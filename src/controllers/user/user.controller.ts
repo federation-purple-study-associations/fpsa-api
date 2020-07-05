@@ -22,7 +22,7 @@ export class UserController {
     constructor(
         private readonly userRepository: UserRepository,
         private readonly emailService: EmailService,
-    ) {}
+    ) { }
 
     @Get('me')
     @HttpCode(200)
@@ -126,6 +126,21 @@ export class UserController {
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async getUsers(): Promise<UserSummaryDTO[]> {
         return UserTransformer.toSummary(await this.userRepository.getAll());
+    }
+
+    @Get('full')
+    @Auth('User:Read')
+    @HttpCode(200)
+    @ApiOperation({
+        operationId: 'UserGetAllFull',
+        summary: 'getAllFull',
+        description: 'This call can be used to get all of the users',
+    })
+    @ApiResponse({ status: 200, description: 'Users', type: User, isArray: true })
+    @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async getFullUsers(): Promise<User[]> {
+        return this.userRepository.getAllForExcelExport();
     }
 
     @Get(':id')

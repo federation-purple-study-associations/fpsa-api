@@ -34,12 +34,12 @@ export class AgendaItem extends BaseEntity {
     @ApiProperty({ maxLength: 255 })
     summaryEN: string;
 
-    @Column({type: 'mediumtext'})
-    @ApiProperty({ maxLength: 65535 })
+    @Column({length: 16382})
+    @ApiProperty({ maxLength: 16382 })
     descriptionNL: string;
 
-    @Column({type: 'mediumtext'})
-    @ApiProperty({ maxLength: 65535 })
+    @Column({length: 16382})
+    @ApiProperty({ maxLength: 16382 })
     descriptionEN: string;
 
     @Column({default: false})

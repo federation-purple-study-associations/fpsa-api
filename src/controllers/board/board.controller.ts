@@ -1,7 +1,7 @@
 import { Controller, Get, Query, HttpCode, Res, NotFoundException, Post, Body, Param, Delete, Put } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes } from '@nestjs/swagger';
 import { LANGUAGE } from '../../constants';
-import { BoardInfoDTO } from '../../dto/board/board.info';
+import { BoardInfoTotalDTO } from '../../dto/board/board.info';
 import { BoardRepository } from '../../repositories/board.repository';
 import { BoardTransformer } from '../../transformers/board.transformer';
 import { createReadStream, existsSync, mkdirSync, createWriteStream, unlinkSync } from 'fs';
@@ -29,10 +29,14 @@ export class BoardController {
         summary: 'getAll',
         description: 'This call can be used to get all of the boards of FPSA',
     })
-    @ApiResponse({ status: 200, description: 'All boards', type: BoardInfoDTO, isArray: true })
+    @ApiResponse({ status: 200, description: 'All boards', type: BoardInfoTotalDTO })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    public async getBoards(@Query('lang') lang: LANGUAGE, @Query('skip') skip: number, @Query('size') size: number): Promise<BoardInfoDTO[]> {
-        return BoardTransformer.toInfo(await this.boardRepository.getAll(lang, skip, size));
+    public async getBoards(@Query('lang') lang: LANGUAGE, @Query('skip') skip: number, @Query('size') size: number): Promise<BoardInfoTotalDTO> {
+        const promises = await Promise.all([
+            this.boardRepository.getAll(lang, skip, size),
+            this.boardRepository.count(),
+        ])
+        return BoardTransformer.toInfo(...promises);
     }
 
     @Get('original/:id')
