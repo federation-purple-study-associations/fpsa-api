@@ -37,6 +37,7 @@
     "nodemailer": "^6.4.8",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.5.4",
+    "sha.js": "^2.4.11",
     "typeorm": "^0.2.22",
     "uuid": "^3.4.0"
   },
