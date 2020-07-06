@@ -26,7 +26,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage
   hostPath:
-    path: "/home/root/Onedrive"
+    path: "/root/OneDrive"
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -51,6 +51,7 @@ spec:
     spec:
       template:
         spec:
+          restartPolicy: Never
           imagePullSecrets:
           - name: regcred
           volumes:
