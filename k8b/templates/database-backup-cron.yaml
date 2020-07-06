@@ -26,7 +26,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage
   hostPath:
-    path: /home/root/Onedrive
+    path: "/home/root/Onedrive"
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -66,22 +66,22 @@ spec:
               mountPath: /mnt
             env:
             - name: DB_HOST
-                valueFrom:
-                  secretKeyRef:
-                    name: db
-                    key: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: db
+                  key: DB_HOST
             - name: DB_USER
-                valueFrom:
-                  secretKeyRef:
-                    name: db
-                    key: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db
+                  key: DB_USER
             - name: DB_PASSWORD
-                valueFrom:
-                  secretKeyRef:
-                    name: db
-                    key: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db
+                  key: DB_PASSWORD
             - name: DB_NAME
-                valueFrom:
-                  secretKeyRef:
-                    name: db
-                    key: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: db
+                  key: DB_NAME
