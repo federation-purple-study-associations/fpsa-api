@@ -49,6 +49,8 @@ spec:
   failedJobsHistoryLimit: 2
   jobTemplate:
     spec:
+      imagePullSecrets:
+      - name: regcred
       template:
         spec:
           volumes:
