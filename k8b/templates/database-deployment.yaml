@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb-deployment
+  namespace: fpsa
+  labels:
+    app: mariadb
+    type: database
+spec:
+  selector:
+    matchLabels:
+      app: mariadb
+      type: database
+      namespace: fpsa
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mariadb
+        type: database
+        namespace: fpsa
+    spec:
+      volumes:
+        - name: database-storage
+          persistentVolumeClaim:
+            claimName: database-volume-claim
+      containers:
+        - image: mysql:5.6
+          name: mysql
+          env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db
+                key: DB_PASSWORD
+          ports:
+          - containerPort: 3306
+            name: mysql
+          volumeMounts:
+          - name: database-storage
+            mountPath: /var/lib/mysql

@@ -1,8 +1,9 @@
 storagePath: /var/storage/backend
+storageDatabasePath: /var/storage/database
 frontendUrl: https://fpsa.nl/
 backendUrl: https://api.fpsa.nl/
 
 autoscaling:
     minReplicas: 1
     maxReplicas: 5
-    targetCPUUtilizationPercentage: 50
+    targetCPUUtilizationPercentage: 30
