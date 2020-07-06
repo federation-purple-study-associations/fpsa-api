@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: database-backup-volume-claim
+  namespace: fpsa
+spec:
+  storageClassName: local-storage
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3Gi
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: database-backup-volume
+  namespace: fpsa
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+  - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  hostPath:
+    path: /home/root/Onedrive
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - fpsa-server
+
+---
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: database-backup-cronjob
+  namespace: fpsa
+spec:
+  schedule: 0 1 * * *
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          volumes:
+          - name: database-backup-storage
+            persistentVolumeClaim:
+              claimName: database-backup-volume-claim
+          restartPolicy: Never
+          containers:
+          - image: "docker.pkg.github.com/federation-purple-study-associations/fpsa-cron-database-backup/cronjob:latest"
+            name: database-backup
+            volumeMounts:
+            - name: database-backup-storage
+              mountPath: /mnt
+            env:
+            - name: DB_HOST
+                valueFrom:
+                  secretKeyRef:
+                    name: db
+                    key: DB_HOST
+            - name: DB_USER
+                valueFrom:
+                  secretKeyRef:
+                    name: db
+                    key: DB_USER
+            - name: DB_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: db
+                    key: DB_PASSWORD
+            - name: DB_NAME
+                valueFrom:
+                  secretKeyRef:
+                    name: db
+                    key: DB_NAME
