@@ -49,10 +49,10 @@ spec:
   failedJobsHistoryLimit: 2
   jobTemplate:
     spec:
-      imagePullSecrets:
-      - name: regcred
       template:
         spec:
+          imagePullSecrets:
+          - name: regcred
           volumes:
           - name: database-backup-storage
             persistentVolumeClaim:
