@@ -15,6 +15,8 @@ import { EmailService } from '../../services/email/email.service';
 import { UserActivateDTO } from '../../dto/user/user.activate';
 import { NewApplication } from '../../dto/user/application.new';
 import { Application } from '../../entities/user/application.entity';
+import { UserForgotDTO } from '../../dto/user/user.forgot';
+import { config } from 'process';
 
 @Controller('user')
 @ApiTags('user')
@@ -162,6 +164,26 @@ export class UserController {
         }
 
         return user;
+    }
+
+    @Post('forgot')
+    @HttpCode(202)
+    @ApiOperation({
+        operationId: 'UserForgot',
+        summary: 'forgot',
+        description: 'This call can be used to send a user an email in order to reset its password',
+    })
+    @ApiResponse({ status: 202, description: 'Email send!' })
+    @ApiResponse({ status: 404, description: 'User not found...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async sendForgotEmail(@Body() body: UserForgotDTO): Promise<void> {
+        const user: User = await this.userRepository.getOneByEmail(body.email);
+        if (!user) {
+            throw new NotFoundException('User not found...');
+        }
+
+        const confirmation = await this.userRepository.createConfirmation(user);
+        this.emailService.sendForgotPasswordEmail(user, confirmation);
     }
 
     @Post()

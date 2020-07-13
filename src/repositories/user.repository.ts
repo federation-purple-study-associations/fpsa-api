@@ -28,6 +28,10 @@ export class UserRepository {
         return User.findOne({ where: {id} });
     }
 
+    public getOneByEmail(email: string): Promise<User> {
+        return User.findOne({where: { email }});
+    }
+
     public getConfirmation(token: string): Promise<Confirmation> {
         return Confirmation.findOne({where: {token}, relations: ['user', 'user.role', 'user.role.scopes']});
     }

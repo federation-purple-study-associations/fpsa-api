@@ -53,7 +53,20 @@ export class EmailService {
             user.email,
             'Bevestig uw FPSA account',
             this.handlebarTemplate({
-                template: 'email-confirmation',
+                template: 'account-confirmation',
+                user,
+                token: confirmation.token,
+                baseUrl: process.env.URL_SITE,
+            }),
+        );
+    }
+
+    public sendForgotPasswordEmail(user: User, confirmation: Confirmation): Promise<any> {
+        return this.sendMail(
+            user.email,
+            'Herstel uw FPSA account',
+            this.handlebarTemplate({
+                template: 'account-recovery',
                 user,
                 token: confirmation.token,
                 baseUrl: process.env.URL_SITE,
