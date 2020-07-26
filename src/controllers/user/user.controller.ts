@@ -33,7 +33,7 @@ export class UserController {
         description: 'This call can be used to get yourself',
     })
     @ApiResponse({ status: 200, description: 'Got ya!', type: User })
-    @ApiResponse({ status: 401, description: 'Your are not logged in...' })
+    @ApiResponse({ status: 401, description: 'You are not logged in...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public getMe(@Me() me: Promise<User>): Promise<User> {
         return me;
