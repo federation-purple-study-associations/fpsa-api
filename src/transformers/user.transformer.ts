@@ -52,7 +52,6 @@ export class UserTransformer {
         user.academy = dto.academy;
         user.kvk = dto.kvk;
         user.establishment = dto.establishment;
-        user.memberSince = dto.memberSince;
 
         if (role) {
             user.role = role;

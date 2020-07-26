@@ -27,7 +27,4 @@ export class UserUpdateDTO {
     @ApiProperty()
     @IsNotEmpty()
     public roleId: number;
-
-    @ApiProperty({type: String, format: 'date'})
-    public memberSince: Date;
 }
