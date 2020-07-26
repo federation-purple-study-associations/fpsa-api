@@ -82,6 +82,7 @@ export class UserTransformer {
         user.academy = application.academy;
         user.kvk = application.kvk;
         user.establishment = application.establishment;
+        user.memberSince = new Date();
         
         user.roleId = 2;
 

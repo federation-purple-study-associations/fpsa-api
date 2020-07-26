@@ -16,7 +16,6 @@ import { UserActivateDTO } from '../../dto/user/user.activate';
 import { NewApplication } from '../../dto/user/application.new';
 import { Application } from '../../entities/user/application.entity';
 import { UserForgotDTO } from '../../dto/user/user.forgot';
-import { config } from 'process';
 
 @Controller('user')
 @ApiTags('user')

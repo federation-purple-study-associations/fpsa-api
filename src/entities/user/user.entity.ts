@@ -36,6 +36,10 @@ export class User extends BaseEntity {
     @ApiProperty({type: String, format: 'date', required: false})
     public lastLogin: Date;
 
+    @Column({nullable: true})
+    @ApiProperty({type: String, format: 'date', required: false})
+    public memberSince: Date;
+
     @Column({default: false})
     @ApiProperty()
     public recieveEmailUpdatesEvents: boolean;

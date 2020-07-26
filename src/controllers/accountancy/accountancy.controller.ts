@@ -19,8 +19,8 @@ import { AddMutationDTO } from "../../dto/accountancy/add.mutation.dto";
 import { NotImportedMutationDTO } from "../../dto/accountancy/not.imported.mutation.dto";
 import { ImportMutationDTO } from "../../dto/accountancy/import.mutation.dto";
 import { AccountancyTransformer } from "../../transformers/accountancy.transformer";
-import { AccountancyInterceptor } from "../../interceptor/accountancy.interceptor";
-import { MutationDTO, MutationResponseDTO } from "../../dto/accountancy/mutation.dto";
+import { AccountancyInterceptor } from "../../interceptors/accountancy.interceptor";
+import { MutationResponseDTO } from "../../dto/accountancy/mutation.dto";
 
 @Controller('accountancy')
 @ApiTags('accountancy')
