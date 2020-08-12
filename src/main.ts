@@ -32,7 +32,7 @@ async function bootstrap() {
 
   // Enable cors
   app.enableCors({
-    origin: ['http://localhost:8080', 'https://fpsa.nl', 'http://localhost:3000/', 'https://www.fpsa.nl'],
+    origin: ['http://localhost:8080', 'https://fpsa.nl', 'http://localhost:3000/', 'https://www.fpsa.nl', 'http://beta.fpsa.nl', 'https://beta.fpsa.nl'],
     credentials: true,
   });
 
