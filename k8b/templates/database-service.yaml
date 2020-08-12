@@ -6,9 +6,9 @@ metadata:
   labels:
     type: database
 spec:
-  ports:
-  - port: 3306
+  clusterIP: None
   selector:
     app: mariadb
     type: database
-  clusterIP: None
+  ports:
+    - port: 3306

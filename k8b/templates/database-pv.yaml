@@ -3,11 +3,13 @@ kind: PersistentVolume
 metadata:
   name: database-volume
   namespace: fpsa
+  labels:
+    app: database-volume
 spec:
   capacity:
     storage: 20Gi
   accessModes:
-  - ReadWriteMany
+  - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage
   hostPath:

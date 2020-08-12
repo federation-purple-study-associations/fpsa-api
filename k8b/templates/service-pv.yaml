@@ -3,12 +3,13 @@ kind: PersistentVolume
 metadata:
   name: {{ .Chart.Name }}-volume
   namespace: fpsa
-  finalizers: []
+  labels:
+    app: {{ .Chart.Name }}-volume
 spec:
   capacity:
     storage: 20Gi
   accessModes:
-  - ReadWriteMany
+  - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage
   hostPath:

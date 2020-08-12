@@ -3,11 +3,14 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ .Chart.Name }}-volume-claim
   namespace: fpsa
-  finalizers: []
+  finalizers: null
 spec:
   storageClassName: local-storage
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-volume
   resources:
     requests:
       storage: 3Gi

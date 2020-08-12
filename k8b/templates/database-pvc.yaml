@@ -3,10 +3,14 @@ kind: PersistentVolumeClaim
 metadata:
   name: database-volume-claim
   namespace: fpsa
+  finalizers: null
 spec:
   storageClassName: local-storage
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
+  selector:
+    matchLabels:
+      app: database-volume
   resources:
     requests:
       storage: 3Gi
