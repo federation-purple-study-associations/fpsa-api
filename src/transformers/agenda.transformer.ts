@@ -3,7 +3,7 @@ import { AgendaSummaryDTO } from '../dto/agenda/agenda.summary';
 import { AgendaDetailsDTO } from '../dto/agenda/agenda.details';
 import { NewAgendaDTO } from '../dto/agenda/agenda.new';
 import { extname } from 'path';
-import * as uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import { UpdateAgendaDTO } from '../dto/agenda/agenda.update';
 
 export class AgendaTransformer {

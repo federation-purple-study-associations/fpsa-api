@@ -2,7 +2,7 @@ import { Board } from '../entities/board/board.entity';
 import { BoardInfoDTO, BoardInfoTotalDTO } from '../dto/board/board.info';
 import { WriteBoardDTO } from '../dto/board/board.write';
 import { extname } from 'path';
-import * as uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 
 export class BoardTransformer {
     static toInfo(list: Board[], total: number): BoardInfoTotalDTO {

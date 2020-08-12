@@ -13,13 +13,13 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
 
   // Enable multipart for file uploads
-  app.register(multipart, {
+  app.register(multipart as any, {
     addToBody: true,
     sharedSchemaId: 'MultipartFileType'
   });
 
   // Enable cookies for authorization
-  app.register(cookies, {
+  app.register(cookies as any, {
     secret: process.env.COOKIE_SECRET, // for cookies signature
     parseOptions: {}     // options for parsing cookies
   })

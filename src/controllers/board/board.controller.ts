@@ -10,7 +10,7 @@ import { Auth } from '../../decorators/auth.decorator';
 import { WriteBoardDTO } from '../../dto/board/board.write';
 import { Board } from '../../entities/board/board.entity';
 import * as mime from 'mime-types';
-import * as uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 
 @Controller('board')
 @ApiTags('board')

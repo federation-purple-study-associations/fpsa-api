@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from "@nestjs/common";
 import axios from 'axios';
-import * as uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import * as https from 'https';
 import * as shajs from 'sha.js';
 import * as nodeRSA from 'node-rsa';
