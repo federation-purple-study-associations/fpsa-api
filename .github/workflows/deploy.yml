@@ -46,6 +46,7 @@ jobs:
         namespace: 'fpsa'
         chart: 'k8b'
         helm: 'helm3'
+        timeout: 2m30s
         token: '${{ github.token }}'
         values: |
           tag: '${{ github.sha }}'
