@@ -30,16 +30,13 @@ jobs:
 
 # Dockerize project
     - name: Docker login
-      env:
-        Username: ${{secrets.DOCKER_USERNAME}}
-        Password: ${{secrets.DOCKER_PASSWORD}}
-      run: docker login -u $Username -p $Password
+      run: docker login docker.pkg.github.com -u bastiaanv -p ${{ secrets.GITHUB_TOKEN }}
     
     - name: Docker build
-      run: docker build -t svfpsa/backend:$GITHUB_SHA -f Dockerfile .;
+      run: docker build -t docker.pkg.github.com/federation-purple-study-associations/fpsa-api/backend:$GITHUB_SHA -f Dockerfile .;
     
     - name: Docker publish
-      run: docker push svfpsa/backend:$GITHUB_SHA
+      run: docker push docker.pkg.github.com/federation-purple-study-associations/fpsa-api/backend:$GITHUB_SHA
 
 # Deploy container
     - name: Deploy
