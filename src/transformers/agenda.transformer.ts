@@ -48,7 +48,7 @@ export class AgendaTransformer {
         return agenda;
     }
 
-    static update(agenda: AgendaItem, body: UpdateAgendaDTO, needUpdateFilePath: boolean) {
+    static update(agenda: AgendaItem, body: UpdateAgendaDTO, photoUrl: string) {
         agenda.location = body.location;
         agenda.date = body.date;
         agenda.titleNL = body.titleNL;
@@ -58,10 +58,7 @@ export class AgendaTransformer {
         agenda.descriptionNL = body.descriptionNL;
         agenda.descriptionEN = body.descriptionEN;
         agenda.isDraft = body.isDraft === 'true';
-        
-        if (needUpdateFilePath) {
-            agenda.imageUrl = uuid() + extname(body.image[0].filename);
-        }
+        agenda.imageUrl = photoUrl;
 
         return agenda;
     }

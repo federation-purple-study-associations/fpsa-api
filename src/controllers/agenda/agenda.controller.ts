@@ -15,6 +15,7 @@ import { AgendaItem } from '../../entities/agenda/agenda.item.entity';
 import { EmailService } from '../../services/email/email.service';
 import { UserRepository } from '../../repositories/user.repository';
 import { User } from '../../entities/user/user.entity';
+import { v4 as uuid } from 'uuid';
 
 @Controller('agenda')
 @ApiTags('agenda')
@@ -162,16 +163,20 @@ export class AgendaController {
       throw new NotFoundException('Agenda item not found...');
     }
 
+    let photoUrl = agendaItem.imageUrl;
     if (body.image) {
       // Delete old image to preserve storage space
       const dir = resolve(process.env.STORAGE_PATH, 'agenda');
       try {
-        unlinkSync(resolve(dir, agendaItem.imageUrl));
+        unlinkSync(resolve(dir, photoUrl));
       } catch(e) {}
+
+      // Update url name
+      photoUrl = uuid() + extname(body.image[0].filename);
 
       // Add new image
       await new Promise((resolve) => {
-        const stream = createWriteStream(path.resolve(dir, agendaItem.imageUrl), {encoding: 'binary'});
+        const stream = createWriteStream(path.resolve(dir, photoUrl), {encoding: 'binary'});
         stream.once('open', () => {
             stream.write(body.image[0].data);
             stream.end();
@@ -183,7 +188,7 @@ export class AgendaController {
     const wasDraft: boolean = agendaItem.isDraft;
 
     // Update database
-    AgendaTransformer.update(agendaItem, body, !!body.image);
+    AgendaTransformer.update(agendaItem, body, photoUrl);
     await this.agendaRepository.save(agendaItem);
 
     // Send email if agenda item is not a draft ANY MORE
