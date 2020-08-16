@@ -3,7 +3,7 @@ import { createWriteStream, mkdirSync, existsSync, createReadStream, unlinkSync 
 import * as path from 'path';
 import { resolve, extname } from 'path';
 import { AgendaRepository } from '../../repositories/agenda.repository';
-import { ApiOperation, ApiResponse, ApiTags, ApiConsumes } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags, ApiConsumes, ApiQuery } from '@nestjs/swagger';
 import { LANGUAGE } from '../../constants';
 import { AgendaTransformer } from '../../transformers/agenda.transformer';
 import { AgendaDetailsDTO } from '../../dto/agenda/agenda.details';
@@ -34,12 +34,15 @@ export class AgendaController {
     summary: 'getAll',
     description: 'This call can be used to get the complete agenda of FPSA',
   })
+  @ApiQuery({name: 'past', required: false})
   @ApiResponse({ status: 200, description: 'All agenda items', type: AgendaAllDTO })
   @ApiResponse({ status: 500, description: 'Internal server error...' })
-  async getAll(@Query('lang') language: LANGUAGE, @Query('skip') skip: number, @Query('size') size: number): Promise<AgendaAllDTO> {
+  async getAll(@Query('lang') language: LANGUAGE, @Query('skip') skip: number, @Query('take') size: number, @Query('past') past: string = 'false'): Promise<AgendaAllDTO> {
+    const inPast = past == 'true';
+
     const promise = await Promise.all([
-      this.agendaRepository.getAll(language, skip, size),
-      this.agendaRepository.count()
+      this.agendaRepository.getAll(language, skip, size, inPast),
+      this.agendaRepository.count(inPast)
     ]);
 
     return {

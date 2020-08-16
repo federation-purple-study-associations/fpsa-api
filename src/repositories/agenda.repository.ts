@@ -1,15 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { AgendaItem } from '../entities/agenda/agenda.item.entity';
 import { LANGUAGE } from '../constants';
-import { MoreThanOrEqual, BaseEntity } from 'typeorm';
+import { MoreThanOrEqual, BaseEntity, LessThanOrEqual } from 'typeorm';
 
 @Injectable()
 export class AgendaRepository {
-  public count(): Promise<number> {
-    return AgendaItem.count({where: { date: MoreThanOrEqual(new Date())}});
+  public count(inPast: boolean): Promise<number> {
+    return AgendaItem.count({
+      where: {
+        date: inPast ? LessThanOrEqual(new Date()) : MoreThanOrEqual(new Date())
+      }
+    });
   }
 
-  public getAll(language: LANGUAGE, skip: number, take: number): Promise<AgendaItem[]> {
+  public getAll(language: LANGUAGE, skip: number, take: number, inPast: boolean): Promise<AgendaItem[]> {
     const select = this.getSelect();
     if(language === 'nl') {
       select.push('titleNL', 'summaryNL');
@@ -18,7 +22,13 @@ export class AgendaRepository {
       select.push('titleEN', 'summaryEN');
     }
 
-    return AgendaItem.find({select, skip, take, order: {date: 'ASC'}, where: { date: MoreThanOrEqual(new Date()), isDraft: false }});
+    return AgendaItem.find({
+      select,
+      skip,
+      take,
+      order: {date: inPast ? 'DESC' : 'ASC'},
+      where: {date: inPast ? LessThanOrEqual(new Date()) : MoreThanOrEqual(new Date()), isDraft: false}
+    });
   }
 
   public getOne(id: number, language: LANGUAGE): Promise<AgendaItem> {
