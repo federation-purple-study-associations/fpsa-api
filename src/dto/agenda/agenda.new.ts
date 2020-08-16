@@ -5,47 +5,47 @@ import { Exclude } from 'class-transformer';
 export class NewAgendaDTO {
     @ApiProperty()
     @IsNotEmpty()
-    location: string;
+    public location: string;
 
     @ApiProperty({type: String, format: 'date'})
     @IsNotEmpty()
-    date: Date;
+    public date: Date;
 
     @ApiProperty({maxLength: 63})
     @IsNotEmpty()
     @MaxLength(63)
-    titleNL: string;
+    public titleNL: string;
 
     @ApiProperty({maxLength: 63})
     @IsNotEmpty()
     @MaxLength(63)
-    titleEN: string;
+    public titleEN: string;
 
     @ApiProperty({maxLength: 255})
     @IsNotEmpty()
     @MaxLength(255)
-    summaryNL: string;
+    public summaryNL: string;
 
     @ApiProperty({maxLength: 255})
     @IsNotEmpty()
     @MaxLength(255)
-    summaryEN: string;
+    public summaryEN: string;
 
     @ApiProperty({maxLength: 65535})
     @IsNotEmpty()
     @MaxLength(65535)
-    descriptionNL: string;
+    public descriptionNL: string;
 
     @ApiProperty({maxLength: 65535})
     @IsNotEmpty()
     @MaxLength(65535)
-    descriptionEN: string;
+    public descriptionEN: string;
 
     @ApiProperty()
     @IsNotEmpty()
-    isDraft: 'true' | 'false';
+    public isDraft: 'true' | 'false';
 
     @ApiProperty({ type: 'string', format: 'binary' })
     @Exclude()
-    image: any;
+    public image: any;
 }

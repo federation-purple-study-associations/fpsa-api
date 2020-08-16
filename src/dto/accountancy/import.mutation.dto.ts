@@ -5,10 +5,10 @@ export class ImportMutationDTO {
     @ApiProperty()
     @IsNotEmpty()
     @IsNumber()
-    paymentMethodId: number;
+    public paymentMethodId: number;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsNumber()
-    incomeStatementId: number;
+    public incomeStatementId: number;
 }

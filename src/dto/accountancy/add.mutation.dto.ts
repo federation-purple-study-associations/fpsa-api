@@ -4,28 +4,28 @@ import { ApiProperty } from '@nestjs/swagger';
 export class AddMutationDTO {
     @IsNotEmpty()
     @ApiProperty()
-    description: string;
+    public description: string;
 
     @ApiProperty({required: false})
-    entryReference: number;
+    public entryReference: number;
 
     @IsNotEmpty()
     @ApiProperty({type: String, format: 'date'})
-    date: Date;
+    public date: Date;
 
     @IsNotEmpty()
     @ApiProperty()
-    amount: number;
+    public amount: number;
 
     @IsNotEmpty()
     @ApiProperty()
-    debtorIban: string;
+    public debtorIban: string;
 
     @IsNotEmpty()
     @ApiProperty()
-    paymentMethodId: number;
+    public paymentMethodId: number;
 
     @IsNotEmpty()
     @ApiProperty()
-    incomeStatementId: number;
+    public incomeStatementId: number;
 }

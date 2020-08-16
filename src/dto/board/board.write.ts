@@ -6,28 +6,28 @@ export class WriteBoardDTO {
     @ApiProperty({maxLength: 63})
     @IsNotEmpty()
     @MaxLength(63)
-    titleNL: string;
+    public titleNL: string;
 
     @ApiProperty({maxLength: 63})
     @IsNotEmpty()
     @MaxLength(63)
-    titleEN: string;
+    public titleEN: string;
 
     @ApiProperty({ maxLength: 65535 })
     @IsNotEmpty()
     @MaxLength(65535)
-    textNL: string;
+    public textNL: string;
 
     @ApiProperty({ maxLength: 65535 })
     @IsNotEmpty()
     @MaxLength(65535)
-    textEN: string;
+    public textEN: string;
 
     @ApiProperty({ type: 'string', format: 'binary', required: false })
     @Exclude()
-    image: any[];
+    public image: any[];
 
     @ApiProperty({ type: 'string', format: 'binary', required: false })
     @Exclude()
-    policy: any[];
+    public policy: any[];
 }

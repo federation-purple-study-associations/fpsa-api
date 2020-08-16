@@ -4,5 +4,5 @@ import { ApiProperty } from "@nestjs/swagger";
 export class SaveAuthorizationDTO {
     @IsNotEmpty()
     @ApiProperty()
-    code: string;
+    public code: string;
 }

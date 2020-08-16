@@ -5,5 +5,5 @@ export class UserForgotDTO {
     @IsNotEmpty()
     @IsEmail()
     @ApiProperty()
-    email: string;
+    public email: string;
 }

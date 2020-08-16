@@ -6,24 +6,24 @@ import { ApiProperty } from '@nestjs/swagger';
 export class PaymentMethod extends BaseEntity {
     @PrimaryGeneratedColumn()
     @ApiProperty()
-    id: number;
+    public id: number;
 
     @Column()
     @ApiProperty()
-    name: string;
+    public name: string;
 
     @Column()
     @ApiProperty()
-    code: number;
+    public code: number;
 
     @Column({ default: 0 })
     @ApiProperty({ default: 0 })
-    startAssets: number;
+    public startAssets: number;
 
     @Column({ default: 0 })
     @ApiProperty({ default: 0 })
-    startLiabilities: number;
+    public startLiabilities: number;
 
     @OneToMany(() => Mutation, mutation => mutation.paymentMethod)
-    mutations: Mutation[];
+    public mutations: Mutation[];
 }

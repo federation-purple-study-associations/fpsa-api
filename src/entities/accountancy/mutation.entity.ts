@@ -7,43 +7,43 @@ import { ApiProperty } from '@nestjs/swagger';
 export class Mutation extends BaseEntity {
     @ApiProperty()
     @PrimaryGeneratedColumn()
-    id: number;
+    public id: number;
 
     @ApiProperty()
     @Column()
-    entryReference: number;
+    public entryReference: number;
 
     @ApiProperty()
     @Column()
-    description: string;
+    public description: string;
 
     @ApiProperty()
     @Column()
-    date: Date;
+    public date: Date;
 
     @ApiProperty()
     @Column()
-    amount: number;
+    public amount: number;
 
     @ApiProperty()
     @Column()
-    debtorIban: string;
+    public debtorIban: string;
 
     @ApiProperty({ default: false })
     @Column({ default: false })
-    imported: boolean;
+    public imported: boolean;
 
     @Column({ nullable: false })
-    paymentMethodId: number;
+    public paymentMethodId: number;
 
     @ApiProperty({ type: PaymentMethod, required: false })
     @ManyToOne(() => PaymentMethod, paymentMethod => paymentMethod.mutations,  { onDelete: 'CASCADE', nullable: true })
-    paymentMethod?: PaymentMethod;
+    public paymentMethod?: PaymentMethod;
 
     @Column({ nullable: false })
-    incomeStatementId: number;
+    public incomeStatementId: number;
 
     @ApiProperty({ type: IncomeStatement, required: false })
     @ManyToOne(() => IncomeStatement, incomeStatement => incomeStatement.mutations,  { onDelete: 'CASCADE', nullable: true })
-    incomeStatement?: IncomeStatement;
+    public incomeStatement?: IncomeStatement;
 }

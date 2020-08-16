@@ -6,16 +6,16 @@ import { ApiProperty } from '@nestjs/swagger';
 export class IncomeStatement extends BaseEntity {
     @PrimaryGeneratedColumn()
     @ApiProperty()
-    id: number;
+    public id: number;
 
     @Column()
     @ApiProperty()
-    name: string;
+    public name: string;
 
     @Column()
     @ApiProperty()
-    code: number;
+    public code: number;
 
     @OneToMany(() => Mutation, mutation => mutation.incomeStatement)
-    mutations: Mutation[];
+    public mutations: Mutation[];
 }

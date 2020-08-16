@@ -2,17 +2,17 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class AgendaDetailsDTO {
     @ApiProperty()
-    id: number;
+    public id: number;
     
     @ApiProperty()
-    location: string;
+    public location: string;
 
     @ApiProperty({type: String, format: 'date'})
-    date: Date;
+    public date: Date;
 
     @ApiProperty({maxLength: 63})
-    title: string;
+    public title: string;
 
     @ApiProperty({maxLength: 65535})
-    description: string;
+    public description: string;
 }

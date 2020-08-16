@@ -2,17 +2,17 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class IncomeStatementDTO {
     @ApiProperty()
-    id: number;
+    public id: number;
 
     @ApiProperty()
-    name: string;
+    public name: string;
 
     @ApiProperty({nullable: true, required: false})
-    code: number;
+    public code: number;
 
     @ApiProperty({nullable: true, required: false})
-    profit: number;
+    public profit: number;
 
     @ApiProperty({nullable: true, required: false})
-    lost: number;
+    public lost: number;
 }

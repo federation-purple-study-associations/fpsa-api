@@ -2,34 +2,34 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class MutationDTO {
     @ApiProperty()
-    id: number;
+    public id: number;
 
     @ApiProperty()
-    entryReference: number;
+    public entryReference: number;
 
     @ApiProperty()
-    description: string;
+    public description: string;
 
     @ApiProperty({type: String, format: 'date'})
-    date: Date;
+    public date: Date;
 
     @ApiProperty()
-    amount: number;
+    public amount: number;
 
     @ApiProperty()
-    debtorIban: string;
+    public debtorIban: string;
 
     @ApiProperty()
-    incomeStatementId: number;
+    public incomeStatementId: number;
 
     @ApiProperty()
-    balanceId: number;
+    public balanceId: number;
 }
 
 export class MutationResponseDTO {
     @ApiProperty({type: MutationDTO, isArray: true})
-    mutations: MutationDTO[];
+    public mutations: MutationDTO[];
 
     @ApiProperty()
-    total: number;
+    public total: number;
 }

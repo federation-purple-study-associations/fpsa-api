@@ -2,17 +2,17 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class NotImportedMutationDTO {
     @ApiProperty()
-    id: number;
+    public id: number;
 
     @ApiProperty()
-    description: string;
+    public description: string;
 
     @ApiProperty({type: String, format: 'date'})
-    date: Date;
+    public date: Date;
 
     @ApiProperty()
-    amount: number;
+    public amount: number;
 
     @ApiProperty()
-    debtorIban: string;
+    public debtorIban: string;
 }

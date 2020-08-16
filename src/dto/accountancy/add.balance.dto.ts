@@ -4,17 +4,17 @@ import { ApiProperty } from '@nestjs/swagger';
 export class AddBalanceDTO {
     @IsNotEmpty()
     @ApiProperty()
-    name: string;
+    public name: string;
 
     @IsNotEmpty()
     @ApiProperty()
-    code: number;
+    public code: number;
 
     @IsNotEmpty()
     @ApiProperty()
-    startAssets: number;
+    public startAssets: number;
 
     @IsNotEmpty()
     @ApiProperty()
-    startLiabilities: number;
+    public startLiabilities: number;
 }

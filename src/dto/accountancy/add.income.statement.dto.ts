@@ -4,9 +4,9 @@ import { ApiProperty } from '@nestjs/swagger';
 export class AddIncomeStatementDTO {
     @IsNotEmpty()
     @ApiProperty()
-    name: string;
+    public name: string;
 
     @IsNotEmpty()
     @ApiProperty()
-    code: number;
+    public code: number;
 }
