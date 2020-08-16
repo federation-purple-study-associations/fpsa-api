@@ -85,7 +85,7 @@ export class AccountancyTransformer {
         return mutation;
     }
 
-    public static mutationNotImported(array: Mutation[]) {
+    public static mutationNotImported(array: Mutation[]): NotImportedMutationDTO[] {
         const response: NotImportedMutationDTO[] = [];
 
         for (const mutation of array) {

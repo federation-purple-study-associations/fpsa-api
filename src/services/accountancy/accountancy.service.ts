@@ -63,7 +63,7 @@ export class AccountancyService {
         });
     }
 
-    public getHttpsHeader(accessToken: string, certificate: Buffer, privateKey: Buffer, clientId: string, certificateId: number): { 'Authorization': string, 'date': string, 'x-request-id': string, 'digest': string, 'signature': string, 'tpp-signature-certificate': string, 'x-ibm-client-id': string, } {
+    public getHttpsHeader(accessToken: string, certificate: Buffer, privateKey: Buffer, clientId: string, certificateId: number): { 'Authorization': string, 'date': string, 'x-request-id': string, 'digest': string, 'signature': string, 'tpp-signature-certificate': string, 'x-ibm-client-id': string } {
         const currentDate = (new Date()).toUTCString();
         const digest = this.generateDigest('');
         const requestId = uuid();

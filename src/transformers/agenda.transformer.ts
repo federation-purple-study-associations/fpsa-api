@@ -28,7 +28,7 @@ export class AgendaTransformer {
             location: item.location,
             date: item.date,
             title: item.titleNL || item.titleEN,
-            description: item.descriptionNL || item.descriptionEN
+            description: item.descriptionNL || item.descriptionEN,
         };
     }
 

@@ -30,7 +30,7 @@ export class AccountancyRepository {
                     qb.andWhere('incomeStatement.id = :incomeStatement', { incomeStatement });
                 }
             },
-            order: {id: 'DESC'}
+            order: {id: 'DESC'},
         });
     }
 

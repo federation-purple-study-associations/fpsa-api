@@ -12,7 +12,7 @@ import { ContactFormDTO } from '../../dto/user/contact.form';
 @Injectable()
 export class EmailService {
     private readonly handlebarTemplate: HandlebarsTemplateDelegate;
-    private readonly defaultFromEmailAddress = '"Federation of Purple Study Associations" info@fpsa.nl';
+    private readonly defaultFromEmailAddress: string = '"Federation of Purple Study Associations" info@fpsa.nl';
     private readonly mailer: nodemailer.Transporter;
 
     constructor() {
@@ -97,7 +97,7 @@ export class EmailService {
             this.handlebarTemplate({
                 template: 'application-to-board',
                 application,
-                handedIn: moment(application.handedIn).tz("Europe/Amsterdam").format('DD-MM-YYYY HH:mm')
+                handedIn: moment(application.handedIn).tz("Europe/Amsterdam").format('DD-MM-YYYY HH:mm'),
             }),
             '"' + application.name + '" ' + application.email,
         )

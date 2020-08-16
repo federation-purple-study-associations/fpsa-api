@@ -9,7 +9,7 @@ import { ValidationPipe } from '@nestjs/common';
 import swaggerOptions from './swagger/swagger.document';
 import { LanguageInterceptor } from './interceptors/language.interceptor';
 
-async function bootstrap(): Promise<void> {
+const bootstrap: () => Promise<void> = async () => {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
 
   // Enable multipart for file uploads

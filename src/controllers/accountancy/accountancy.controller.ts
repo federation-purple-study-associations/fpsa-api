@@ -301,7 +301,7 @@ export class AccountancyController {
     @ApiResponse({ status: 403, description: 'You do not have the permission to do this...' })
     @ApiResponse({ status: 404, description: 'This balance could not be found...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    public async deleteBalance(@Param('id') id: number) {
+    public async deleteBalance(@Param('id') id: number): Promise<void> {
         const balance = await this.accountancyRepository.readOnePaymentMethod(id);
         if (!balance) {
             throw new NotFoundException('This income statement could not be found...');

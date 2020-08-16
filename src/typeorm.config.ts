@@ -16,5 +16,5 @@ export = {
     cli: {
         migrationsDir: 'src/migrations',
         entitiesDir: 'src/entities',
-    }
+    },
 }

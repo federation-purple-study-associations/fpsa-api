@@ -45,7 +45,7 @@ export class FileService {
         return fs.readFileSync(this.pathAccountancyKey);
     }
 
-    private ensureDirectoryExistence(filePath): void {
+    private ensureDirectoryExistence(filePath: string): void {
         const dirname = path.dirname(filePath);
         if (fs.existsSync(dirname)) {
           return;
