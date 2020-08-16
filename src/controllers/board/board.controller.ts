@@ -49,7 +49,7 @@ export class BoardController {
     @ApiResponse({ status: 200, description: 'The Board', type: Board })
     @ApiResponse({ status: 404, description: 'The Board is not found...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    async getOriginalOne(@Param('id') id: number): Promise<Board> {
+    public async getOriginalOne(@Param('id') id: number): Promise<Board> {
         const board = await this.boardRepository.getOneFull(id);
         if (!board) {
             throw new NotFoundException('Board not found...');
@@ -109,7 +109,7 @@ export class BoardController {
     @ApiResponse({ status: 400, description: 'Validation error...' })
     @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    async createNew(@Body() body: WriteBoardDTO): Promise<void> {
+    public async createNew(@Body() body: WriteBoardDTO): Promise<void> {
         const board = BoardTransformer.fromNew(body);
         await this.boardRepository.save(board);
 
@@ -148,7 +148,7 @@ export class BoardController {
     @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
     @ApiResponse({ status: 404, description: 'Board not found...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    async update(@Param('id') id: number, @Body() body: WriteBoardDTO): Promise<void> {
+    public async update(@Param('id') id: number, @Body() body: WriteBoardDTO): Promise<void> {
         const board = await this.boardRepository.getOneFull(id);
         if (!board) {
             throw new NotFoundException('Board not found...');
@@ -207,7 +207,7 @@ export class BoardController {
     @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
     @ApiResponse({ status: 404, description: 'Board not found...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    async delete(@Param('id') id: number): Promise<void> {
+    public async delete(@Param('id') id: number): Promise<void> {
         const agendaItem = await this.boardRepository.getOne(id, 'nl');
         if (!agendaItem) {
             throw new NotFoundException('Board not found...');

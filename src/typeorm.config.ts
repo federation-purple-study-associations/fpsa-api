@@ -1,5 +1,6 @@
 import { resolve } from 'path';
-require('dotenv').config()
+import * as dotEnv from 'dotenv';
+dotEnv.config()
 
 export = {
     type: "mariadb",

@@ -13,7 +13,7 @@ export class AuthorizationGuard implements CanActivate {
     private readonly reflector: Reflector,
   ) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  public async canActivate(context: ExecutionContext): Promise<boolean> {
     const scope = this.reflector.get<string>('scope', context.getHandler());
     if (!scope) {
       return true;
@@ -47,5 +47,5 @@ export class AuthorizationGuard implements CanActivate {
     }
 
     return list;
-}
+  }
 }

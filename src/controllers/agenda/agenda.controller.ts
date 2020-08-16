@@ -38,7 +38,7 @@ export class AgendaController {
   @ApiQuery({name: 'past', required: false})
   @ApiResponse({ status: 200, description: 'All agenda items', type: AgendaAllDTO })
   @ApiResponse({ status: 500, description: 'Internal server error...' })
-  async getAll(@Query('lang') language: LANGUAGE, @Query('skip') skip: number, @Query('take') size: number, @Query('past') past: string = 'false'): Promise<AgendaAllDTO> {
+  public async getAll(@Query('lang') language: LANGUAGE, @Query('skip') skip: number, @Query('take') size: number, @Query('past') past: string = 'false'): Promise<AgendaAllDTO> {
     const inPast = past == 'true';
 
     const promise = await Promise.all([
@@ -62,7 +62,7 @@ export class AgendaController {
   @ApiResponse({ status: 200, description: 'The agenda item', type: AgendaDetailsDTO })
   @ApiResponse({ status: 404, description: 'The agenda item is not found...' })
   @ApiResponse({ status: 500, description: 'Internal server error...' })
-  async getOne(@Param('id') id: number, @Query('lang') language: LANGUAGE): Promise<AgendaDetailsDTO> {
+  public async getOne(@Param('id') id: number, @Query('lang') language: LANGUAGE): Promise<AgendaDetailsDTO> {
     const agendaItem = await this.agendaRepository.getOne(id, language);
     if (!agendaItem) {
       throw new NotFoundException('Agenda item not found...');
@@ -81,7 +81,7 @@ export class AgendaController {
   @ApiResponse({ status: 200, description: 'The agenda item', type: AgendaItem })
   @ApiResponse({ status: 404, description: 'The agenda item is not found...' })
   @ApiResponse({ status: 500, description: 'Internal server error...' })
-  async getOriginalOne(@Param('id') id: number): Promise<AgendaItem> {
+  public async getOriginalOne(@Param('id') id: number): Promise<AgendaItem> {
     const agendaItem = await this.agendaRepository.getOneFull(id);
     if (!agendaItem) {
       throw new NotFoundException('Agenda item not found...');
@@ -100,7 +100,7 @@ export class AgendaController {
   @ApiResponse({ status: 200, description: 'The agenda item' })
   @ApiResponse({ status: 404, description: 'The agenda item is not found...' })
   @ApiResponse({ status: 500, description: 'Internal server error...' })
-  async getPhoto(@Query('id') id: number, @Res() res: FastifyReply): Promise<void> {
+  public async getPhoto(@Query('id') id: number, @Res() res: FastifyReply): Promise<void> {
     const item = await this.agendaRepository.getOne(id, 'nl');
     if (!item) {
       throw new NotFoundException('This agenda item is not found...');
@@ -123,7 +123,7 @@ export class AgendaController {
   @ApiResponse({ status: 400, description: 'Validation error...' })
   @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
   @ApiResponse({ status: 500, description: 'Internal server error...' })
-  async createNew(@Body() body: NewAgendaDTO): Promise<void> {
+  public async createNew(@Body() body: NewAgendaDTO): Promise<void> {
     const agendaItem = AgendaTransformer.fromNew(body);
     await this.agendaRepository.save(agendaItem);
 
@@ -161,7 +161,7 @@ export class AgendaController {
   @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
   @ApiResponse({ status: 404, description: 'Agenda item not found...' })
   @ApiResponse({ status: 500, description: 'Internal server error...' })
-  async update(@Param('id') id: number, @Body() body: UpdateAgendaDTO): Promise<void> {
+  public async update(@Param('id') id: number, @Body() body: UpdateAgendaDTO): Promise<void> {
     const agendaItem = await this.agendaRepository.getOneFull(id);
     if (!agendaItem) {
       throw new NotFoundException('Agenda item not found...');
@@ -214,7 +214,7 @@ export class AgendaController {
   @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
   @ApiResponse({ status: 404, description: 'Agenda item not found...' })
   @ApiResponse({ status: 500, description: 'Internal server error...' })
-  async delete(@Param('id') id: number): Promise<void> {
+  public async delete(@Param('id') id: number): Promise<void> {
     const agendaItem = await this.agendaRepository.getOne(id, 'nl');
     if (!agendaItem) {
       throw new NotFoundException('Agenda item not found...');
