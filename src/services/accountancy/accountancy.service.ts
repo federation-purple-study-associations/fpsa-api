@@ -27,7 +27,6 @@ export class AccountancyService {
         for (const transaction of transactions.transactions.booked) {
             // Only add a transaction if there is not a mutation of it
             if (!(await Mutation.findOne({where: { entryReference: transaction.entryReference}}))) {
-                console.log(transaction)
                 const mutation = new Mutation();
                 mutation.entryReference = transaction.entryReference;
                 mutation.amount = parseFloat(transaction.transactionAmount.amount);
