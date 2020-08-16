@@ -16,6 +16,7 @@ import { UserActivateDTO } from '../../dto/user/user.activate';
 import { NewApplication } from '../../dto/user/application.new';
 import { Application } from '../../entities/user/application.entity';
 import { UserForgotDTO } from '../../dto/user/user.forgot';
+import { FastifyReply } from 'fastify';
 
 @Controller('user')
 @ApiTags('user')
@@ -64,7 +65,7 @@ export class UserController {
     @ApiResponse({ status: 200, description: 'Logged in!' })
     @ApiResponse({ status: 400, description: 'Email or password is incorrect...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    public async login(@Body() body: LoginDTO, @Res() response: any) {
+    public async login(@Body() body: LoginDTO, @Res() response: FastifyReply): Promise<void> {
         const user = await this.userRepository.login(body.email);
         if (!user || !(await bcrypt.compare(body.password, user.password))) {
             throw new BadRequestException('Email or password is incorrect...');
@@ -93,7 +94,7 @@ export class UserController {
     @ApiResponse({ status: 400, description: 'Validation error...' })
     @ApiResponse({ status: 404, description: 'Token invalid...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    public async activate(@Body() body: UserActivateDTO, @Res() response: any) {
+    public async activate(@Body() body: UserActivateDTO, @Res() response: FastifyReply) {
         const confirmation = await this.userRepository.getConfirmation(body.token);
         if (!confirmation) {
             throw new NotFoundException('Token invalid...');

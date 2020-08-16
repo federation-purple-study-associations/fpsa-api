@@ -1,11 +1,11 @@
-import { UnauthorizedException, CanActivate, Injectable, ExecutionContext, SetMetadata } from '@nestjs/common';
+import { UnauthorizedException, CanActivate, Injectable, ExecutionContext, SetMetadata, CustomDecorator } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { UserTransformer } from '../transformers/user.transformer';
 
 const errorNoAuthCookieFound = 'No authorization cookie has been found... Please make sure that you are logged in before performing this action';
 const errorAuthCookieExpired = 'Token is invalid or expired...'
 
-export const Auth = (scope: string) => SetMetadata('scope', scope);
+export const Auth: (scope: string) => CustomDecorator<string> = (scope: string) => SetMetadata('scope', scope);
 
 @Injectable()
 export class AuthorizationGuard implements CanActivate {

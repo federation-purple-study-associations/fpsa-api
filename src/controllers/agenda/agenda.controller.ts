@@ -16,6 +16,7 @@ import { EmailService } from '../../services/email/email.service';
 import { UserRepository } from '../../repositories/user.repository';
 import { User } from '../../entities/user/user.entity';
 import { v4 as uuid } from 'uuid';
+import { FastifyReply } from 'fastify';
 
 @Controller('agenda')
 @ApiTags('agenda')
@@ -99,7 +100,7 @@ export class AgendaController {
   @ApiResponse({ status: 200, description: 'The agenda item' })
   @ApiResponse({ status: 404, description: 'The agenda item is not found...' })
   @ApiResponse({ status: 500, description: 'Internal server error...' })
-  async getPhoto(@Query('id') id: number, @Res() res): Promise<void> {
+  async getPhoto(@Query('id') id: number, @Res() res: FastifyReply): Promise<void> {
     const item = await this.agendaRepository.getOne(id, 'nl');
     if (!item) {
       throw new NotFoundException('This agenda item is not found...');

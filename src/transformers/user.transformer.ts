@@ -1,6 +1,6 @@
 import { User } from '../entities/user/user.entity';
 import { JwtPayload } from '../dto/user/jwt';
-import * as jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { UserSummaryDTO } from '../dto/user/user.summary';
 import { UserNewDTO } from '../dto/user/user.new';
 import { Role } from '../entities/user/role.entity';
@@ -9,7 +9,7 @@ import { Application } from '../entities/user/application.entity';
 import { NewApplication } from '../dto/user/application.new';
 
 export class UserTransformer {
-    public static toJwtToken(user: User) {
+    public static toJwtToken(user: User): string {
         const jwtPayload: JwtPayload = {
             id: user.id,
             email: user.email,
@@ -19,7 +19,7 @@ export class UserTransformer {
         return jwt.sign(jwtPayload, process.env.JWT_SECRET, {expiresIn: '1d'});
     }
 
-    public static toSummary(users: User[]) {
+    public static toSummary(users: User[]): UserSummaryDTO[] {
         const output: UserSummaryDTO[] = [];
         for (const user of users) {
             output.push({
@@ -33,7 +33,7 @@ export class UserTransformer {
         return output;
     }
 
-    public static toUser(dto: UserNewDTO, role: Role) {
+    public static toUser(dto: UserNewDTO, role: Role): User {
         const user = new User();
         user.fullName = dto.fullName;
         user.email = dto.email;
@@ -46,7 +46,7 @@ export class UserTransformer {
         return user;
     }
 
-    public static update(dto: UserUpdateDTO, user: User, role?: Role) {
+    public static update(dto: UserUpdateDTO, user: User, role?: Role): User {
         user.fullName = dto.fullName;
         user.email = dto.email;
         user.academy = dto.academy;
@@ -60,7 +60,7 @@ export class UserTransformer {
         return user;
     }
 
-    public static updateMe(me: User, update: User) {
+    public static updateMe(me: User, update: User): User {
         me.email = update.email;
         me.recieveEmailUpdatesEvents = update.recieveEmailUpdatesEvents;
 
@@ -71,7 +71,7 @@ export class UserTransformer {
         return jwt.verify(token, process.env.JWT_SECRET);
     }
 
-    public static hasScope(token: string, scope: string) {
+    public static hasScope(token: string, scope: string): boolean {
         const decodeToken: JwtPayload = jwt.verify(token, process.env.JWT_SECRET);
         return decodeToken.scopes.includes(scope);
     }
@@ -90,7 +90,7 @@ export class UserTransformer {
         return user;
     }
 
-    public static toApplication(body: NewApplication) {
+    public static toApplication(body: NewApplication): Application {
         const application = new Application();
         application.email = body.email;
         application.name = body.name;

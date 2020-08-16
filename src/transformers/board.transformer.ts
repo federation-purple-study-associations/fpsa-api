@@ -40,7 +40,7 @@ export class BoardTransformer {
         return board;
     }
 
-    static update(board: Board, body: WriteBoardDTO, newPhotoName: string, newPolicyName: string) {
+    static update(board: Board, body: WriteBoardDTO, newPhotoName: string, newPolicyName: string): Board {
         board.titleNL = body.titleNL;
         board.titleEN = body.titleEN;
         board.textNL = body.textNL;
