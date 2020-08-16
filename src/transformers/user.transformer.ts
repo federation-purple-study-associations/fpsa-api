@@ -1,6 +1,6 @@
 import { User } from '../entities/user/user.entity';
 import { JwtPayload } from '../dto/user/jwt';
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 import { UserSummaryDTO } from '../dto/user/user.summary';
 import { UserNewDTO } from '../dto/user/user.new';
 import { Role } from '../entities/user/role.entity';
