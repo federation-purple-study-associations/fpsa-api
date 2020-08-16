@@ -7,7 +7,7 @@ import { v4 as uuid } from 'uuid';
 import { UpdateAgendaDTO } from '../dto/agenda/agenda.update';
 
 export class AgendaTransformer {
-    static toSummary(list: AgendaItem[]): AgendaSummaryDTO[] {
+    public static toSummary(list: AgendaItem[]): AgendaSummaryDTO[] {
         const output: AgendaSummaryDTO[] = [];
         for (const item of list) {
             output.push({
@@ -15,14 +15,14 @@ export class AgendaTransformer {
                 title: item.titleNL || item.titleEN,
                 summary: item.summaryNL || item.summaryEN,
                 location: item.location,
-                date: item.date
+                date: item.date,
             })
         }
 
         return output;
     }
 
-    static toDetails(item: AgendaItem): AgendaDetailsDTO {
+    public static toDetails(item: AgendaItem): AgendaDetailsDTO {
         return {
             id: item.id,
             location: item.location,
@@ -32,7 +32,7 @@ export class AgendaTransformer {
         };
     }
 
-    static fromNew(body: NewAgendaDTO): AgendaItem {
+    public static fromNew(body: NewAgendaDTO): AgendaItem {
         const agenda = new AgendaItem();
         agenda.location = body.location;
         agenda.date = body.date;
@@ -48,7 +48,7 @@ export class AgendaTransformer {
         return agenda;
     }
 
-    static update(agenda: AgendaItem, body: UpdateAgendaDTO, photoUrl: string) {
+    public static update(agenda: AgendaItem, body: UpdateAgendaDTO, photoUrl: string): AgendaItem {
         agenda.location = body.location;
         agenda.date = body.date;
         agenda.titleNL = body.titleNL;

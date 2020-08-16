@@ -71,7 +71,7 @@ export class AccountancyController {
                                                                     this.fileService.getCertificate(),
                                                                     this.fileService.getPrivateKey(),
                                                                     process.env.RABOBANK_CLIENT_ID,
-                                                                    +process.env.RABOBANK_CERTIFICATE_KEY_ID
+                                                                    +process.env.RABOBANK_CERTIFICATE_KEY_ID,
                                                                 ),
                                                     httpsAgent: this.accountancyService.getAccountancyHttpAgent(),
                                                 },
@@ -200,7 +200,7 @@ export class AccountancyController {
     @ApiResponse({ status: 403, description: 'You do not have the permission to do this...' })
     @ApiResponse({ status: 404, description: 'This income statement could not be found...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    public async deleteIncomeStatement(@Param('id') id: number) {
+    public async deleteIncomeStatement(@Param('id') id: number): Promise<void> {
         const incomeStatement = await this.accountancyRepository.readOneIncomeStatement(id);
         if (!incomeStatement) {
             throw new NotFoundException('This income statement could not be found...');
@@ -431,7 +431,7 @@ export class AccountancyController {
         description: '',
     })
     @ApiParam({name: 'id', type: Number, required: true})
-    @ApiResponse({ status: 200, description: 'Deleted!', })
+    @ApiResponse({ status: 200, description: 'Deleted!' })
     @ApiResponse({ status: 403, description: 'You do not have the permission to do this...' })
     @ApiResponse({ status: 404, description: 'Mutation not found...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })

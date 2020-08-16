@@ -43,12 +43,12 @@ export class AgendaController {
 
     const promise = await Promise.all([
       this.agendaRepository.getAll(language, skip, size, inPast),
-      this.agendaRepository.count(inPast)
+      this.agendaRepository.count(inPast),
     ]);
 
     return {
       items: AgendaTransformer.toSummary(promise[0]),
-      count: promise[1]
+      count: promise[1],
     };
   }
 

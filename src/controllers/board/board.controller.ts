@@ -15,8 +15,8 @@ import { v4 as uuid } from 'uuid';
 @Controller('board')
 @ApiTags('board')
 export class BoardController {
-    private readonly photoUrl = resolve(process.env.STORAGE_PATH, 'board', 'photo');
-    private readonly policyUrl = resolve(process.env.STORAGE_PATH, 'board', 'policy');
+    private readonly photoUrl: string = resolve(process.env.STORAGE_PATH, 'board', 'photo');
+    private readonly policyUrl: string = resolve(process.env.STORAGE_PATH, 'board', 'policy');
 
     constructor(
         private readonly boardRepository: BoardRepository,

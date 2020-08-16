@@ -5,7 +5,7 @@ import { extname } from 'path';
 import { v4 as uuid } from 'uuid';
 
 export class BoardTransformer {
-    static toInfo(list: Board[], total: number): BoardInfoTotalDTO {
+    public static toInfo(list: Board[], total: number): BoardInfoTotalDTO {
         const output: BoardInfoDTO[] = [];
         for (const item of list) {
             output.push({
@@ -22,7 +22,7 @@ export class BoardTransformer {
         };
     }
 
-    static fromNew(model: WriteBoardDTO): Board {
+    public static fromNew(model: WriteBoardDTO): Board {
         const board = new Board();
         board.titleNL = model.titleNL;
         board.titleEN = model.titleEN;
@@ -40,7 +40,7 @@ export class BoardTransformer {
         return board;
     }
 
-    static update(board: Board, body: WriteBoardDTO, newPhotoName: string, newPolicyName: string): Board {
+    public static update(board: Board, body: WriteBoardDTO, newPhotoName: string, newPolicyName: string): Board {
         board.titleNL = body.titleNL;
         board.titleEN = body.titleEN;
         board.textNL = body.textNL;

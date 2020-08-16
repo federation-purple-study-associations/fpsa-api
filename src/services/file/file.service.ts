@@ -4,11 +4,11 @@ import * as path from 'path';
 
 @Injectable()
 export class FileService {
-    private readonly pathAccountancyAccessToken = process.env.STORAGE_PATH + FileType.ACCOUNTANCY + 'accessToken.txt';
-    private readonly pathAccountancyRefreshToken = process.env.STORAGE_PATH + FileType.ACCOUNTANCY + 'refreshToken.txt';
-    private readonly pathAccountancyResourceId = process.env.STORAGE_PATH + FileType.ACCOUNTANCY + 'resourceId.txt';
-    private readonly pathAccountancyCertificate = process.env.STORAGE_PATH + FileType.ACCOUNTANCY + 'cert.key';
-    private readonly pathAccountancyKey = process.env.STORAGE_PATH + FileType.ACCOUNTANCY + 'private.key';
+    private readonly pathAccountancyAccessToken: string = process.env.STORAGE_PATH + FileType.ACCOUNTANCY + 'accessToken.txt';
+    private readonly pathAccountancyRefreshToken: string = process.env.STORAGE_PATH + FileType.ACCOUNTANCY + 'refreshToken.txt';
+    private readonly pathAccountancyResourceId: string = process.env.STORAGE_PATH + FileType.ACCOUNTANCY + 'resourceId.txt';
+    private readonly pathAccountancyCertificate: string = process.env.STORAGE_PATH + FileType.ACCOUNTANCY + 'cert.key';
+    private readonly pathAccountancyKey: string = process.env.STORAGE_PATH + FileType.ACCOUNTANCY + 'private.key';
 
     public saveAccessTokenAccountancy(token: string): void {
         this.ensureDirectoryExistence(this.pathAccountancyAccessToken);
@@ -45,7 +45,7 @@ export class FileService {
         return fs.readFileSync(this.pathAccountancyKey);
     }
 
-    private ensureDirectoryExistence(filePath) {
+    private ensureDirectoryExistence(filePath): void {
         const dirname = path.dirname(filePath);
         if (fs.existsSync(dirname)) {
           return;

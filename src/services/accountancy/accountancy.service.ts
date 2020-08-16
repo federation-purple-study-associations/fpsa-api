@@ -8,7 +8,7 @@ import { FileService } from "../file/file.service";
 import { AccessResponse } from "../../dto/accountancy/accessResponse.dto";
 import { TransactionDTO } from "../../dto/accountancy/transaction.dto";
 import { Mutation } from "../../entities/accountancy/mutation.entity";
-import moment = require("moment");
+import * as moment from 'moment';
 
 @Injectable()
 export class AccountancyService {
@@ -44,6 +44,43 @@ export class AccountancyService {
           }
     }
 
+    public generateDigest(body: string): string {
+        return 'sha-512=' + shajs('sha512').update(body).digest('base64');
+    }
+    
+    public generateSignature(signatureString: string, headers: string, privateKey: Buffer, keyId: number): string {
+        const key = new nodeRSA(privateKey, 'pkcs8', {signingScheme: 'pkcs1-sha512'});
+
+        const signedSignature = key.sign(Buffer.from(signatureString), 'base64');
+        return `keyId="${keyId}",algorithm="rsa-sha512",headers="${headers}",signature="${signedSignature}"`;
+    }
+
+    public getAccountancyHttpAgent(): https.Agent {
+        return new https.Agent({
+            rejectUnauthorized: false,
+            cert: this.fileService.getCertificate(),
+            key: this.fileService.getPrivateKey(),
+        });
+    }
+
+    public getHttpsHeader(accessToken: string, certificate: Buffer, privateKey: Buffer, clientId: string, certificateId: number): { 'Authorization': string, 'date': string, 'x-request-id': string, 'digest': string, 'signature': string, 'tpp-signature-certificate': string, 'x-ibm-client-id': string, } {
+        const currentDate = (new Date()).toUTCString();
+        const digest = this.generateDigest('');
+        const requestId = uuid();
+        const signingString = 'date: ' + currentDate + '\ndigest: ' + digest + '\nx-request-id: ' + requestId;
+        const signature = this.generateSignature(signingString, 'date digest x-request-id', privateKey, certificateId);
+
+        return {
+            'Authorization': 'Bearer ' + accessToken,
+            'date': currentDate,
+            'x-request-id': requestId,
+            'digest': digest,
+            'signature': signature,
+            'tpp-signature-certificate': certificate.toString('utf8').replace(/\r?\n|\r/g, '').substr(27, 1224),
+            'x-ibm-client-id': clientId,
+        };
+    }
+
     private async obtainTransactions(): Promise<TransactionDTO> {
         if (new Date().getTime() > this.tokenExpired.getTime()) {
             // Refresh rabo-token
@@ -69,48 +106,11 @@ export class AccountancyService {
                         this.fileService.getCertificate(),
                         this.fileService.getPrivateKey(),
                         process.env.RABOBANK_CLIENT_ID,
-                        +process.env.RABOBANK_CERTIFICATE_KEY_ID
+                        +process.env.RABOBANK_CERTIFICATE_KEY_ID,
                     ),
             httpsAgent: this.getAccountancyHttpAgent(),
         })).data;
 
         return response;
-    }
-
-    public generateDigest(body: string): string {
-        return 'sha-512=' + shajs('sha512').update(body).digest('base64');
-    }
-    
-    public generateSignature(signatureString: string, headers: string, privateKey: Buffer, keyId: number): string {
-        const key = new nodeRSA(privateKey, 'pkcs8', {signingScheme: 'pkcs1-sha512'});
-
-        const signedSignature = key.sign(Buffer.from(signatureString), 'base64');
-        return `keyId="${keyId}",algorithm="rsa-sha512",headers="${headers}",signature="${signedSignature}"`;
-    }
-
-    public getAccountancyHttpAgent(): https.Agent {
-        return new https.Agent({
-            rejectUnauthorized: false,
-            cert: this.fileService.getCertificate(),
-            key: this.fileService.getPrivateKey(),
-        });
-    }
-
-    public getHttpsHeader(accessToken: string, certificate: Buffer, privateKey: Buffer, clientId: string, certificateId: number) {
-        const currentDate = (new Date()).toUTCString();
-        const digest = this.generateDigest('');
-        const requestId = uuid();
-        const signingString = 'date: ' + currentDate + '\ndigest: ' + digest + '\nx-request-id: ' + requestId;
-        const signature = this.generateSignature(signingString, 'date digest x-request-id', privateKey, certificateId);
-
-        return {
-            'Authorization': 'Bearer ' + accessToken,
-            'date': currentDate,
-            'x-request-id': requestId,
-            'digest': digest,
-            'signature': signature,
-            'tpp-signature-certificate': certificate.toString('utf8').replace(/\r?\n|\r/g, '').substr(27, 1224),
-            'x-ibm-client-id': clientId,
-        };
     }
 }

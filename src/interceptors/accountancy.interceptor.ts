@@ -9,7 +9,7 @@ export class AccountancyInterceptor implements NestInterceptor {
         private fileService: FileService,
     ) {}
 
-    intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> {
+    public intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> {
         if (context.getArgs()[0].url !== '/accountancy/activate' && this.fileService.getAccessTokenAccountancy() === '') {
             throw new ImATeapotException('Accountancy API is not activated...');
         }

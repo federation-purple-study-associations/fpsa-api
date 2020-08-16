@@ -26,7 +26,7 @@ export class EmailService {
 
         // Load all partials for Handlebars
         const partials = {};
-        readdirSync(__dirname + '/templates').forEach(function(file) {
+        readdirSync(__dirname + '/templates').forEach((file: string) => {
             if (file.match(/\.hbs$/) !== null) {
               const name = file.replace('.hbs', '');
               partials[name] = require('./templates/' + file);

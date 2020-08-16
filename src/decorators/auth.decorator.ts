@@ -1,6 +1,7 @@
 import { UnauthorizedException, CanActivate, Injectable, ExecutionContext, SetMetadata, CustomDecorator } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { UserTransformer } from '../transformers/user.transformer';
+import { FastifyReply } from 'fastify';
 
 const errorNoAuthCookieFound = 'No authorization cookie has been found... Please make sure that you are logged in before performing this action';
 const errorAuthCookieExpired = 'Token is invalid or expired...'
@@ -19,8 +20,8 @@ export class AuthorizationGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest();
-    if (!request.headers.cookie) {
+    const request: FastifyReply = context.switchToHttp().getRequest();
+    if (!request.headers['cookie']) {
       throw new UnauthorizedException(errorNoAuthCookieFound);
     }
     const auth = this.parseCookies(request).auth;
@@ -35,9 +36,9 @@ export class AuthorizationGuard implements CanActivate {
     }
   }
 
-  private parseCookies(request): any {
+  private parseCookies(request: FastifyReply): any {
     const list = {};
-    const rc = request.headers.cookie;
+    const rc = request.headers['cookie'];
 
     if (rc) {
       rc.split(';').forEach((cookie) => {

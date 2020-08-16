@@ -9,7 +9,7 @@ export class AgendaRepository {
     return AgendaItem.count({
       where: {
         date: inPast ? LessThanOrEqual(new Date()) : MoreThanOrEqual(new Date()),
-      }
+      },
     });
   }
 
