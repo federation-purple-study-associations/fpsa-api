@@ -17,6 +17,7 @@ import { NewApplication } from '../../dto/user/application.new';
 import { Application } from '../../entities/user/application.entity';
 import { UserForgotDTO } from '../../dto/user/user.forgot';
 import { FastifyReply } from 'fastify';
+import { ContactFormDTO } from '../../dto/user/contact.form';
 
 @Controller('user')
 @ApiTags('user')
@@ -340,5 +341,19 @@ export class UserController {
 
         await this.userRepository.delete(application);
         await this.emailService.sendApplicationDeclined(application);
+    }
+
+    @Post('contact')
+    @HttpCode(200)
+    @ApiOperation({
+        operationId: 'Contact',
+        summary: 'contact',
+        description: 'This call can be used to send an email to info@fpsa.nl',
+    })
+    @ApiResponse({ status: 200, description: 'Contact form has been send!' })
+    @ApiResponse({ status: 400, description: 'Validation error...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async sendContactEmail(@Body() body: ContactFormDTO): Promise<void> {
+        await this.emailService.sendContactEmail(body);
     }
 }

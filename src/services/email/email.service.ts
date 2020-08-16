@@ -7,6 +7,7 @@ import { Application } from '../../entities/user/application.entity';
 import * as moment from 'moment-timezone';
 import { readdirSync } from 'fs';
 import * as nodemailer from 'nodemailer';
+import { ContactFormDTO } from '../../dto/user/contact.form';
 
 @Injectable()
 export class EmailService {
@@ -135,6 +136,19 @@ export class EmailService {
                 name: application.name,
                 date: moment(application.handedIn).tz("Europe/Amsterdam").format('DD-MM-YYYY'),
             }),
+        );
+    }
+
+    public async sendContactEmail(form: ContactFormDTO): Promise<void> {
+        await this.sendMail(
+            this.defaultFromEmailAddress,
+            "Contact: " + form.subject,
+            this.handlebarTemplate({
+                template: 'contact-form',
+                message: form.message,
+                name: form.name,
+            }),
+            '"' + form.name + '" ' + form.email,
         );
     }
 

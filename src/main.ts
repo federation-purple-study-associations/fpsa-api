@@ -22,7 +22,7 @@ async function bootstrap() {
   app.register(cookies as any, {
     secret: process.env.COOKIE_SECRET, // for cookies signature
     parseOptions: {}     // options for parsing cookies
-  })
+  });
 
   // Enable model validation
   app.useGlobalPipes(new ValidationPipe());
