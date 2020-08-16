@@ -8,7 +8,7 @@ import { Auth } from '../../decorators/auth.decorator';
 @ApiTags('statistic')
 export class StatisticsController {
     constructor(
-        private readonly statisticRepository: StatisticRepository
+        private readonly statisticRepository: StatisticRepository,
     ) {}
 
     @Get('pageview')

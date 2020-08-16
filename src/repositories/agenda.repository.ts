@@ -8,7 +8,7 @@ export class AgendaRepository {
   public count(inPast: boolean): Promise<number> {
     return AgendaItem.count({
       where: {
-        date: inPast ? LessThanOrEqual(new Date()) : MoreThanOrEqual(new Date())
+        date: inPast ? LessThanOrEqual(new Date()) : MoreThanOrEqual(new Date()),
       }
     });
   }
@@ -27,7 +27,7 @@ export class AgendaRepository {
       skip,
       take,
       order: {date: inPast ? 'DESC' : 'ASC'},
-      where: {date: inPast ? LessThanOrEqual(new Date()) : MoreThanOrEqual(new Date()), isDraft: false}
+      where: {date: inPast ? LessThanOrEqual(new Date()) : MoreThanOrEqual(new Date()), isDraft: false},
     });
   }
 

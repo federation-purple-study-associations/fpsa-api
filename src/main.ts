@@ -15,13 +15,13 @@ async function bootstrap() {
   // Enable multipart for file uploads
   app.register(multipart as any, {
     addToBody: true,
-    sharedSchemaId: 'MultipartFileType'
+    sharedSchemaId: 'MultipartFileType',
   });
 
   // Enable cookies for authorization
   app.register(cookies as any, {
     secret: process.env.COOKIE_SECRET, // for cookies signature
-    parseOptions: {}     // options for parsing cookies
+    parseOptions: {},     // options for parsing cookies
   });
 
   // Enable model validation
