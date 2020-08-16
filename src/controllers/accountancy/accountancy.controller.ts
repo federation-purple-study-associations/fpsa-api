@@ -152,7 +152,7 @@ export class AccountancyController {
         incomeStatement.code = body.code;
         incomeStatement.mutations = [];
 
-        return this.accountancyRepository.saveIncomeStatement(incomeStatement);
+        return this.accountancyRepository.save(incomeStatement);
     }
 
     @Put('/incomeStatement/:id')
@@ -184,7 +184,7 @@ export class AccountancyController {
         incomeStatement.name = body.name;
         incomeStatement.code = body.code;
 
-        return this.accountancyRepository.saveIncomeStatement(incomeStatement);
+        return this.accountancyRepository.save(incomeStatement);
     }
 
     @Delete('/incomeStatement/:id')
@@ -251,7 +251,7 @@ export class AccountancyController {
         balance.startLiabilities = body.startLiabilities;
         balance.mutations = [];
 
-        return this.accountancyRepository.savePaymentMethod(balance);
+        return this.accountancyRepository.save(balance);
     }
 
     @Put('/balance/:id')
@@ -285,7 +285,7 @@ export class AccountancyController {
         balance.startAssets = body.startAssets;
         balance.startLiabilities = body.startLiabilities;
 
-        return this.accountancyRepository.savePaymentMethod(balance);
+        return this.accountancyRepository.save(balance);
     }
 
     @Delete('/balance/:id')
@@ -386,10 +386,65 @@ export class AccountancyController {
             mutation.entryReference = body.entryReference;
         }
 
-        return this.accountancyRepository.saveMutation(mutation);
+        return this.accountancyRepository.save(mutation);
     }
 
-    @Get('import')
+    @Put('mutation/:id')
+    @HttpCode(200)
+    @Auth('Accountancy:Write')
+    @ApiOperation({
+        operationId: 'UpdateMutation',
+        summary: 'Updates the mutation',
+        description: '',
+    })
+    @ApiParam({name: 'id', type: Number, required: true})
+    @ApiResponse({ status: 200, description: 'Updated!', type: Mutation})
+    @ApiResponse({ status: 403, description: 'You do not have the permission to do this...' })
+    @ApiResponse({ status: 404, description: 'Mutation, income statement or payment method not found...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    async updateMutation(@Param('id') id: number, @Body() body: AddMutationDTO): Promise<Mutation> {
+        const [ mutation, paymentMethod, incomeStatement ] = await Promise.all([
+            this.accountancyRepository.readOneMutations(id),
+            this.accountancyRepository.readOnePaymentMethod(body.paymentMethodId),
+            this.accountancyRepository.readOneIncomeStatement(body.incomeStatementId),
+        ]);
+
+        if (!mutation) {
+            throw new NotFoundException('Mutation not found...');
+        }
+        if (!paymentMethod) {
+            throw new NotFoundException('Payment method not found...');
+        }
+        if (!incomeStatement) {
+            throw new NotFoundException('Income statement not found...');
+        }
+
+        return AccountancyTransformer.updateMutation(mutation, body).save();
+    }
+
+    @Delete('mutation/:id')
+    @HttpCode(200)
+    @Auth('Accountancy:Delete')
+    @ApiOperation({
+        operationId: 'DeleteMutation',
+        summary: 'Deletes the mutation',
+        description: '',
+    })
+    @ApiParam({name: 'id', type: Number, required: true})
+    @ApiResponse({ status: 200, description: 'Deleted!', })
+    @ApiResponse({ status: 403, description: 'You do not have the permission to do this...' })
+    @ApiResponse({ status: 404, description: 'Mutation not found...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    async deleteMutation(@Param('id') id: number): Promise<void> {
+        const mutation: Mutation = await this.accountancyRepository.readOneMutations(id);
+        if (!mutation) {
+            throw new NotFoundException('Mutation not found...');
+        }
+
+        await mutation.remove();
+    }
+
+    @Get('mutation/import')
     @HttpCode(200)
     @Auth('Accountancy:Read')
     @ApiOperation({
@@ -404,7 +459,7 @@ export class AccountancyController {
         return AccountancyTransformer.mutationNotImported(await this.accountancyRepository.readAllNotImportedMutations());
     }
 
-    @Put('/import/:id')
+    @Put('mutation/import/:id')
     @HttpCode(200)
     @Auth('Accountancy:Write')
     @ApiOperation({
@@ -436,7 +491,7 @@ export class AccountancyController {
         mutation.imported = true;
         mutation.incomeStatement = incomeStatement;
         mutation.paymentMethod = paymentMethod;
-        await this.accountancyRepository.saveMutation(mutation);
+        await this.accountancyRepository.save(mutation);
     }
 }
 

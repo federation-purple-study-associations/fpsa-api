@@ -10,7 +10,7 @@ export class MutationDTO {
     @ApiProperty()
     description: string;
 
-    @ApiProperty()
+    @ApiProperty({type: String, format: 'date'})
     date: Date;
 
     @ApiProperty()
@@ -18,6 +18,12 @@ export class MutationDTO {
 
     @ApiProperty()
     debtorIban: string;
+
+    @ApiProperty()
+    incomeStatementId: number;
+
+    @ApiProperty()
+    balanceId: number;
 }
 
 export class MutationResponseDTO {

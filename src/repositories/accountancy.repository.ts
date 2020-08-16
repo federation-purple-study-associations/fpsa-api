@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { IncomeStatement } from "../entities/accountancy/income.statement.entity";
 import { PaymentMethod } from "../entities/accountancy/payment.method.entity";
 import { Mutation } from "../entities/accountancy/mutation.entity";
+import { BaseEntity } from 'typeorm';
 
 @Injectable()
 export class AccountancyRepository {
@@ -120,15 +121,7 @@ export class AccountancyRepository {
         return IncomeStatement.remove(incomeStatement);
     }
 
-    public saveMutation(mutation: Mutation): Promise<Mutation> {
-        return mutation.save();
-    }
-
-    public savePaymentMethod(paymentMethod: PaymentMethod): Promise<PaymentMethod> {
-        return paymentMethod.save();
-    }
-
-    public saveIncomeStatement(incomeStatement: IncomeStatement): Promise<IncomeStatement> {
-        return incomeStatement.save();
+    public save<T extends BaseEntity>(entity: T): Promise<T> {
+        return entity.save();
     }
 }

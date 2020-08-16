@@ -33,9 +33,15 @@ export class Mutation extends BaseEntity {
     @Column({ default: false })
     imported: boolean;
 
+    @Column({ nullable: false })
+    paymentMethodId: number;
+
     @ApiProperty({ type: PaymentMethod, required: false })
     @ManyToOne(() => PaymentMethod, paymentMethod => paymentMethod.mutations,  { onDelete: 'CASCADE', nullable: true })
     paymentMethod?: PaymentMethod;
+
+    @Column({ nullable: false })
+    incomeStatementId: number;
 
     @ApiProperty({ type: IncomeStatement, required: false })
     @ManyToOne(() => IncomeStatement, incomeStatement => incomeStatement.mutations,  { onDelete: 'CASCADE', nullable: true })
