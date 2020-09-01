@@ -8,6 +8,7 @@ import * as moment from 'moment-timezone';
 import { readdirSync } from 'fs';
 import * as nodemailer from 'nodemailer';
 import { ContactFormDTO } from '../../dto/user/contact.form';
+import { ContactMembersDTO } from '../../dto/user/contact.members';
 
 @Injectable()
 export class EmailService {
@@ -150,6 +151,20 @@ export class EmailService {
             }),
             '"' + form.name + '" ' + form.email,
         );
+    }
+
+    public async sendContactMembersEmail(form: ContactMembersDTO, members: User[]): Promise<void> {
+        for(const member of members) {
+            await this.sendMail(
+                '"' + member.fullName + '" ' + member.email,
+                "Contact: " + form.subject,
+                this.handlebarTemplate({
+                    template: 'contact-members',
+                    message: form.message,
+                    name: member.fullName
+                }),
+            );
+        }
     }
 
     private sendMail(to: string, subject: string, html: string, replyTo?: string): Promise<any> {

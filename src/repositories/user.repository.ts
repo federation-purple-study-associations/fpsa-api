@@ -16,6 +16,10 @@ export class UserRepository {
         return User.find({ relations: ['role'], order: { roleId: 'ASC' } });
     }
 
+    public getAllMembers(): Promise<User[]> {
+        return User.find({ where: {roleId: 2} });
+    }
+
     public getAllForExcelExport(): Promise<User[]> {
         return User.find({ where: {roleId: 2} });
     }

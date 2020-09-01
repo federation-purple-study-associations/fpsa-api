@@ -18,6 +18,7 @@ import { Application } from '../../entities/user/application.entity';
 import { UserForgotDTO } from '../../dto/user/user.forgot';
 import { FastifyReply } from 'fastify';
 import { ContactFormDTO } from '../../dto/user/contact.form';
+import { ContactMembersDTO } from '../../dto/user/contact.members';
 
 @Controller('user')
 @ApiTags('user')
@@ -355,5 +356,22 @@ export class UserController {
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async sendContactEmail(@Body() body: ContactFormDTO): Promise<void> {
         await this.emailService.sendContactEmail(body);
+    }
+
+    @Post('contact/members')
+    @HttpCode(200)
+    @ApiOperation({
+        operationId: 'ContactMembers',
+        summary: 'contactMembers',
+        description: 'This call can be used to send an email to all of the members',
+    })
+    @ApiResponse({ status: 200, description: 'Contact email has been send!' })
+    @ApiResponse({ status: 400, description: 'Validation error...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async contactMembers(@Body() body: ContactMembersDTO): Promise<void> {
+        const members: User[] = await this.userRepository.getAllMembers();
+
+        body.message = body.message.replace(/(?:\r\n|\r|\n)/g, '<br>');
+        await this.emailService.sendContactMembersEmail(body, members);
     }
 }
