@@ -39,7 +39,7 @@ export class AccountancyTransformer {
         return asset;
     }
 
-    public static updateAsset(asset: Assets, body: AssetsDTO) {
+    public static updateAsset(asset: Assets, body: AssetsDTO): void {
         asset.name = body.name;
         asset.value = body.value;
         asset.comments = body.comments;
