@@ -90,8 +90,15 @@ export class AccountancyRepository {
         });
     }
 
-    public readAllAssets(): Promise<Assets[]> {
-        return Assets.find();
+    public readAllAssets(name?: string): Promise<Assets[]> {
+        return Assets.find({
+            join: { alias: 'assets'},
+            where: qb => {
+                if (name) {
+                    qb.where('assets.name LIKE :name', { name: `%${name}%` } );
+                }
+            }
+        });
     }
 
     public readAllNotImportedMutations(): Promise<Mutation[]> {

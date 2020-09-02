@@ -505,11 +505,12 @@ export class AccountancyController {
         summary: 'Gets the assets',
         description: '',
     })
+    @ApiQuery({ name: 'name', required: false })
     @ApiResponse({ status: 200, description: 'Assets', type: Assets, isArray: true })
     @ApiResponse({ status: 403, description: 'You do not have the permission to do this...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    public getAllAssets(): Promise<Assets[]> {
-        return this.accountancyRepository.readAllAssets();
+    public getAllAssets(@Query('name') name?: string): Promise<Assets[]> {
+        return this.accountancyRepository.readAllAssets(name);
     }
 
     @Post('assets')
