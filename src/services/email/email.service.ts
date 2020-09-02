@@ -165,6 +165,16 @@ export class EmailService {
                 }),
             );
         }
+
+        await this.sendMail(
+            this.defaultFromEmailAddress,
+            "Kopie contact: "+ form.subject,
+            this.handlebarTemplate({
+                template: 'contact-members',
+                message: form.message,
+                name: "{STUDIE VERENIGING}"
+            }),
+        );
     }
 
     private sendMail(to: string, subject: string, html: string, replyTo?: string): Promise<any> {
