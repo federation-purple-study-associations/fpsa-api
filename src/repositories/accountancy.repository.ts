@@ -97,7 +97,7 @@ export class AccountancyRepository {
                 if (name) {
                     qb.where('assets.name LIKE :name', { name: `%${name}%` } );
                 }
-            }
+            },
         });
     }
 
