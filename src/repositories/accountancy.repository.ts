@@ -3,6 +3,7 @@ import { IncomeStatement } from "../entities/accountancy/income.statement.entity
 import { PaymentMethod } from "../entities/accountancy/payment.method.entity";
 import { Mutation } from "../entities/accountancy/mutation.entity";
 import { BaseEntity } from 'typeorm';
+import { Assets } from '../entities/accountancy/assets.entity';
 
 @Injectable()
 export class AccountancyRepository {
@@ -89,6 +90,10 @@ export class AccountancyRepository {
         });
     }
 
+    public readAllAssets(): Promise<Assets[]> {
+        return Assets.find();
+    }
+
     public readAllNotImportedMutations(): Promise<Mutation[]> {
         return Mutation.find({ where: { imported: false }});
     }
@@ -104,9 +109,9 @@ export class AccountancyRepository {
     public readOnePaymentMethodByCode(code: number): Promise<PaymentMethod> {
         return PaymentMethod.findOne( {where: { code }});
     }
-
-    public deletePaymentMethod(paymentMethod: PaymentMethod): Promise<PaymentMethod> {
-        return PaymentMethod.remove(paymentMethod);
+    
+    public readOneAsset(id: number): Promise<Assets> {
+        return Assets.findOne(id);
     }
 
     public readOneIncomeStatement(id: number): Promise<IncomeStatement> {
@@ -117,8 +122,8 @@ export class AccountancyRepository {
         return IncomeStatement.findOne( {where: { code }});
     }
 
-    public deleteIncomeStatement(incomeStatement: IncomeStatement): Promise<IncomeStatement> {
-        return IncomeStatement.remove(incomeStatement);
+    public delete<T extends BaseEntity>(entity: T): Promise<T> {
+        return entity.remove();
     }
 
     public save<T extends BaseEntity>(entity: T): Promise<T> {

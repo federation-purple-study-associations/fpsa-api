@@ -6,6 +6,8 @@ import { BalanceDTO } from "../dto/accountancy/balance.dto";
 import { NotImportedMutationDTO } from "../dto/accountancy/not.imported.mutation.dto";
 import { MutationDTO, MutationResponseDTO } from "src/dto/accountancy/mutation.dto";
 import { AddMutationDTO } from '../dto/accountancy/add.mutation.dto';
+import { AssetsDTO } from '../dto/accountancy/assets.dto';
+import { Assets } from '../entities/accountancy/assets.entity';
 
 export class AccountancyTransformer {
     public static incomeStatment(array: IncomeStatement[]): IncomeStatementDTO[] {
@@ -26,6 +28,21 @@ export class AccountancyTransformer {
         }
 
         return response;
+    }
+
+    public static asset(body: AssetsDTO): Assets {
+        const asset = new Assets();
+        asset.name = body.name;
+        asset.value = body.value;
+        asset.comments = body.comments;
+
+        return asset;
+    }
+
+    public static updateAsset(asset: Assets, body: AssetsDTO) {
+        asset.name = body.name;
+        asset.value = body.value;
+        asset.comments = body.comments;
     }
 
     public static balance(array: PaymentMethod[]): BalanceDTO[] {

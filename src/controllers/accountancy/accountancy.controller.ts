@@ -21,6 +21,9 @@ import { ImportMutationDTO } from "../../dto/accountancy/import.mutation.dto";
 import { AccountancyTransformer } from "../../transformers/accountancy.transformer";
 import { AccountancyInterceptor } from "../../interceptors/accountancy.interceptor";
 import { MutationResponseDTO } from "../../dto/accountancy/mutation.dto";
+import { Assets } from '../../entities/accountancy/assets.entity';
+import { AssetsDTO } from '../../dto/accountancy/assets.dto';
+import { identity } from 'rxjs';
 
 @Controller('accountancy')
 @ApiTags('accountancy')
@@ -206,7 +209,7 @@ export class AccountancyController {
             throw new NotFoundException('This income statement could not be found...');
         }
 
-        await this.accountancyRepository.deleteIncomeStatement(incomeStatement);
+        await this.accountancyRepository.delete(incomeStatement);
     }
 
     @Get('balance')
@@ -307,7 +310,7 @@ export class AccountancyController {
             throw new NotFoundException('This income statement could not be found...');
         }
 
-        await this.accountancyRepository.deletePaymentMethod(balance);
+        await this.accountancyRepository.delete(balance);
     }
 
     @Get('mutation')
@@ -492,6 +495,82 @@ export class AccountancyController {
         mutation.incomeStatement = incomeStatement;
         mutation.paymentMethod = paymentMethod;
         await this.accountancyRepository.save(mutation);
+    }
+
+    @Get('assets')
+    @HttpCode(200)
+    @Auth('Accountancy:Read')
+    @ApiOperation({
+        operationId: 'GetAssets',
+        summary: 'Gets the assets',
+        description: '',
+    })
+    @ApiResponse({ status: 200, description: 'Assets', type: Assets, isArray: true })
+    @ApiResponse({ status: 403, description: 'You do not have the permission to do this...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public getAllAssets(): Promise<Assets[]> {
+        return this.accountancyRepository.readAllAssets();
+    }
+
+    @Post('assets')
+    @HttpCode(200)
+    @Auth('Accountancy:Write')
+    @ApiOperation({
+        operationId: 'AddAssets',
+        summary: 'Create a new assets',
+        description: '',
+    })
+    @ApiResponse({ status: 200, description: 'Created Asset!', type: Assets})
+    @ApiResponse({ status: 400, description: 'Validation error on one of the parameters...' })
+    @ApiResponse({ status: 403, description: 'You do not have the permission to do this...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public createAsset(@Body() body: AssetsDTO): Promise<Assets> {
+        const asset: Assets = AccountancyTransformer.asset(body);
+        return this.accountancyRepository.save(asset);
+    }
+
+    @Put('assets/:id')
+    @HttpCode(200)
+    @Auth('Accountancy:Write')
+    @ApiOperation({
+        operationId: 'UpdateAssets',
+        summary: 'Updates an assets',
+        description: '',
+    })
+    @ApiResponse({ status: 200, description: 'Updated Asset!', type: Assets})
+    @ApiResponse({ status: 400, description: 'Validation error on one of the parameters...' })
+    @ApiResponse({ status: 404, description: 'Asset not found...' })
+    @ApiResponse({ status: 403, description: 'You do not have the permission to do this...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async updateAsset(@Body() body: AssetsDTO, @Param('id') id: number): Promise<Assets> {
+        const asset: Assets = await this.accountancyRepository.readOneAsset(id);
+        if (!asset) {
+            throw new NotFoundException('Asset not found...');
+        }
+
+        AccountancyTransformer.updateAsset(asset, body);
+        return this.accountancyRepository.save(asset);
+    }
+
+    @Delete('assets/:id')
+    @HttpCode(200)
+    @Auth('Accountancy:Delete')
+    @ApiOperation({
+        operationId: 'DeleteAssets',
+        summary: 'Deletes an assets',
+        description: '',
+    })
+    @ApiResponse({ status: 200, description: 'Deleted Asset!'})
+    @ApiResponse({ status: 404, description: 'Asset not found...' })
+    @ApiResponse({ status: 403, description: 'You do not have the permission to do this...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async deleteAsset(@Param('id') id: number): Promise<void> {
+        const asset: Assets = await this.accountancyRepository.readOneAsset(id);
+        if (!asset) {
+            throw new NotFoundException('Asset not found...');
+        }
+
+        await this.accountancyRepository.delete(asset);
     }
 }
 
