@@ -161,7 +161,7 @@ export class EmailService {
                 this.handlebarTemplate({
                     template: 'contact-members',
                     message: form.message,
-                    name: member.fullName
+                    name: member.fullName,
                 }),
             );
         }
@@ -172,7 +172,7 @@ export class EmailService {
             this.handlebarTemplate({
                 template: 'contact-members',
                 message: form.message,
-                name: "{STUDIE VERENIGING}"
+                name: "{STUDIE VERENIGING}",
             }),
         );
     }
