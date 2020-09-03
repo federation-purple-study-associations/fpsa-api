@@ -23,7 +23,6 @@ import { AccountancyInterceptor } from "../../interceptors/accountancy.intercept
 import { MutationResponseDTO } from "../../dto/accountancy/mutation.dto";
 import { Assets } from '../../entities/accountancy/assets.entity';
 import { AssetsDTO } from '../../dto/accountancy/assets.dto';
-import { identity } from 'rxjs';
 
 @Controller('accountancy')
 @ApiTags('accountancy')
