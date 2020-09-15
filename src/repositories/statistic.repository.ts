@@ -11,7 +11,7 @@ export class StatisticRepository {
 
     public getPageViews(): Promise<PageView[]> {
         const date = new Date();
-        date.setFullYear(date.getFullYear() - 1);
+        date.setMonth(date.getMonth() - 3);
 
         return PageView.find({ order: {date: 'ASC'}, where: {date: MoreThanOrEqual(date)}});
     }
