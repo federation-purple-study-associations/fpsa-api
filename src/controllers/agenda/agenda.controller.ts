@@ -22,8 +22,7 @@ import * as mime from 'mime-types';
 @Controller('agenda')
 @ApiTags('agenda')
 export class AgendaController {
-
-  private readonly photoUrl = resolve(process.env.STORAGE_PATH, 'agenda');
+  private readonly photoUrl: string = resolve(process.env.STORAGE_PATH, 'agenda');
 
   constructor(
     private readonly agendaRepository: AgendaRepository,

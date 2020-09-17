@@ -7,11 +7,10 @@ import { AdministrationRepository } from '../../repositories/administration.repo
 import { ActivityPlan } from '../../entities/administration/activity.plan.entity';
 import { CreateActivityPlan } from '../../dto/administration/create.activity.plan';
 import { AdministrationTransformer } from '../../transformers/administration.transformer';
-import { createWriteStream, existsSync, mkdirSync, unlinkSync } from 'fs';
+import { createWriteStream, existsSync, mkdirSync, unlinkSync, readFile } from 'fs';
 import { extname, resolve } from 'path';
 import { v4 as uuid } from 'uuid';
 import * as mime from 'mime-types';
-import { readFile } from 'fs';
 
 @Controller('administration')
 @ApiTags('administration')
