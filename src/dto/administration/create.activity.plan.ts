@@ -12,7 +12,7 @@ export class CreateActivityPlan {
     @IsNotEmpty()
     public end: Date;
 
-    @ApiProperty({ type: 'string', format: 'binary' })
+    @ApiProperty({ type: 'string', format: 'binary', required: false })
     @Exclude()
     public document?: any[];
 }

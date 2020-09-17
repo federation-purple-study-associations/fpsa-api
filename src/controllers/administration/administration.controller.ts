@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Res } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, Post, PreconditionFailedException, Put, Query, Res } from '@nestjs/common';
 import { ApiConsumes, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Auth } from '../../decorators/auth.decorator';
 import { Me } from '../../decorators/me.decorator';
@@ -51,7 +51,6 @@ export class AdministrationController {
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async getActivityPlanDocument(@Me() me: User, @Param('id') id: number, @Res() res: any): Promise<void> {
         const activityPlan = await this.getActivityPlan(id, me);
-        console.log(resolve(this.documentUrl, activityPlan.documentUrl))
 
         const buffer = await new Promise<Buffer>((Resolve) => readFile(resolve(this.documentUrl, activityPlan.documentUrl), (err, data) => Resolve(data)));
         res.type(mime.lookup(activityPlan.documentUrl)).send(buffer);
@@ -67,7 +66,8 @@ export class AdministrationController {
         description: 'This call can be used to save a new activity plan',
     })
     @ApiResponse({ status: 202, description: 'Activity plan saved!' })
-    @ApiResponse({ status: 400, description: 'Upload is not a PDF-file...' })
+    @ApiResponse({ status: 400, description: 'Validation error...' })
+    @ApiResponse({ status: 412, description: 'Upload is not a PDF-file...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async createActivityPlan(@Body() body: CreateActivityPlan, @Me() me: User): Promise<void> {
         this.checkMimeType(body.document[0]);
@@ -95,9 +95,10 @@ export class AdministrationController {
         description: 'This call can be used to update the activity plan',
     })
     @ApiResponse({ status: 202, description: 'Activity plan updated!' })
-    @ApiResponse({ status: 400, description: 'Upload is not a PDF-file...' })
+    @ApiResponse({ status: 400, description: 'Validation error...' })
     @ApiResponse({ status: 403, description: 'You are not allowed to update this acitivity plan...' })
     @ApiResponse({ status: 404, description: 'No activity plan found...' })
+    @ApiResponse({ status: 412, description: 'Upload is not a PDF-file...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async updateActivityPlan(@Body() body: CreateActivityPlan, @Me() me: User, @Param('id') id: number): Promise<void> {
         const activityPlan = await this.getActivityPlan(id, me);
@@ -159,7 +160,7 @@ export class AdministrationController {
 
     private checkMimeType(document: any): void {
         if (mime.lookup(document.filename) !== 'application/pdf') {
-            throw new BadRequestException('Upload is not a PDF-file...');
+            throw new PreconditionFailedException('Upload is not a PDF-file...');
         }
     }
 }

@@ -7,7 +7,7 @@ import { User } from '../entities/user/user.entity';
 export class AdministrationRepository {
     public readAllActivityPlans(user?: User, skip?: number, take?: number): Promise<ActivityPlan[]> {
         if (!user) {
-            return ActivityPlan.find();
+            return ActivityPlan.find({relations: ['user']});
         
         } else {
             return ActivityPlan.find({where: {user}, skip, take, relations: ['user']});
