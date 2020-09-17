@@ -14,6 +14,20 @@ export class AuthorizationGuard implements CanActivate {
     private readonly reflector: Reflector,
   ) {}
 
+  public static parseCookies(request: FastifyReply): any {
+    const list = {};
+    const rc = request.headers['cookie'];
+
+    if (rc) {
+      rc.split(';').forEach((cookie) => {
+          const parts = cookie.split('=');
+          list[parts.shift().trim()] = decodeURI(parts.join('='));
+      });
+    }
+
+    return list;
+  }
+
   public async canActivate(context: ExecutionContext): Promise<boolean> {
     const scope = this.reflector.get<string>('scope', context.getHandler());
     if (!scope) {
@@ -34,19 +48,5 @@ export class AuthorizationGuard implements CanActivate {
     } catch {
         throw new UnauthorizedException(errorAuthCookieExpired);
     }
-  }
-
-  public static parseCookies(request: FastifyReply): any {
-    const list = {};
-    const rc = request.headers['cookie'];
-
-    if (rc) {
-      rc.split(';').forEach((cookie) => {
-          const parts = cookie.split('=');
-          list[parts.shift().trim()] = decodeURI(parts.join('='));
-      });
-    }
-
-    return list;
   }
 }

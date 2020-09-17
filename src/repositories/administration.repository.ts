@@ -21,4 +21,8 @@ export class AdministrationRepository {
     public save<T extends BaseEntity>(entity: T): Promise<T> {
         return entity.save();
     }
+
+    public delete<T extends BaseEntity>(entity: T): Promise<T> {
+        return entity.remove();
+    }
 }

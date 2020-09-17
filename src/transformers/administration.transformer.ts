@@ -17,7 +17,7 @@ export class AdministrationTransformer {
         return activityPlan;
     }
 
-    public static updateActivityPlan(activityPlan: ActivityPlan, body: CreateActivityPlan, documentUrl: string) {
+    public static updateActivityPlan(activityPlan: ActivityPlan, body: CreateActivityPlan, documentUrl: string): void {
         activityPlan.start = body.start;
         activityPlan.end = body.end;
         activityPlan.documentUrl = documentUrl;

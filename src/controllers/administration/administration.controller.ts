@@ -49,7 +49,7 @@ export class AdministrationController {
     @ApiResponse({ status: 403, description: 'You are not allowed to update this acitivity plan...' })
     @ApiResponse({ status: 404, description: 'No activity plan found...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    public async getActivityPlanDocument(@Me() me: User, @Param('id') id: number, @Res() res: any){
+    public async getActivityPlanDocument(@Me() me: User, @Param('id') id: number, @Res() res: any): Promise<void> {
         const activityPlan = await this.getActivityPlan(id, me);
 
         const stream = createWriteStream(resolve(this.documentUrl, activityPlan.documentUrl));
@@ -139,7 +139,7 @@ export class AdministrationController {
         const activityPlan = await this.getActivityPlan(id, me);
 
         unlinkSync(resolve(this.documentUrl, activityPlan.documentUrl));
-        await activityPlan.remove();
+        await this.administrationRepository.delete(activityPlan);
     }
 
     private async getActivityPlan(id: number, me: User): Promise<ActivityPlan> {
