@@ -24,7 +24,7 @@ export class AuthorizationGuard implements CanActivate {
     if (!request.headers['cookie']) {
       throw new UnauthorizedException(errorNoAuthCookieFound);
     }
-    const auth = this.parseCookies(request).auth;
+    const auth = AuthorizationGuard.parseCookies(request).auth;
     if (!auth) {
         throw new UnauthorizedException(errorNoAuthCookieFound);
     }
@@ -36,7 +36,7 @@ export class AuthorizationGuard implements CanActivate {
     }
   }
 
-  private parseCookies(request: FastifyReply): any {
+  public static parseCookies(request: FastifyReply): any {
     const list = {};
     const rc = request.headers['cookie'];
 

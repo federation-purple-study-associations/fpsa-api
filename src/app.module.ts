@@ -14,6 +14,8 @@ import { BoardController } from './controllers/board/board.controller';
 import { BoardRepository } from './repositories/board.repository';
 import { EmailService } from './services/email/email.service';
 import { FileService } from './services/file/file.service';
+import { AdministrationController } from './controllers/administration/administration.controller';
+import { AdministrationRepository } from './repositories/administration.repository';
 
 @Module({
   imports: [
@@ -24,6 +26,7 @@ import { FileService } from './services/file/file.service';
     UserController,
     StatisticsController,
     BoardController,
+    AdministrationController,
   ],
   providers: [
     {
@@ -37,6 +40,7 @@ import { FileService } from './services/file/file.service';
     BoardRepository,
     EmailService,
     FileService,
+    AdministrationRepository,
   ],
 })
 export class AppModule {}

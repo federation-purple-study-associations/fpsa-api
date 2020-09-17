@@ -1,7 +1,8 @@
 import { Entity, BaseEntity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
-import { ApiProperty, ApiOperation } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Role } from './role.entity';
 import { Confirmation } from './confirmation.entity';
+import { ActivityPlan } from '../administration/activity.plan.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -53,4 +54,7 @@ export class User extends BaseEntity {
 
     @OneToMany(() => Confirmation, conf => conf.user)
     public confirmations: Confirmation[];
+
+    @OneToMany(() => ActivityPlan, plan => plan.user)
+    public activityPlans: ActivityPlan[];
 }
