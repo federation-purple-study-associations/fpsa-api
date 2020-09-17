@@ -25,5 +25,6 @@ export class ActivityPlan extends BaseEntity {
     public documentUrl: string;
 
     @ManyToOne(() => User, user => user.activityPlans)
+    @ApiProperty({type: () => User})
     public user: User;
 }

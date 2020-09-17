@@ -4,7 +4,7 @@ import { LANGUAGE } from '../../constants';
 import { BoardInfoTotalDTO } from '../../dto/board/board.info';
 import { BoardRepository } from '../../repositories/board.repository';
 import { BoardTransformer } from '../../transformers/board.transformer';
-import { createReadStream, existsSync, mkdirSync, createWriteStream, unlinkSync } from 'fs';
+import { existsSync, mkdirSync, createWriteStream, unlinkSync, readFile } from 'fs';
 import { resolve, extname } from 'path';
 import { Auth } from '../../decorators/auth.decorator';
 import { WriteBoardDTO } from '../../dto/board/board.write';
@@ -73,8 +73,8 @@ export class BoardController {
             throw new NotFoundException('This board is not found...');
         }
 
-        const stream = createReadStream(resolve(this.photoUrl, item.photoUrl));
-        res.type(mime.lookup(item.photoUrl)).send(stream);
+        const buffer = await new Promise<Buffer>((Resolve) => readFile(resolve(this.policyUrl, item.photoUrl), (err, data) => Resolve(data)));
+        res.type(mime.lookup(item.policyPlanUrl)).send(buffer);
     }
 
     @Get('policy')
@@ -92,8 +92,8 @@ export class BoardController {
             throw new NotFoundException('This board is not found or has no policy plan...');
         }
 
-        const stream = createReadStream(resolve(this.policyUrl, item.policyPlanUrl));
-        res.type(mime.lookup(item.policyPlanUrl)).send(stream);
+        const buffer = await new Promise<Buffer>((Resolve) => readFile(resolve(this.policyUrl, item.policyPlanUrl), (err, data) => Resolve(data)));
+        res.type(mime.lookup(item.policyPlanUrl)).send(buffer);
     }
 
     @Post()

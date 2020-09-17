@@ -10,7 +10,7 @@ export class AdministrationRepository {
             return ActivityPlan.find();
         
         } else {
-            return ActivityPlan.find({where: {user}, skip, take});
+            return ActivityPlan.find({where: {user}, skip, take, relations: ['user']});
         }
     }
 

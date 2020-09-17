@@ -1,5 +1,5 @@
 import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Res } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Auth } from '../../decorators/auth.decorator';
 import { Me } from '../../decorators/me.decorator';
 import { User } from '../../entities/user/user.entity';
@@ -11,6 +11,7 @@ import { createWriteStream, existsSync, mkdirSync, unlinkSync } from 'fs';
 import { extname, resolve } from 'path';
 import { v4 as uuid } from 'uuid';
 import * as mime from 'mime-types';
+import { readFile } from 'fs';
 
 @Controller('administration')
 @ApiTags('administration')
@@ -51,14 +52,16 @@ export class AdministrationController {
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async getActivityPlanDocument(@Me() me: User, @Param('id') id: number, @Res() res: any): Promise<void> {
         const activityPlan = await this.getActivityPlan(id, me);
+        console.log(resolve(this.documentUrl, activityPlan.documentUrl))
 
-        const stream = createWriteStream(resolve(this.documentUrl, activityPlan.documentUrl));
-        res.type(mime.lookup(activityPlan.documentUrl)).send(stream);
+        const buffer = await new Promise<Buffer>((Resolve) => readFile(resolve(this.documentUrl, activityPlan.documentUrl), (err, data) => Resolve(data)));
+        res.type(mime.lookup(activityPlan.documentUrl)).send(buffer);
     }
 
     @Post('activityplan')
     @Auth('Administration:Write')
     @HttpCode(202)
+    @ApiConsumes('multipart/form-data')
     @ApiOperation({
         operationId: 'ActivityPlanCreate',
         summary: 'create',
@@ -86,6 +89,7 @@ export class AdministrationController {
     @Put('activityplan/:id')
     @Auth('Administration:Write')
     @HttpCode(202)
+    @ApiConsumes('multipart/form-data')
     @ApiOperation({
         operationId: 'ActivityPlanUpdate',
         summary: 'update',

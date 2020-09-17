@@ -1,5 +1,5 @@
 import { Controller, Post, Get, HttpCode, Query, Param, Body, Res, Delete, NotFoundException, Put } from '@nestjs/common';
-import { createWriteStream, mkdirSync, existsSync, createReadStream, unlinkSync } from 'fs';
+import { createWriteStream, mkdirSync, existsSync, unlinkSync, readFile } from 'fs';
 import * as path from 'path';
 import { resolve, extname } from 'path';
 import { AgendaRepository } from '../../repositories/agenda.repository';
@@ -17,10 +17,13 @@ import { UserRepository } from '../../repositories/user.repository';
 import { User } from '../../entities/user/user.entity';
 import { v4 as uuid } from 'uuid';
 import { FastifyReply } from 'fastify';
+import * as mime from 'mime-types';
 
 @Controller('agenda')
 @ApiTags('agenda')
 export class AgendaController {
+
+  private readonly photoUrl = resolve(process.env.STORAGE_PATH, 'agenda');
 
   constructor(
     private readonly agendaRepository: AgendaRepository,
@@ -106,8 +109,8 @@ export class AgendaController {
       throw new NotFoundException('This agenda item is not found...');
     }
 
-    const stream = createReadStream(resolve(process.env.STORAGE_PATH, 'agenda', item.imageUrl))
-    res.type('image/' + extname(item.imageUrl).substr(1)).send(stream)
+    const buffer = await new Promise<Buffer>((Resolve) => readFile(resolve(this.photoUrl, item.imageUrl), (err, data) => Resolve(data)));
+    res.type(mime.lookup(item.imageUrl)).send(buffer);
   }
   
   @Post()
