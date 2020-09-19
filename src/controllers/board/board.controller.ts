@@ -74,7 +74,7 @@ export class BoardController {
         }
 
         const buffer = await new Promise<Buffer>((Resolve) => readFile(resolve(this.policyUrl, item.photoUrl), (err, data) => Resolve(data)));
-        res.type(mime.lookup(item.policyPlanUrl)).send(buffer);
+        res.type(mime.lookup(item.photoUrl)).send(buffer);
     }
 
     @Get('policy')
