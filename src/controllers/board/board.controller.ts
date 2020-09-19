@@ -73,7 +73,7 @@ export class BoardController {
             throw new NotFoundException('This board is not found...');
         }
 
-        const buffer = await new Promise<Buffer>((Resolve) => readFile(resolve(this.policyUrl, item.photoUrl), (err, data) => Resolve(data)));
+        const buffer = await new Promise<Buffer>((Resolve) => readFile(resolve(this.photoUrl, item.photoUrl), (err, data) => Resolve(data)));
         res.type(mime.lookup(item.photoUrl)).send(buffer);
     }
 
