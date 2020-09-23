@@ -26,6 +26,10 @@ spec:
       containers:
       - name: {{ .Chart.Name }}
         image: docker.pkg.github.com/federation-purple-study-associations/fpsa-api/backend:{{.Values.tag}}
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
         volumeMounts:
           - mountPath: {{.Values.storagePath}}
             name: {{ .Chart.Name }}-storage
