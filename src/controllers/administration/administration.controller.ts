@@ -46,7 +46,7 @@ export class AdministrationController {
         const user = me.roleId === 1 ? undefined : me;
         const results = await Promise.all([
             this.administrationRepository.countActivityPlans(user, emptyReport),
-            this.administrationRepository.readAllActivityPlans(user, emptyReport, skip, size)
+            this.administrationRepository.readAllActivityPlans(user, emptyReport, skip, size),
         ]);
 
         return { count: results[0], activityPlans: results[1] };
