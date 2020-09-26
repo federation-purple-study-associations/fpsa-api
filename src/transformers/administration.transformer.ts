@@ -33,7 +33,7 @@ export class AdministrationTransformer {
         return annualReport;
     }
 
-    public static updateAnnualReport(annualReport: AnnualReport, activityPlan: ActivityPlan, documentUrl: string) {
+    public static updateAnnualReport(annualReport: AnnualReport, activityPlan: ActivityPlan, documentUrl: string): void {
         annualReport.documentUrl = documentUrl;
         annualReport.activityPlan = activityPlan;
     }
