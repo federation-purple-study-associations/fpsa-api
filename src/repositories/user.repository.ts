@@ -17,7 +17,7 @@ export class UserRepository {
     }
 
     public getAllMembers(): Promise<User[]> {
-        return User.find({ where: {roleId: 2} });
+        return User.find({ where: {roleId: 2}, relations: ['activityPlans'] });
     }
 
     public getAllForExcelExport(): Promise<User[]> {

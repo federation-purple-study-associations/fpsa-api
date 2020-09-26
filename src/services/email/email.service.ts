@@ -177,7 +177,22 @@ export class EmailService {
         );
     }
 
+    public async sendActivityPlanReminder(member: User): Promise<void> {
+        await this.sendMail(
+            '"' + member.fullName + '" ' + member.email,
+            "HERINNERING: Nieuw activiteitenplan aanleveren",
+            this.handlebarTemplate({
+                template: 'activity-plan-reminder',
+                name: member.fullName,
+            }),
+        );
+    }
+
     private sendMail(to: string, subject: string, html: string, replyTo?: string): Promise<any> {
+        if (!replyTo) {
+            replyTo = this.defaultFromEmailAddress;
+        }
+
         return this.mailer.sendMail({
             from: this.defaultFromEmailAddress,
             to,

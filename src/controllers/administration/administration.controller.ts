@@ -11,6 +11,8 @@ import { createWriteStream, existsSync, mkdirSync, unlinkSync, readFile } from '
 import { extname, resolve } from 'path';
 import { v4 as uuid } from 'uuid';
 import * as mime from 'mime-types';
+import { UserRepository } from '../../repositories/user.repository';
+import { EmailService } from '../../services/email/email.service';
 
 @Controller('administration')
 @ApiTags('administration')
@@ -19,6 +21,8 @@ export class AdministrationController {
 
     constructor(
         private readonly administrationRepository: AdministrationRepository,
+        private readonly userRepository: UserRepository,
+        private readonly emailService: EmailService,
     ) {}
 
     @Get('activityplan')
@@ -144,6 +148,36 @@ export class AdministrationController {
 
         unlinkSync(resolve(this.documentUrl, activityPlan.documentUrl));
         await this.administrationRepository.delete(activityPlan);
+    }
+
+    @Post('activityplan/check')
+    @Auth('Administration:System')
+    @HttpCode(200)
+    @ApiOperation({
+        operationId: 'ActivityPlanCheck',
+        summary: 'check',
+        description: 'This call can be used to check the end dates of each user\'s last activity plan',
+    })
+    @ApiResponse({ status: 202, description: 'Checked!' })
+    @ApiResponse({ status: 403, description: 'You are not allowed to update this acitivity plan...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async doCheckActivityPlans() {
+        const today = new Date();
+
+        const users = await this.userRepository.getAllMembers();
+        users.forEach(async (user) => {
+            if (user.activityPlans.length === 0) {
+                return;
+            }
+
+            const activityPlan = user.activityPlans[user.activityPlans.length -1];
+            if (activityPlan.end.getDate() === today.getDate() &&
+                activityPlan.end.getMonth() === today.getMonth() &&
+                activityPlan.end.getFullYear() === today.getFullYear()) {
+
+                    await this.emailService.sendActivityPlanReminder(user);
+            }
+        });
     }
 
     private async getActivityPlan(id: number, me: User): Promise<ActivityPlan> {
