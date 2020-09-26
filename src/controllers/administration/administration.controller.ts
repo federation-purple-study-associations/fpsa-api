@@ -13,11 +13,14 @@ import { v4 as uuid } from 'uuid';
 import * as mime from 'mime-types';
 import { UserRepository } from '../../repositories/user.repository';
 import { EmailService } from '../../services/email/email.service';
+import { AnnualReport } from '../../entities/administration/annual.report.entity';
+import { CreateAnnualReport } from '../../dto/administration/create.annual.report';
 
 @Controller('administration')
 @ApiTags('administration')
 export class AdministrationController {
-    private readonly documentUrl: string = resolve(process.env.STORAGE_PATH, 'administration', 'activityPlan');
+    private readonly activityPlanDocumentUrl: string = resolve(process.env.STORAGE_PATH, 'administration', 'activityPlan');
+    private readonly annualReportDocumentUrl: string = resolve(process.env.STORAGE_PATH, 'administration', 'annualReport');
 
     constructor(
         private readonly administrationRepository: AdministrationRepository,
@@ -56,7 +59,7 @@ export class AdministrationController {
     public async getActivityPlanDocument(@Me() me: User, @Param('id') id: number, @Res() res: any): Promise<void> {
         const activityPlan = await this.getActivityPlan(id, me);
 
-        const buffer = await new Promise<Buffer>((Resolve) => readFile(resolve(this.documentUrl, activityPlan.documentUrl), (err, data) => Resolve(data)));
+        const buffer = await new Promise<Buffer>((Resolve) => readFile(resolve(this.activityPlanDocumentUrl, activityPlan.documentUrl), (err, data) => Resolve(data)));
         res.type(mime.lookup(activityPlan.documentUrl)).send(buffer);
     }
 
@@ -80,9 +83,9 @@ export class AdministrationController {
         await activityPlan.save();
 
         // Create path if needed
-        !existsSync(this.documentUrl) && mkdirSync(this.documentUrl, { recursive: true });
+        !existsSync(this.activityPlanDocumentUrl) && mkdirSync(this.activityPlanDocumentUrl, { recursive: true });
 
-        const stream = createWriteStream(resolve(this.documentUrl, activityPlan.documentUrl), {encoding: 'binary'});
+        const stream = createWriteStream(resolve(this.activityPlanDocumentUrl, activityPlan.documentUrl), {encoding: 'binary'});
         stream.once('open', () => {
             stream.write(body.document[0].data);
             stream.end();
@@ -113,14 +116,14 @@ export class AdministrationController {
 
             // Delete old document to preserve storage space
             try {
-                unlinkSync(resolve(this.documentUrl, documentUrl));
+                unlinkSync(resolve(this.activityPlanDocumentUrl, documentUrl));
             } catch(e) {}
 
             // Update url name
             documentUrl = uuid() + extname(body.document[0].filename);
 
             // Add new document
-            const stream = createWriteStream(resolve(this.documentUrl, documentUrl), {encoding: 'binary'});
+            const stream = createWriteStream(resolve(this.activityPlanDocumentUrl, documentUrl), {encoding: 'binary'});
             stream.once('open', () => {
                 stream.write(body.document[0].data);
                 stream.end();
@@ -139,14 +142,14 @@ export class AdministrationController {
         summary: 'delete',
         description: 'This call can be used to delete the activity plan',
     })
-    @ApiResponse({ status: 202, description: 'Activity plan updated!' })
+    @ApiResponse({ status: 202, description: 'Activity plan deleted!' })
     @ApiResponse({ status: 403, description: 'You are not allowed to update this acitivity plan...' })
     @ApiResponse({ status: 404, description: 'No activity plan found...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async deleteActivityPlan(@Param('id') id: number, @Me() me: User): Promise<void> {
         const activityPlan = await this.getActivityPlan(id, me);
 
-        unlinkSync(resolve(this.documentUrl, activityPlan.documentUrl));
+        unlinkSync(resolve(this.activityPlanDocumentUrl, activityPlan.documentUrl));
         await this.administrationRepository.delete(activityPlan);
     }
 
@@ -178,6 +181,143 @@ export class AdministrationController {
                     await this.emailService.sendActivityPlanReminder(user);
             }
         });
+    }
+
+    @Get('annualReport')
+    @Auth('Administration:Read')
+    @HttpCode(200)
+    @ApiOperation({
+        operationId: 'AnnualReportGetAll',
+        summary: 'getAll',
+        description: 'This call can be used to get all of the annual reports. Based on your account you will get all of your annual reports (if you have roleId 2), or you will get all of the annual reports in the db (if you have roleId 1)',
+    })
+    @ApiQuery({name: 'skip', required: false})
+    @ApiQuery({name: 'size', required: false})
+    @ApiResponse({ status: 200, description: 'Annual reports returned', type: AnnualReport, isArray: true })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public getAnnualReports(@Me() me: User, @Query('skip') skip?: number, @Query('size') size?: number): Promise<AnnualReport[]> {
+        return this.administrationRepository.readAllAnnualReports(me, skip, size);
+    }
+
+    @Get('annualReport/:id/document')
+    @Auth('Administration:Read')
+    @HttpCode(200)
+    @ApiOperation({
+        operationId: 'AnnualReportGetDocument',
+        summary: 'getDocument',
+        description: 'This call can be used to get the PDF of the annual report',
+    })
+    @ApiResponse({ status: 200, description: 'Annual report document returned' })
+    @ApiResponse({ status: 403, description: 'You are not allowed to update this annual report...' })
+    @ApiResponse({ status: 404, description: 'No annual report found...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async getAnnualReportDocument(@Param('id') id: number, @Res() res: any): Promise<void> {
+        const annualReport = await this.administrationRepository.readOneAnnualReport(id);
+        if (!annualReport) {
+            throw new NotFoundException('No annual report found...');
+        }
+
+        const buffer = await new Promise<Buffer>((Resolve) => readFile(resolve(this.annualReportDocumentUrl, annualReport.documentUrl), (err, data) => Resolve(data)));
+        res.type(mime.lookup(annualReport.documentUrl)).send(buffer);
+    }
+
+    @Post('annualReport')
+    @Auth('Administration:Write')
+    @HttpCode(202)
+    @ApiConsumes('multipart/form-data')
+    @ApiOperation({
+        operationId: 'AnnualReportCreate',
+        summary: 'create',
+        description: 'This call can be used to save a new annual report',
+    })
+    @ApiResponse({ status: 202, description: 'Annual report saved!' })
+    @ApiResponse({ status: 400, description: 'Validation error...' })
+    @ApiResponse({ status: 404, description: 'Activity plan not found...' })
+    @ApiResponse({ status: 412, description: 'Upload is not a PDF-file...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async createAnnualReport(@Body() body: CreateAnnualReport, @Me() me: User): Promise<void> {
+        this.checkMimeType(body.document[0]);
+
+        const activityPlan = await this.getActivityPlan(body.activityPlanId, me);
+        const annualReport = AdministrationTransformer.toAnnualReport(body, activityPlan);
+        await annualReport.save();
+
+        // Create path if needed
+        !existsSync(this.annualReportDocumentUrl) && mkdirSync(this.annualReportDocumentUrl, { recursive: true });
+
+        const stream = createWriteStream(resolve(this.annualReportDocumentUrl, annualReport.documentUrl), {encoding: 'binary'});
+        stream.once('open', () => {
+            stream.write(body.document[0].data);
+            stream.end();
+        });
+    }
+
+    @Put('annualReport/:id')
+    @Auth('Administration:Write')
+    @HttpCode(202)
+    @ApiConsumes('multipart/form-data')
+    @ApiOperation({
+        operationId: 'AnnualReportUpdate',
+        summary: 'update',
+        description: 'This call can be used to update the annualReport',
+    })
+    @ApiResponse({ status: 202, description: 'Annual report updated!' })
+    @ApiResponse({ status: 400, description: 'Validation error...' })
+    @ApiResponse({ status: 403, description: 'You are not allowed to update this acitivity plan...' })
+    @ApiResponse({ status: 404, description: 'No annual report or activity pan found...' })
+    @ApiResponse({ status: 412, description: 'Upload is not a PDF-file...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async updateAnnualReport(@Body() body: CreateAnnualReport, @Me() me: User, @Param('id') id: number): Promise<void> {
+        const activityPlan = await this.getActivityPlan(body.activityPlanId, me);
+        const annualReport = await this.administrationRepository.readOneAnnualReport(id);
+        if (!annualReport) {
+            throw new NotFoundException('No annual report found...');
+        }
+
+        let documentUrl = annualReport.documentUrl;
+        if (body.document) {
+            this.checkMimeType(body.document[0]);
+
+            // Delete old document to preserve storage space
+            try {
+                unlinkSync(resolve(this.annualReportDocumentUrl, documentUrl));
+            } catch(e) {}
+
+            // Update url name
+            documentUrl = uuid() + extname(body.document[0].filename);
+
+            // Add new document
+            const stream = createWriteStream(resolve(this.annualReportDocumentUrl, documentUrl), {encoding: 'binary'});
+            stream.once('open', () => {
+                stream.write(body.document[0].data);
+                stream.end();
+            });
+        }
+
+        AdministrationTransformer.updateAnnualReport(annualReport, activityPlan, documentUrl);
+        await annualReport.save();
+    }
+
+    @Delete('annualReport/:id')
+    @Auth('Administration:Delete')
+    @HttpCode(202)
+    @ApiOperation({
+        operationId: 'AnnualReportDelete',
+        summary: 'delete',
+        description: 'This call can be used to delete the annual report',
+    })
+    @ApiResponse({ status: 202, description: 'Annual report deleted!' })
+    @ApiResponse({ status: 403, description: 'You are not allowed to update this annual report...' })
+    @ApiResponse({ status: 404, description: 'No annual report found...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async deleteAnnualReport(@Param('id') id: number): Promise<void> {
+        const annualReport = await this.administrationRepository.readOneAnnualReport(id);
+        if (!annualReport) {
+            throw new NotFoundException('No annual report found...');
+        }
+
+        unlinkSync(resolve(this.activityPlanDocumentUrl, annualReport.documentUrl));
+        await this.administrationRepository.delete(annualReport);
     }
 
     private async getActivityPlan(id: number, me: User): Promise<ActivityPlan> {
