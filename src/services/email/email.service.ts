@@ -189,10 +189,6 @@ export class EmailService {
     }
 
     private sendMail(to: string, subject: string, html: string, replyTo?: string): Promise<any> {
-        if (!replyTo) {
-            replyTo = this.defaultFromEmailAddress;
-        }
-
         return this.mailer.sendMail({
             from: this.defaultFromEmailAddress,
             to,

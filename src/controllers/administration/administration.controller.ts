@@ -164,7 +164,7 @@ export class AdministrationController {
     @ApiResponse({ status: 202, description: 'Checked!' })
     @ApiResponse({ status: 403, description: 'You are not allowed to update this acitivity plan...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    public async doCheckActivityPlans() {
+    public async doCheckActivityPlans(): Promise<void> {
         const today = new Date();
 
         const users = await this.userRepository.getAllMembers();
