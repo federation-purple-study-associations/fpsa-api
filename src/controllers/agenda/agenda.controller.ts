@@ -1,4 +1,4 @@
-import { Controller, Post, Get, HttpCode, Query, Param, Body, Res, Delete, NotFoundException, Put } from '@nestjs/common';
+import { Controller, Post, Get, HttpCode, Query, Param, Body, Res, Delete, NotFoundException, Put, BadRequestException } from '@nestjs/common';
 import { createWriteStream, mkdirSync, existsSync, unlinkSync, readFile } from 'fs';
 import * as path from 'path';
 import { resolve, extname } from 'path';
@@ -126,6 +126,10 @@ export class AgendaController {
   @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
   @ApiResponse({ status: 500, description: 'Internal server error...' })
   public async createNew(@Body() body: NewAgendaDTO): Promise<void> {
+    if (body.image.length === 0) {
+      throw new BadRequestException('No document has been uploaded...');
+    }
+
     const agendaItem = AgendaTransformer.fromNew(body);
     await this.agendaRepository.save(agendaItem);
 

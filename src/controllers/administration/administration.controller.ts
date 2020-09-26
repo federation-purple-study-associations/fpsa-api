@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, Post, PreconditionFailedException, Put, Query, Res } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, HttpCode, NotFoundException, Param, Post, PreconditionFailedException, Put, Query, Res } from '@nestjs/common';
 import { ApiConsumes, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Auth } from '../../decorators/auth.decorator';
 import { Me } from '../../decorators/me.decorator';
@@ -13,8 +13,9 @@ import { v4 as uuid } from 'uuid';
 import * as mime from 'mime-types';
 import { UserRepository } from '../../repositories/user.repository';
 import { EmailService } from '../../services/email/email.service';
-import { AnnualReport } from '../../entities/administration/annual.report.entity';
 import { CreateAnnualReport } from '../../dto/administration/create.annual.report';
+import { ResultActivityPlan } from '../../dto/administration/result.activity.plan';
+import { ResultAnnualReport } from '../../dto/administration/result.annual.report';
 
 @Controller('administration')
 @ApiTags('administration')
@@ -38,10 +39,17 @@ export class AdministrationController {
     })
     @ApiQuery({name: 'skip', required: false})
     @ApiQuery({name: 'size', required: false})
-    @ApiResponse({ status: 200, description: 'Activity plans returned', type: ActivityPlan, isArray: true })
+    @ApiQuery({name: 'emptyReport', required: false})
+    @ApiResponse({ status: 200, description: 'Activity plans returned', type: ResultActivityPlan })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    public getAllActivityPlans(@Me() me: User, @Query('skip') skip?: number, @Query('size') size?: number): Promise<ActivityPlan[]> {
-        return this.administrationRepository.readAllActivityPlans(me.roleId === 1 ? undefined : me, skip, size);
+    public async getAllActivityPlans(@Me() me: User, @Query('skip') skip?: number, @Query('size') size?: number, @Query('emptyReport') emptyReport?: boolean): Promise<ResultActivityPlan> {
+        const user = me.roleId === 1 ? undefined : me;
+        const results = await Promise.all([
+            this.administrationRepository.countActivityPlans(user, emptyReport),
+            this.administrationRepository.readAllActivityPlans(user, emptyReport, skip, size)
+        ]);
+
+        return { count: results[0], activityPlans: results[1] };
     }
 
     @Get('activityplan/:id/document')
@@ -77,6 +85,9 @@ export class AdministrationController {
     @ApiResponse({ status: 412, description: 'Upload is not a PDF-file...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async createActivityPlan(@Body() body: CreateActivityPlan, @Me() me: User): Promise<void> {
+        if (body.document.length === 0) {
+            throw new BadRequestException('No document has been uploaded...');
+        }
         this.checkMimeType(body.document[0]);
 
         const activityPlan = AdministrationTransformer.toActivityPlan(body, me);
@@ -193,10 +204,16 @@ export class AdministrationController {
     })
     @ApiQuery({name: 'skip', required: false})
     @ApiQuery({name: 'size', required: false})
-    @ApiResponse({ status: 200, description: 'Annual reports returned', type: AnnualReport, isArray: true })
+    @ApiResponse({ status: 200, description: 'Annual reports returned', type: ResultAnnualReport })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    public getAnnualReports(@Me() me: User, @Query('skip') skip?: number, @Query('size') size?: number): Promise<AnnualReport[]> {
-        return this.administrationRepository.readAllAnnualReports(me, skip, size);
+    public async getAnnualReports(@Me() me: User, @Query('skip') skip?: number, @Query('size') size?: number): Promise<ResultAnnualReport> {
+        const user = me.roleId === 1 ? undefined : me;
+        const results = await Promise.all([
+            this.administrationRepository.countAnnualReports(user),
+            this.administrationRepository.readAllAnnualReports(user, skip, size),
+        ]);
+
+        return { count: results[0], annualReports: results[1] }
     }
 
     @Get('annualReport/:id/document')
@@ -236,6 +253,9 @@ export class AdministrationController {
     @ApiResponse({ status: 412, description: 'Upload is not a PDF-file...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async createAnnualReport(@Body() body: CreateAnnualReport, @Me() me: User): Promise<void> {
+        if (body.document.length === 0) {
+            throw new BadRequestException('No document has been uploaded...');
+        }
         this.checkMimeType(body.document[0]);
 
         const activityPlan = await this.getActivityPlan(body.activityPlanId, me);

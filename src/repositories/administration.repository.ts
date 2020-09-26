@@ -1,18 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { BaseEntity } from 'typeorm';
+import { BaseEntity, IsNull } from 'typeorm';
 import { ActivityPlan } from '../entities/administration/activity.plan.entity';
 import { AnnualReport } from '../entities/administration/annual.report.entity';
 import { User } from '../entities/user/user.entity';
 
 @Injectable()
 export class AdministrationRepository {
-    public readAllActivityPlans(user?: User, skip?: number, take?: number): Promise<ActivityPlan[]> {
-        if (!user) {
-            return ActivityPlan.find({relations: ['user'], order: {delivered: 'DESC'}});
-        
-        } else {
-            return ActivityPlan.find({where: {user}, skip, take, relations: ['user'], order: {delivered: 'DESC'}});
+    public async readAllActivityPlans(user?: User, emptyReport?: boolean, skip?: number, take?: number): Promise<ActivityPlan[]> {
+        const where: {user?: User } = {};
+        if (user) {
+            where.user = user;
         }
+
+        const plans = await ActivityPlan.find({where, skip, take, relations: ['user', 'annualReport'], order: {delivered: 'DESC'}});
+        if (typeof emptyReport !== 'undefined') {
+            return plans.filter(x => !x.annualReport == emptyReport);
+        }
+        
+        return plans;
     }
 
     public readOneActivityPlan(id: number): Promise<ActivityPlan> {
@@ -30,6 +35,28 @@ export class AdministrationRepository {
 
     public readOneAnnualReport(id: number): Promise<AnnualReport> {
         return AnnualReport.findOne({where: {id}});
+    }
+
+    public countAnnualReports(user?: User): Promise<number> {
+        if (!user) {
+            return AnnualReport.count();
+        }
+
+        return AnnualReport.count({where: {activityPlan: {user}}});
+    }
+
+    public async countActivityPlans(user?: User, emptyReport?: boolean): Promise<number> {
+        const where: {user?: User } = {};
+        if (user) {
+            where.user = user;
+        }
+
+        const plans = await ActivityPlan.find({where, relations: ['user', 'annualReport']});
+        if (typeof emptyReport !== 'undefined') {
+            return plans.filter(x => !x.annualReport == emptyReport).length;
+        }
+        
+        return plans.length;
     }
 
     public save<T extends BaseEntity>(entity: T): Promise<T> {

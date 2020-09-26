@@ -1,4 +1,4 @@
-import { Controller, Get, Query, HttpCode, Res, NotFoundException, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Query, HttpCode, Res, NotFoundException, Post, Body, Param, Delete, Put, BadRequestException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes } from '@nestjs/swagger';
 import { LANGUAGE } from '../../constants';
 import { BoardInfoTotalDTO } from '../../dto/board/board.info';
@@ -110,6 +110,10 @@ export class BoardController {
     @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async createNew(@Body() body: WriteBoardDTO): Promise<void> {
+        if (body.image.length === 0) {
+            throw new BadRequestException('No image has been uploaded...');
+        }
+
         const board = BoardTransformer.fromNew(body);
         await this.boardRepository.save(board);
 

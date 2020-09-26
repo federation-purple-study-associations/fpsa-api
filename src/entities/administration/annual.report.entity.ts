@@ -15,7 +15,12 @@ export class AnnualReport extends BaseEntity {
     @Column()
     public documentUrl: string;
 
+    // Only used by the frontend
+    @ApiProperty({required: false})
+    public period: string;
+
     @OneToOne(() => ActivityPlan, plan => plan.annualReport)
     @JoinColumn()
+    @ApiProperty({type: () => ActivityPlan, required: false})
     public activityPlan: ActivityPlan;
 }
