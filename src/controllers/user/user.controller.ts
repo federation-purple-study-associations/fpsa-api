@@ -359,6 +359,7 @@ export class UserController {
     }
 
     @Post('contact/members')
+    @Auth('User:Write')
     @HttpCode(200)
     @ApiOperation({
         operationId: 'ContactMembers',
