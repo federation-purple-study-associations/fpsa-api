@@ -42,6 +42,7 @@ export class UserTransformer {
         user.kvk = dto.kvk;
         user.establishment = dto.establishment;
         user.memberSince = new Date();
+        user.recieveEmailUpdatesEvents = true;
         
         return user;
     }
@@ -84,9 +85,9 @@ export class UserTransformer {
         user.kvk = application.kvk;
         user.establishment = application.establishment;
         user.memberSince = new Date();
-        
+        user.recieveEmailUpdatesEvents = true;
         user.roleId = 2;
-
+        
         return user;
     }
 
