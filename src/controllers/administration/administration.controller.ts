@@ -43,7 +43,7 @@ export class AdministrationController {
     @ApiResponse({ status: 200, description: 'Activity plans returned', type: ResultActivityPlan })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async getAllActivityPlans(@Me() me: User, @Query('skip') skip?: number, @Query('size') size?: number, @Query('emptyReport') emptyReport?: boolean): Promise<ResultActivityPlan> {
-        const user = me.roleId === 1 ? undefined : me;
+        const user = me.roleId !== 2 ? undefined : me;
         const results = await Promise.all([
             this.administrationRepository.countActivityPlans(user, emptyReport),
             this.administrationRepository.readAllActivityPlans(user, emptyReport, skip, size),
@@ -207,7 +207,7 @@ export class AdministrationController {
     @ApiResponse({ status: 200, description: 'Annual reports returned', type: ResultAnnualReport })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async getAnnualReports(@Me() me: User, @Query('skip') skip?: number, @Query('size') size?: number): Promise<ResultAnnualReport> {
-        const user = me.roleId === 1 ? undefined : me;
+        const user = me.roleId !== 2 ? undefined : me;
         const results = await Promise.all([
             this.administrationRepository.countAnnualReports(user),
             this.administrationRepository.readAllAnnualReports(user, skip, size),
