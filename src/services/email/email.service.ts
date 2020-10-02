@@ -86,6 +86,7 @@ export class EmailService {
                     event: agendaItem,
                     user,
                     baseUrl: process.env.URL_SITE,
+                    apiUrl: process.env.URL_API,
                 }),
             );
         }
