@@ -9,6 +9,7 @@ import { readdirSync } from 'fs';
 import * as nodemailer from 'nodemailer';
 import { ContactFormDTO } from '../../dto/user/contact.form';
 import { ContactMembersDTO } from '../../dto/user/contact.members';
+import { ActivityPlan } from '../../entities/administration/activity.plan.entity';
 
 @Injectable()
 export class EmailService {
@@ -185,6 +186,31 @@ export class EmailService {
             this.handlebarTemplate({
                 template: 'activity-plan-reminder',
                 name: member.fullName,
+            }),
+        );
+    }
+
+    public async sendActivityPlanConfirmation(member: User, activityPlan: ActivityPlan): Promise<void> {
+        await this.sendMail(
+            '"' + member.fullName + '" ' + member.email,
+            'Activiteitenplan ontvangen!',
+            this.handlebarTemplate({
+                template: 'activity-plan-confirmation',
+                name: member.fullName,
+                date: moment(activityPlan.delivered).tz("Europe/Amsterdam").format('DD-MM-YYYY'),
+            }),
+        );
+    }
+
+    public async sendAnnualReportConfirmation(member: User, activityPlan: ActivityPlan): Promise<void> {
+        await this.sendMail(
+            '"' + member.fullName + '" ' + member.email,
+            'Jaarverslag ontvangen!',
+            this.handlebarTemplate({
+                template: 'annual-report-confirmation',
+                name: member.fullName,
+                begin: moment(activityPlan.start).tz("Europe/Amsterdam").format('DD-MM-YYYY'),
+                end: moment(activityPlan.end).tz("Europe/Amsterdam").format('DD-MM-YYYY'),
             }),
         );
     }

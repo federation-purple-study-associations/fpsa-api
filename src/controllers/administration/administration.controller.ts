@@ -101,6 +101,8 @@ export class AdministrationController {
             stream.write(body.document[0].data);
             stream.end();
         });
+
+        await this.emailService.sendActivityPlanConfirmation(me, activityPlan);
     }
 
     @Put('activityplan/:id')
@@ -270,6 +272,8 @@ export class AdministrationController {
             stream.write(body.document[0].data);
             stream.end();
         });
+
+        await this.emailService.sendAnnualReportConfirmation(me, activityPlan);
     }
 
     @Put('annualReport/:id')
