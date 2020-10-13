@@ -5,6 +5,8 @@ import { User } from '../entities/user/user.entity';
 import { v4 as uuid } from 'uuid';
 import { CreateAnnualReport } from '../dto/administration/create.annual.report';
 import { AnnualReport } from '../entities/administration/annual.report.entity';
+import { BoardGrant } from '../entities/administration/board.grant.entity';
+import { CreateBoardGrant } from '../dto/administration/create.board.grant';
 
 export class AdministrationTransformer {
     public static toActivityPlan(body: CreateActivityPlan, user: User): ActivityPlan {
@@ -36,5 +38,23 @@ export class AdministrationTransformer {
     public static updateAnnualReport(annualReport: AnnualReport, activityPlan: ActivityPlan, documentUrl: string): void {
         annualReport.documentUrl = documentUrl;
         annualReport.activityPlan = activityPlan;
+    }
+
+    public static toBoardGrant(body: CreateBoardGrant, user: User): BoardGrant {
+        const boardGrant = new BoardGrant();
+        boardGrant.delivered = new Date();
+        boardGrant.user = user;
+        boardGrant.documentUrl = uuid() + extname(body.document[0].filename);
+
+        return boardGrant;
+    }
+
+    public static updateBoardGrant(boardGrant: BoardGrant, documentUrl: string): void {
+        boardGrant.documentUrl = documentUrl;
+    }
+
+    public static boardGrantChecked(boardGrant: BoardGrant): void {
+        boardGrant.checked = true;
+        boardGrant.checkedAt = new Date();
     }
 }

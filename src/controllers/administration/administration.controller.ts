@@ -16,12 +16,16 @@ import { EmailService } from '../../services/email/email.service';
 import { CreateAnnualReport } from '../../dto/administration/create.annual.report';
 import { ResultActivityPlan } from '../../dto/administration/result.activity.plan';
 import { ResultAnnualReport } from '../../dto/administration/result.annual.report';
+import { ResultBoardGrant } from '../../dto/administration/result.board.grant';
+import { BoardGrant } from '../../entities/administration/board.grant.entity';
+import { CreateBoardGrant } from '../../dto/administration/create.board.grant';
 
 @Controller('administration')
 @ApiTags('administration')
 export class AdministrationController {
     private readonly activityPlanDocumentUrl: string = resolve(process.env.STORAGE_PATH, 'administration', 'activityPlan');
     private readonly annualReportDocumentUrl: string = resolve(process.env.STORAGE_PATH, 'administration', 'annualReport');
+    private readonly boardGrantDocumentUrl: string = resolve(process.env.STORAGE_PATH, 'administration', 'boardGrant');
 
     constructor(
         private readonly administrationRepository: AdministrationRepository,
@@ -35,7 +39,7 @@ export class AdministrationController {
     @ApiOperation({
         operationId: 'ActivityPlanGetAll',
         summary: 'getAll',
-        description: 'This call can be used to get all of the activity plans. Based on your account you will get all of your activity plan (if you have roleId 2), or you will get all of the activity plans in the db (if you have roleId 1)',
+        description: 'This call can be used to get all of the activity plans. Based on your account you will get all of your activity plan (if you have roleId 2), or you will get all of the activity plans in the db (if you have roleId 1 or 3)',
     })
     @ApiQuery({name: 'skip', required: false})
     @ApiQuery({name: 'size', required: false})
@@ -61,7 +65,7 @@ export class AdministrationController {
         description: 'This call can be used to get the PDF of the activity plan',
     })
     @ApiResponse({ status: 200, description: 'Activity plan document returned' })
-    @ApiResponse({ status: 403, description: 'You are not allowed to update this acitivity plan...' })
+    @ApiResponse({ status: 403, description: 'You are not allowed to get this acitivity plan...' })
     @ApiResponse({ status: 404, description: 'No activity plan found...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async getActivityPlanDocument(@Me() me: User, @Param('id') id: number, @Res() res: any): Promise<void> {
@@ -202,7 +206,7 @@ export class AdministrationController {
     @ApiOperation({
         operationId: 'AnnualReportGetAll',
         summary: 'getAll',
-        description: 'This call can be used to get all of the annual reports. Based on your account you will get all of your annual reports (if you have roleId 2), or you will get all of the annual reports in the db (if you have roleId 1)',
+        description: 'This call can be used to get all of the annual reports. Based on your account you will get all of your annual reports (if you have roleId 2), or you will get all of the annual reports in the db (if you have roleId 1 or 3)',
     })
     @ApiQuery({name: 'skip', required: false})
     @ApiQuery({name: 'size', required: false})
@@ -344,6 +348,164 @@ export class AdministrationController {
         await this.administrationRepository.delete(annualReport);
     }
 
+    @Get('boardGrant')
+    @Auth('Administration:Read')
+    @HttpCode(200)
+    @ApiOperation({
+        operationId: 'BoardGrantGetAll',
+        summary: 'getAll',
+        description: 'This call can be used to get all of the board garnts. Based on your account you will get all of your board grant (if you have roleId 2), or you will get all of the board grants in the db (if you have roleId 1 or 3)',
+    })
+    @ApiQuery({name: 'skip', required: false})
+    @ApiQuery({name: 'size', required: false})
+    @ApiResponse({ status: 200, description: 'Activity plans returned', type: ResultBoardGrant })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async getAllBoardGrants(@Me() me: User, @Query('skip') skip?: number, @Query('size') size?: number): Promise<ResultBoardGrant> {
+        const user = me.roleId !== 2 ? undefined : me;
+        const [count, boardGrants] = await Promise.all([
+            this.administrationRepository.countBoardGrants(user),
+            this.administrationRepository.readAllBoardGrants(user, skip, size),
+        ]);
+
+        return { count, boardGrants };
+    }
+
+    @Get('boardGrant/:id/document')
+    @Auth('Administration:Read')
+    @HttpCode(200)
+    @ApiOperation({
+        operationId: 'BoardGrantGetDocument',
+        summary: 'getDocument',
+        description: 'This call can be used to get the PDF of the board grant',
+    })
+    @ApiResponse({ status: 200, description: 'Board grant document returned' })
+    @ApiResponse({ status: 403, description: 'You are not allowed to get this board grant...' })
+    @ApiResponse({ status: 404, description: 'No board grant found...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async getBoardGrantDocument(@Me() me: User, @Param('id') id: number, @Res() res: any): Promise<void> {
+        const boardGrant = await this.getBoardGrant(id, me);
+
+        const buffer = await new Promise<Buffer>((Resolve) => readFile(resolve(this.boardGrantDocumentUrl, boardGrant.documentUrl), (err, data) => Resolve(data)));
+        res.type(mime.lookup(boardGrant.documentUrl)).send(buffer);
+    }
+
+    @Post('boardGrant')
+    @Auth('Administration:Write')
+    @HttpCode(202)
+    @ApiConsumes('multipart/form-data')
+    @ApiOperation({
+        operationId: 'BoardGrantCreate',
+        summary: 'create',
+        description: 'This call can be used to save a new board grant',
+    })
+    @ApiResponse({ status: 202, description: 'Board grant saved!' })
+    @ApiResponse({ status: 400, description: 'Validation error...' })
+    @ApiResponse({ status: 412, description: 'Upload is not a PDF-file...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async createBoardGrant(@Body() body: CreateBoardGrant, @Me() me: User): Promise<void> {
+        if (body.document.length === 0) {
+            throw new BadRequestException('No document has been uploaded...');
+        }
+        this.checkMimeType(body.document[0]);
+
+        const boardGrant = AdministrationTransformer.toBoardGrant(body, me);
+        await this.administrationRepository.save(boardGrant);
+
+        // Create path if needed
+        !existsSync(this.boardGrantDocumentUrl) && mkdirSync(this.boardGrantDocumentUrl, { recursive: true });
+
+        const stream = createWriteStream(resolve(this.boardGrantDocumentUrl, boardGrant.documentUrl), {encoding: 'binary'});
+        stream.once('open', () => {
+            stream.write(body.document[0].data);
+            stream.end();
+        });
+
+        await this.emailService.sendBoardGrantConfirmation(me);
+    }
+
+    @Put('boardGrant/:id')
+    @Auth('Administration:Write')
+    @HttpCode(202)
+    @ApiConsumes('multipart/form-data')
+    @ApiOperation({
+        operationId: 'BoardGrantUpdate',
+        summary: 'update',
+        description: 'This call can be used to update the board grant',
+    })
+    @ApiResponse({ status: 202, description: 'Board grant updated!' })
+    @ApiResponse({ status: 400, description: 'Validation error...' })
+    @ApiResponse({ status: 403, description: 'You are not allowed to update this board grant...' })
+    @ApiResponse({ status: 404, description: 'No board grant found...' })
+    @ApiResponse({ status: 412, description: 'Upload is not a PDF-file...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async updateBoardGrant(@Body() body: CreateBoardGrant, @Me() me: User, @Param('id') id: number): Promise<void> {
+        const boardGrant = await this.getBoardGrant(id, me);
+
+        let documentUrl = boardGrant.documentUrl;
+        if (body.document) {
+            this.checkMimeType(body.document[0]);
+
+            // Delete old document to preserve storage space
+            try {
+                unlinkSync(resolve(this.boardGrantDocumentUrl, documentUrl));
+            } catch(e) {}
+
+            // Update url name
+            documentUrl = uuid() + extname(body.document[0].filename);
+
+            // Add new document
+            const stream = createWriteStream(resolve(this.boardGrantDocumentUrl, documentUrl), {encoding: 'binary'});
+            stream.once('open', () => {
+                stream.write(body.document[0].data);
+                stream.end();
+            });
+        }
+
+        AdministrationTransformer.updateBoardGrant(boardGrant, documentUrl);
+        await this.administrationRepository.save(boardGrant);
+    }
+
+    @Put('boardGrant/:id/checked')
+    @Auth('Administration:System')
+    @HttpCode(200)
+    @ApiOperation({
+        operationId: 'BoardGrantCheck',
+        summary: 'check',
+        description: 'This call can be used to update the status of the board grant to checked',
+    })
+    @ApiResponse({ status: 200, description: 'Board grant checked!' })
+    @ApiResponse({ status: 403, description: 'You are not allowed to update this board grant...' })
+    @ApiResponse({ status: 404, description: 'No board grant found...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async boardGrantChecked(@Param('id') id: number): Promise<void> {
+        const boardGrant = await this.administrationRepository.readOneBoardGrant(id);
+        if (!boardGrant) {
+            throw new NotFoundException('No board grant found...');
+        }
+
+        AdministrationTransformer.boardGrantChecked(boardGrant);
+        await this.administrationRepository.save(boardGrant);
+    } 
+
+    @Delete('boardGrant/:id')
+    @Auth('Administration:Delete')
+    @HttpCode(202)
+    @ApiOperation({
+        operationId: 'BoardGrantDelete',
+        summary: 'delete',
+        description: 'This call can be used to delete the boardGrant',
+    })
+    @ApiResponse({ status: 202, description: 'Activity plan deleted!' })
+    @ApiResponse({ status: 403, description: 'You are not allowed to get this boardGrant...' })
+    @ApiResponse({ status: 404, description: 'No activity plan found...' })
+    @ApiResponse({ status: 500, description: 'Internal server error...' })
+    public async deleteBoardGrant(@Param('id') id: number, @Me() me: User): Promise<void> {
+        const boardGrant = await this.getBoardGrant(id, me);
+
+        unlinkSync(resolve(this.boardGrantDocumentUrl, boardGrant.documentUrl));
+        await this.administrationRepository.delete(boardGrant);
+    }
+
     private async getActivityPlan(id: number, me: User): Promise<ActivityPlan> {
         const activityPlan = await this.administrationRepository.readOneActivityPlan(id);
         if (!activityPlan) {
@@ -354,6 +516,18 @@ export class AdministrationController {
         }
 
         return activityPlan;
+    }
+
+    private async getBoardGrant(id: number, me: User): Promise<BoardGrant> {
+        const boardGrant = await this.administrationRepository.readOneBoardGrant(id);
+        if (!boardGrant) {
+            throw new NotFoundException('No board grant found...');
+        }
+        if (boardGrant.user.id !== me.id && me.roleId === 2) {
+            throw new ForbiddenException('You are not allowed to update this board grant...');
+        }
+
+        return boardGrant;
     }
 
     private checkMimeType(document: any): void {

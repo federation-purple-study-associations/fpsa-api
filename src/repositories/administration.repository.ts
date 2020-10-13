@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BaseEntity, IsNull } from 'typeorm';
 import { ActivityPlan } from '../entities/administration/activity.plan.entity';
 import { AnnualReport } from '../entities/administration/annual.report.entity';
+import { BoardGrant } from '../entities/administration/board.grant.entity';
 import { User } from '../entities/user/user.entity';
 
 @Injectable()
@@ -37,12 +38,33 @@ export class AdministrationRepository {
         return AnnualReport.findOne({where: {id}});
     }
 
+    public readAllBoardGrants(user?: User, skip?: number, take?: number): Promise<BoardGrant[]> {
+        if (!user) {
+            return BoardGrant.find({relations: ['user'], order: {delivered: 'DESC'}});
+        
+        } else {
+            return BoardGrant.find({where: { user }, skip, take, relations: ['user'], order: {delivered: 'DESC'}});
+        }
+    }
+
+    public readOneBoardGrant(id: number): Promise<BoardGrant> {
+        return BoardGrant.findOne({where: {id}});
+    }
+
     public countAnnualReports(user?: User): Promise<number> {
         if (!user) {
             return AnnualReport.count();
         }
 
         return AnnualReport.count({where: {activityPlan: {user}}});
+    }
+
+    public countBoardGrants(user?: User): Promise<number> {
+        if (!user) {
+            return BoardGrant.count();
+        }
+
+        return BoardGrant.count({where: {user}});
     }
 
     public async countActivityPlans(user?: User, emptyReport?: boolean): Promise<number> {

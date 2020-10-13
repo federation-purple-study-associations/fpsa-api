@@ -215,6 +215,27 @@ export class EmailService {
         );
     }
 
+    public async sendBoardGrantConfirmation(member: User): Promise<void> {
+        const now = new Date();
+        const nextYear = new Date();
+        nextYear.setFullYear(nextYear.getFullYear() + 1);
+
+        if (now.getMonth() < 7) {
+            now.setFullYear(now.getFullYear() - 1);
+            nextYear.setFullYear(nextYear.getFullYear() - 1);
+        }
+
+        await this.sendMail(
+            '"' + member.fullName + '" ' + member.email,
+            'Aanmelding bestuursbeurs ontvangen!',
+            this.handlebarTemplate({
+                template: 'board-grant-confirmation',
+                name: member.fullName,
+                board_grant_period: now.getFullYear() + '-' + nextYear.getFullYear(),
+            }),
+        );
+    }
+
     private sendMail(to: string, subject: string, html: string, replyTo?: string): Promise<any> {
         return this.mailer.sendMail({
             from: this.defaultFromEmailAddress,
