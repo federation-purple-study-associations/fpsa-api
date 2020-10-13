@@ -16,7 +16,7 @@ export class BoardGrant extends BaseEntity {
     @ApiProperty()
     public checked: boolean;
 
-    @Column()
+    @Column({nullable: true})
     @ApiProperty({type: String, format: 'date'})
     public checkedAt: Date;
 
