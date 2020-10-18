@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BaseEntity, IsNull } from 'typeorm';
+import { BaseEntity } from 'typeorm';
 import { ActivityPlan } from '../entities/administration/activity.plan.entity';
 import { AnnualReport } from '../entities/administration/annual.report.entity';
 import { BoardGrant } from '../entities/administration/board.grant.entity';
