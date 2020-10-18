@@ -48,7 +48,7 @@ export class AdministrationRepository {
     }
 
     public readOneBoardGrant(id: number): Promise<BoardGrant> {
-        return BoardGrant.findOne({where: {id}});
+        return BoardGrant.findOne({where: {id}, relations: ['user']});
     }
 
     public countAnnualReports(user?: User): Promise<number> {
