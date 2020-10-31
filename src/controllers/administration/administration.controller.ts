@@ -519,6 +519,10 @@ export class AdministrationController {
     }
 
     private async getBoardGrant(id: number, me: User): Promise<BoardGrant> {
+        if (id === 0) {
+            return null;
+        }
+
         const boardGrant = await this.administrationRepository.readOneBoardGrant(id);
         if (!boardGrant) {
             throw new NotFoundException('No board grant found...');
