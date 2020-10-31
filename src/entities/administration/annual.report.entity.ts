@@ -19,7 +19,7 @@ export class AnnualReport extends BaseEntity {
     @ApiProperty({required: false})
     public period: string;
 
-    @OneToOne(() => ActivityPlan, plan => plan.annualReport)
+    @OneToOne(() => ActivityPlan, plan => plan.annualReport, { nullable: true })
     @JoinColumn()
     @ApiProperty({type: () => ActivityPlan, required: false})
     public activityPlan: ActivityPlan;

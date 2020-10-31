@@ -509,7 +509,7 @@ export class AdministrationController {
     private async getActivityPlan(id: number, me: User): Promise<ActivityPlan> {
         const activityPlan = await this.administrationRepository.readOneActivityPlan(id);
         if (!activityPlan) {
-            throw new NotFoundException('No activity plan found...');
+            return null;
         }
         if (activityPlan.user.id !== me.id && me.roleId === 2) {
             throw new ForbiddenException('You are not allowed to update this acitivity plan...');
