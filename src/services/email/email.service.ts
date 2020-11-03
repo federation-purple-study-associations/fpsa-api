@@ -209,8 +209,8 @@ export class EmailService {
             this.handlebarTemplate({
                 template: 'annual-report-confirmation',
                 name: member.fullName,
-                begin: activityPlan.start ? moment(activityPlan.start).tz("Europe/Amsterdam").format('DD-MM-YYYY') : null,
-                end: activityPlan.end ? moment(activityPlan.end).tz("Europe/Amsterdam").format('DD-MM-YYYY') : null,
+                begin: activityPlan ? moment(activityPlan.start).tz("Europe/Amsterdam").format('DD-MM-YYYY') : null,
+                end: activityPlan ? moment(activityPlan.end).tz("Europe/Amsterdam").format('DD-MM-YYYY') : null,
             }),
         );
     }
