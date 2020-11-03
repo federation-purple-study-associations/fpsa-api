@@ -25,7 +25,7 @@ export class AdministrationRepository {
             return AnnualReport.find({relations: ['user'], order: {delivered: 'DESC'}});
         
         } else {
-            return AnnualReport.find({where: { activityPlan: { user } }, skip, take, relations: ['user'], order: {delivered: 'DESC'}});
+            return AnnualReport.find({where: { user }, skip, take, relations: ['user'], order: {delivered: 'DESC'}});
         }
     }
 
@@ -51,7 +51,7 @@ export class AdministrationRepository {
             return AnnualReport.count();
         }
 
-        return AnnualReport.count({where: {activityPlan: {user}}});
+        return AnnualReport.count({where: {user}});
     }
 
     public countBoardGrants(user?: User): Promise<number> {
