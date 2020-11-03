@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Role } from './role.entity';
 import { Confirmation } from './confirmation.entity';
 import { ActivityPlan } from '../administration/activity.plan.entity';
+import { AnnualReport } from '../administration/annual.report.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -57,4 +58,7 @@ export class User extends BaseEntity {
 
     @OneToMany(() => ActivityPlan, plan => plan.user)
     public activityPlans: ActivityPlan[];
+
+    @OneToMany(() => AnnualReport, plan => plan.user)
+    public annualReports: AnnualReport[];
 }

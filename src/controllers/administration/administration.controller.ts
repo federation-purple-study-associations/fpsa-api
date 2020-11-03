@@ -43,14 +43,13 @@ export class AdministrationController {
     })
     @ApiQuery({name: 'skip', required: false})
     @ApiQuery({name: 'size', required: false})
-    @ApiQuery({name: 'emptyReport', required: false})
     @ApiResponse({ status: 200, description: 'Activity plans returned', type: ResultActivityPlan })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    public async getAllActivityPlans(@Me() me: User, @Query('skip') skip?: number, @Query('size') size?: number, @Query('emptyReport') emptyReport?: boolean): Promise<ResultActivityPlan> {
+    public async getAllActivityPlans(@Me() me: User, @Query('skip') skip?: number, @Query('size') size?: number): Promise<ResultActivityPlan> {
         const user = me.roleId !== 2 ? undefined : me;
         const results = await Promise.all([
-            this.administrationRepository.countActivityPlans(user, emptyReport),
-            this.administrationRepository.readAllActivityPlans(user, emptyReport, skip, size),
+            this.administrationRepository.countActivityPlans(user),
+            this.administrationRepository.readAllActivityPlans(user, skip, size),
         ]);
 
         return { count: results[0], activityPlans: results[1] };
@@ -264,8 +263,7 @@ export class AdministrationController {
         }
         this.checkMimeType(body.document[0]);
 
-        const activityPlan = await this.getActivityPlan(body.activityPlanId, me);
-        const annualReport = AdministrationTransformer.toAnnualReport(body, activityPlan);
+        const annualReport = AdministrationTransformer.toAnnualReport(body, me);
         await annualReport.save();
 
         // Create path if needed
@@ -277,7 +275,7 @@ export class AdministrationController {
             stream.end();
         });
 
-        await this.emailService.sendAnnualReportConfirmation(me, activityPlan);
+        await this.emailService.sendAnnualReportConfirmation(me);
     }
 
     @Put('annualReport/:id')
@@ -295,8 +293,7 @@ export class AdministrationController {
     @ApiResponse({ status: 404, description: 'No annual report or activity pan found...' })
     @ApiResponse({ status: 412, description: 'Upload is not a PDF-file...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    public async updateAnnualReport(@Body() body: CreateAnnualReport, @Me() me: User, @Param('id') id: number): Promise<void> {
-        const activityPlan = await this.getActivityPlan(body.activityPlanId, me);
+    public async updateAnnualReport(@Body() body: CreateAnnualReport, @Param('id') id: number): Promise<void> {
         const annualReport = await this.administrationRepository.readOneAnnualReport(id);
         if (!annualReport) {
             throw new NotFoundException('No annual report found...');
@@ -322,7 +319,7 @@ export class AdministrationController {
             });
         }
 
-        AdministrationTransformer.updateAnnualReport(annualReport, activityPlan, documentUrl);
+        AdministrationTransformer.updateAnnualReport(annualReport, documentUrl);
         await annualReport.save();
     }
 
@@ -344,7 +341,7 @@ export class AdministrationController {
             throw new NotFoundException('No annual report found...');
         }
 
-        unlinkSync(resolve(this.activityPlanDocumentUrl, annualReport.documentUrl));
+        unlinkSync(resolve(this.annualReportDocumentUrl, annualReport.documentUrl));
         await this.administrationRepository.delete(annualReport);
     }
 

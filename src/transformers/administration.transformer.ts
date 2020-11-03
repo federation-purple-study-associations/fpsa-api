@@ -26,18 +26,17 @@ export class AdministrationTransformer {
         activityPlan.documentUrl = documentUrl;
     }
 
-    public static toAnnualReport(body: CreateAnnualReport, activityPlan: ActivityPlan): AnnualReport {
+    public static toAnnualReport(body: CreateAnnualReport, user: User): AnnualReport {
         const annualReport = new AnnualReport();
         annualReport.delivered = new Date();
-        annualReport.activityPlan = activityPlan;
+        annualReport.user = user;
         annualReport.documentUrl = uuid() + extname(body.document[0].filename);
 
         return annualReport;
     }
 
-    public static updateAnnualReport(annualReport: AnnualReport, activityPlan: ActivityPlan, documentUrl: string): void {
+    public static updateAnnualReport(annualReport: AnnualReport, documentUrl: string): void {
         annualReport.documentUrl = documentUrl;
-        annualReport.activityPlan = activityPlan;
     }
 
     public static toBoardGrant(body: CreateBoardGrant, user: User): BoardGrant {

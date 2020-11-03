@@ -10,6 +10,7 @@ import * as nodemailer from 'nodemailer';
 import { ContactFormDTO } from '../../dto/user/contact.form';
 import { ContactMembersDTO } from '../../dto/user/contact.members';
 import { ActivityPlan } from '../../entities/administration/activity.plan.entity';
+import { AnnualReport } from '../../entities/administration/annual.report.entity';
 
 @Injectable()
 export class EmailService {
@@ -202,15 +203,13 @@ export class EmailService {
         );
     }
 
-    public async sendAnnualReportConfirmation(member: User, activityPlan: ActivityPlan): Promise<void> {
+    public async sendAnnualReportConfirmation(member: User): Promise<void> {
         await this.sendMail(
             '"' + member.fullName + '" ' + member.email,
             'Jaarverslag ontvangen!',
             this.handlebarTemplate({
                 template: 'annual-report-confirmation',
                 name: member.fullName,
-                begin: activityPlan ? moment(activityPlan.start).tz("Europe/Amsterdam").format('DD-MM-YYYY') : null,
-                end: activityPlan ? moment(activityPlan.end).tz("Europe/Amsterdam").format('DD-MM-YYYY') : null,
             }),
         );
     }

@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseEntity, Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../user/user.entity';
-import { AnnualReport } from './annual.report.entity';
 
 @Entity()
 export class ActivityPlan extends BaseEntity {
@@ -28,7 +27,4 @@ export class ActivityPlan extends BaseEntity {
     @ManyToOne(() => User, user => user.activityPlans)
     @ApiProperty({type: () => User})
     public user: User;
-
-    @OneToOne(() => AnnualReport, report => report.activityPlan)
-    public annualReport: AnnualReport;
 }
