@@ -198,7 +198,7 @@ export class EmailService {
             this.handlebarTemplate({
                 template: 'activity-plan-confirmation',
                 name: member.fullName,
-                date: moment(activityPlan.delivered).tz("Europe/Amsterdam").format('DD-MM-YYYY'),
+                date: moment(activityPlan.end).tz("Europe/Amsterdam").format('DD-MM-YYYY'),
             }),
         );
     }
