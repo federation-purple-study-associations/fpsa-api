@@ -10,7 +10,6 @@ import * as nodemailer from 'nodemailer';
 import { ContactFormDTO } from '../../dto/user/contact.form';
 import { ContactMembersDTO } from '../../dto/user/contact.members';
 import { ActivityPlan } from '../../entities/administration/activity.plan.entity';
-import { AnnualReport } from '../../entities/administration/annual.report.entity';
 
 @Injectable()
 export class EmailService {
