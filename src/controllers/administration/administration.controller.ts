@@ -19,6 +19,7 @@ import { ResultAnnualReport } from '../../dto/administration/result.annual.repor
 import { ResultBoardGrant } from '../../dto/administration/result.board.grant';
 import { BoardGrant } from '../../entities/administration/board.grant.entity';
 import { CreateBoardGrant } from '../../dto/administration/create.board.grant';
+import { AnnualReport } from 'src/entities/administration/annual.report.entity';
 
 @Controller('administration')
 @ApiTags('administration')
@@ -183,6 +184,7 @@ export class AdministrationController {
     public async doCheckActivityPlans(): Promise<void> {
         const today = new Date();
 
+        // Send activity plan reminder
         const users = await this.userRepository.getAllMembers();
         users.forEach(async (user) => {
             if (user.activityPlans.length === 0) {
@@ -197,6 +199,19 @@ export class AdministrationController {
                     await this.emailService.sendActivityPlanReminder(user);
             }
         });
+
+        // Send activity plans and annual reports once per month
+        if (today.getDate() === 1) {
+            const activityPlans: ActivityPlan[] = await this.administrationRepository.readAllActivityPlans(undefined, undefined, undefined, true);
+            const annualReports: AnnualReport[] = await this.administrationRepository.readAllAnnualReports(undefined, undefined, undefined, true);
+
+            await this.emailService.sendReportsToComission(activityPlans, annualReports);
+
+            for (const document of activityPlans.concat(annualReports as any)) {
+                document.sendToCommission = new Date();
+                this.administrationRepository.save(document);
+            }
+        }
     }
 
     @Get('annualReport')

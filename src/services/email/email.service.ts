@@ -5,17 +5,23 @@ import { Confirmation } from '../../entities/user/confirmation.entity';
 import { AgendaItem } from '../../entities/agenda/agenda.item.entity';
 import { Application } from '../../entities/user/application.entity';
 import * as moment from 'moment-timezone';
-import { readdirSync } from 'fs';
+import { readdirSync, readFile } from 'fs';
 import * as nodemailer from 'nodemailer';
 import { ContactFormDTO } from '../../dto/user/contact.form';
 import { ContactMembersDTO } from '../../dto/user/contact.members';
 import { ActivityPlan } from '../../entities/administration/activity.plan.entity';
+import { AnnualReport } from 'src/entities/administration/annual.report.entity';
+import Mail = require('nodemailer/lib/mailer');
+import { resolve } from 'path';
 
 @Injectable()
 export class EmailService {
     private readonly handlebarTemplate: HandlebarsTemplateDelegate;
     private readonly defaultFromEmailAddress: string = '"Federation of Purple Study Associations" info@fpsa.nl';
     private readonly mailer: nodemailer.Transporter;
+
+    private readonly activityPlanDocumentUrl: string = resolve(process.env.STORAGE_PATH, 'administration', 'activityPlan');
+    private readonly annualReportDocumentUrl: string = resolve(process.env.STORAGE_PATH, 'administration', 'annualReport');
 
     constructor() {
         this.mailer = nodemailer.createTransport({
@@ -234,13 +240,98 @@ export class EmailService {
         );
     }
 
-    private sendMail(to: string, subject: string, html: string, replyTo?: string): Promise<any> {
+    public async sendReportsToComission(activityPlans: ActivityPlan[], annualReports: AnnualReport[]): Promise<void> {
+        const attachmentActivityPlan: Mail.Attachment[] = [];
+        const attachmentAnnualReport: Mail.Attachment[] = [];
+        
+        for (const activityPlan of activityPlans) {
+            const content = await new Promise<Buffer>((Resolve) => {
+                readFile(resolve(this.activityPlanDocumentUrl, activityPlan.documentUrl), (err, data) => {
+                    if (err) { 
+                        Resolve(null);
+                    }
+
+                    Resolve(data);
+                })
+            });
+
+            if (content) {
+                attachmentActivityPlan.push({
+                    filename: activityPlan.user.fullName + ' - activiteitenplan.pdf',
+                    content,
+                });
+            }
+        }
+
+        for (const annualReport of annualReports) {
+            const content = await new Promise<Buffer>((Resolve) => {
+                readFile(resolve(this.annualReportDocumentUrl, annualReport.documentUrl), (err, data) => {
+                    if (err) { 
+                        Resolve(null);
+                    }
+
+                    Resolve(data);
+                })
+            });
+
+            if (content) {
+                attachmentAnnualReport.push({
+                    filename: annualReport.user.fullName + ' - jaarverslag.pdf',
+                    content,
+                });
+            }
+        }
+
+        const dataActivitplans = activityPlans.sort((a,b) => {
+            if(a.user.fullName < b.user.fullName) { return -1; }
+            if(a.user.fullName > b.user.fullName) { return 1; }
+            return 0;
+        })
+        .map(x => {
+            return {
+                fullName: x.user.fullName,
+                start: moment(x.start).format('DD-MM-YYYY'),
+                end: moment(x.end).format('DD-MM-YYYY'),
+                delivered: moment(x.delivered).format('DD-MM-YYYY'),
+            };
+        });
+
+        const dataAnnualReports = annualReports.sort((a,b) => {
+            if(a.user.fullName < b.user.fullName) { return -1; }
+            if(a.user.fullName > b.user.fullName) { return 1; }
+            return 0;
+        })
+        .map(x => {
+            return {
+                fullName: x.user.fullName,
+                delivered: moment(x.delivered).format('DD-MM-YYYY'),
+            };
+        });
+
+        await this.sendMail(
+            '"Commissie Profileringsfonds" profileringsfonds@fontys.nl',
+            'Maandelijkse update - activiteitenplan en jaarverslag',
+            this.handlebarTemplate({
+                template: 'update-commission',
+                date: moment().subtract(1, 'days').format('MMMM YYYY'),
+                dataActivitplans,
+                dataAnnualReports,
+                hasActivityPlans: attachmentActivityPlan.length > 0,
+                hasAnnualReports: attachmentAnnualReport.length > 0,
+            }),
+            undefined,
+            attachmentActivityPlan.concat(attachmentAnnualReport),
+        );
+    }
+
+    private sendMail(to: string, subject: string, html: string, replyTo?: string, attachments?: Mail.Attachment[]): Promise<any> {
         return this.mailer.sendMail({
             from: this.defaultFromEmailAddress,
             to,
             subject,
             html,
             replyTo,
+            attachments,
         })
     }
 }

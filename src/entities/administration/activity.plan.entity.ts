@@ -21,6 +21,10 @@ export class ActivityPlan extends BaseEntity {
     @ApiProperty({type: String, format: 'date'})
     public end: Date;
 
+    @Column({ nullable: true })
+    @ApiProperty({type: String, format: 'date'})
+    public sendToCommission: Date;
+
     @Column()
     public documentUrl: string;
 

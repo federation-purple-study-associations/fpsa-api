@@ -79,26 +79,6 @@ spec:
             secretKeyRef:
               name: mailing
               key: SMTP_PASSWORD
-        - name: RABOBANK_URL
-          valueFrom:
-            secretKeyRef:
-              name: rabobank
-              key: RABOBANK_URL
-        - name: RABOBANK_CLIENT_ID
-          valueFrom:
-            secretKeyRef:
-              name: rabobank
-              key: RABOBANK_CLIENT_ID
-        - name: RABOBANK_CLIENT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: rabobank
-              key: RABOBANK_CLIENT_SECRET
-        - name: RABOBANK_CERTIFICATE_KEY_ID
-          valueFrom:
-            secretKeyRef:
-              name: rabobank
-              key: RABOBANK_CERTIFICATE_KEY_ID
         - name: env
           value: PRODUCTION
         - name: URL_SITE

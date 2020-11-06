@@ -1,0 +1,26 @@
+<div>
+    Beste Commissie Profileringsfonds,<br>
+    <br>
+    Hierbij een update met alle nieuwe activiteitenplannen en jaarverslagen over de periode {{date}}. De documenten zijn bijgevoegd in de bijlagen.<br>
+    <br>
+    <b>Activiteitenplan:</b><br>
+    {{#if hasActivityPlans}}
+        {{#each dataActivitplans}}
+            {{fullName}} - <i>ingeleverd op: {{delivered}}</i> - <i>geldig van {{start}} tm {{end}}</i><br>
+        {{/each}}
+    {{else}}
+        Geen activiteitenplannen ontvangen!<br>
+    {{/if}}
+    <br>
+    <b>Jaarverslagen:</b><br>
+    {{#if hasAnnualReports}}
+        {{#each dataAnnualReports}}
+            {{fullName}} - <i>ingeleverd op: {{delivered}}</i><br>
+        {{/each}}
+    {{else}}
+        Geen jaarverslagen ontvangen!<br>
+    {{/if}}
+    <br>
+    Met vriendelijke groeten,<br>
+    Bestuur FPSA
+</div>

@@ -19,6 +19,10 @@ export class AnnualReport extends BaseEntity {
     @ApiProperty({required: false})
     public period: string;
 
+    @Column({ nullable: true })
+    @ApiProperty({type: String, format: 'date'})
+    public sendToCommission: Date;
+
     @ManyToOne(() => User, user => user.annualReports)
     @ApiProperty({type: () => User})
     public user: User;
