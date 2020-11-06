@@ -241,72 +241,28 @@ export class EmailService {
     }
 
     public async sendReportsToComission(activityPlans: ActivityPlan[], annualReports: AnnualReport[]): Promise<void> {
-        const attachmentActivityPlan: Mail.Attachment[] = [];
-        const attachmentAnnualReport: Mail.Attachment[] = [];
-        
-        for (const activityPlan of activityPlans) {
-            const content = await new Promise<Buffer>((Resolve) => {
-                readFile(resolve(this.activityPlanDocumentUrl, activityPlan.documentUrl), (err, data) => {
-                    if (err) { 
-                        Resolve(null);
-                    }
+        const attachmentActivityPlan: Mail.Attachment[] = await this.buildAttachment(activityPlans, this.activityPlanDocumentUrl, 'activiteitenplan');
+        const attachmentAnnualReport: Mail.Attachment[] = await this.buildAttachment(annualReports, this.annualReportDocumentUrl, 'jaarverslag');
 
-                    Resolve(data);
-                })
+        const dataActivitplans = activityPlans
+            .sort(this.sortFullName)
+            .map(x => {
+                return {
+                    fullName: x.user.fullName,
+                    start: moment(x.start).format('DD-MM-YYYY'),
+                    end: moment(x.end).format('DD-MM-YYYY'),
+                    delivered: moment(x.delivered).format('DD-MM-YYYY'),
+                };
             });
 
-            if (content) {
-                attachmentActivityPlan.push({
-                    filename: activityPlan.user.fullName + ' - activiteitenplan.pdf',
-                    content,
-                });
-            }
-        }
-
-        for (const annualReport of annualReports) {
-            const content = await new Promise<Buffer>((Resolve) => {
-                readFile(resolve(this.annualReportDocumentUrl, annualReport.documentUrl), (err, data) => {
-                    if (err) { 
-                        Resolve(null);
-                    }
-
-                    Resolve(data);
-                })
+        const dataAnnualReports = annualReports
+            .sort(this.sortFullName)
+            .map(x => {
+                return {
+                    fullName: x.user.fullName,
+                    delivered: moment(x.delivered).format('DD-MM-YYYY'),
+                };
             });
-
-            if (content) {
-                attachmentAnnualReport.push({
-                    filename: annualReport.user.fullName + ' - jaarverslag.pdf',
-                    content,
-                });
-            }
-        }
-
-        const dataActivitplans = activityPlans.sort((a,b) => {
-            if(a.user.fullName < b.user.fullName) { return -1; }
-            if(a.user.fullName > b.user.fullName) { return 1; }
-            return 0;
-        })
-        .map(x => {
-            return {
-                fullName: x.user.fullName,
-                start: moment(x.start).format('DD-MM-YYYY'),
-                end: moment(x.end).format('DD-MM-YYYY'),
-                delivered: moment(x.delivered).format('DD-MM-YYYY'),
-            };
-        });
-
-        const dataAnnualReports = annualReports.sort((a,b) => {
-            if(a.user.fullName < b.user.fullName) { return -1; }
-            if(a.user.fullName > b.user.fullName) { return 1; }
-            return 0;
-        })
-        .map(x => {
-            return {
-                fullName: x.user.fullName,
-                delivered: moment(x.delivered).format('DD-MM-YYYY'),
-            };
-        });
 
         await this.sendMail(
             '"Commissie Profileringsfonds" profileringsfonds@fontys.nl',
@@ -333,5 +289,36 @@ export class EmailService {
             replyTo,
             attachments,
         })
+    }
+
+    private async buildAttachment(reports: ActivityPlan[] | AnnualReport[], storageUrl: string, suffix: string): Promise<Mail.Attachment[]> {
+        const attachments: Mail.Attachment[] = [];
+
+        for (const report of reports) {
+            const content = await new Promise<Buffer>((Resolve) => {
+                readFile(resolve(storageUrl, report.documentUrl), (err, data) => {
+                    if (err) { 
+                        Resolve(null);
+                    }
+
+                    Resolve(data);
+                })
+            });
+
+            if (content) {
+                attachments.push({
+                    filename: `${report.user.fullName} - ${suffix}.pdf`,
+                    content,
+                });
+            }
+        }
+
+        return attachments;
+    }
+
+    private sortFullName(a, b) {
+        if(a.user.fullName < b.user.fullName) { return -1; }
+        if(a.user.fullName > b.user.fullName) { return 1; }
+        return 0;
     }
 }
