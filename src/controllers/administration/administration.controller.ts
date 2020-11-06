@@ -201,7 +201,7 @@ export class AdministrationController {
         });
 
         // Send activity plans and annual reports once per month
-        if (today.getDate() === 6) {
+        if (today.getDate() === 1) {
             const activityPlans: ActivityPlan[] = await this.administrationRepository.readAllActivityPlans(undefined, undefined, undefined, true);
             const annualReports: AnnualReport[] = await this.administrationRepository.readAllAnnualReports(undefined, undefined, undefined, true);
 
