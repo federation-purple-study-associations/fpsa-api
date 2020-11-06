@@ -316,7 +316,7 @@ export class EmailService {
         return attachments;
     }
 
-    private sortFullName(a, b) {
+    private sortFullName(a, b): number {
         if(a.user.fullName < b.user.fullName) { return -1; }
         if(a.user.fullName > b.user.fullName) { return 1; }
         return 0;

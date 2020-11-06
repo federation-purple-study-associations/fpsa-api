@@ -13,7 +13,6 @@ import { StatisticsController } from './controllers/statistics/statistics.contro
 import { BoardController } from './controllers/board/board.controller';
 import { BoardRepository } from './repositories/board.repository';
 import { EmailService } from './services/email/email.service';
-import { FileService } from './services/file/file.service';
 import { AdministrationController } from './controllers/administration/administration.controller';
 import { AdministrationRepository } from './repositories/administration.repository';
 
@@ -39,7 +38,6 @@ import { AdministrationRepository } from './repositories/administration.reposito
     StatisticRepository,
     BoardRepository,
     EmailService,
-    FileService,
     AdministrationRepository,
   ],
 })
