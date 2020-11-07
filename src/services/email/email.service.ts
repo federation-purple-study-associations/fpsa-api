@@ -165,7 +165,7 @@ export class EmailService {
         for(const member of members) {
             await this.sendMail(
                 '"' + member.fullName + '" ' + member.email,
-                "Contact: " + form.subject,
+                form.subject,
                 this.handlebarTemplate({
                     template: 'contact-members',
                     message: form.message,
