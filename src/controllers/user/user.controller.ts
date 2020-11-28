@@ -161,7 +161,7 @@ export class UserController {
         summary: 'getAllMembers',
         description: 'This call can be used to get all of the members of FPSA'
     })
-    @ApiResponse({ status: 200, description: 'Members!', type: null })
+    @ApiResponse({ status: 200, description: 'Members!', type: MemberDTO, isArray: true })
     public async getMembers(): Promise<MemberDTO[]> {
         return UserTransformer.toMember(await this.userRepository.getAllMembers(false));
     }
