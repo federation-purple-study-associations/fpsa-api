@@ -107,6 +107,7 @@ export class EmailService {
                 template: 'application-to-board',
                 application,
                 handedIn: moment(application.handedIn).tz("Europe/Amsterdam").format('DD-MM-YYYY HH:mm'),
+                apiUrl: process.env.URL_API,
             }),
             '"' + application.name + '" ' + application.email,
         )

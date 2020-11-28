@@ -30,4 +30,11 @@ export class Application extends BaseEntity {
     @Column()
     @ApiProperty({type: String, format: 'date', required: false})
     public handedIn: Date;
+
+    @Column()
+    @ApiProperty()
+    public websiteUrl: string;
+
+    @Column()
+    public photoUrl: string;
 }

@@ -7,7 +7,10 @@
     <b>Vestiging:</b> {{application.establishment}}<br>
     <b>KvK:</b> {{application.kvk}}<br>
     <b>email:</b> <a href="mailto:{{application.email}}">{{application.email}}</a><br>
+    <b>website:</b> <a href="{{application.websiteUrl}}">{{application.websiteUrl}}</a><br>
     <b>Ingediend op:</b> {{handedIn}}<br>
+    <b>Logo vereniging:</b><br>
+    <img src="{{apiUrl}}/user/application/photo?id={{application.id}}" style="width: 100px"/><br>
     <br>
     Indien er vragen zijn over de aanmelding, kunnen deze simpel gesteld worden door te reageren op deze mail<br>
     <br>

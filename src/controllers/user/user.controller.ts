@@ -1,5 +1,5 @@
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { Controller, Post, HttpCode, Body, Res, BadRequestException, Get, Param, NotFoundException, Put, Delete } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiConsumes } from '@nestjs/swagger';
+import { Controller, Post, HttpCode, Body, Res, BadRequestException, Get, Param, NotFoundException, Put, Delete, Query } from '@nestjs/common';
 import { LoginDTO } from '../../dto/user/login';
 import { UserRepository } from '../../repositories/user.repository';
 import { UserTransformer } from '../../transformers/user.transformer';
@@ -19,10 +19,17 @@ import { UserForgotDTO } from '../../dto/user/user.forgot';
 import { FastifyReply } from 'fastify';
 import { ContactFormDTO } from '../../dto/user/contact.form';
 import { ContactMembersDTO } from '../../dto/user/contact.members';
+import { extname, resolve } from 'path';
+import { createWriteStream, existsSync, mkdirSync, readFile, unlinkSync } from 'fs';
+import { v4 as uuid } from 'uuid';
+import { MemberDTO } from '../../dto/user/user.members';
+import * as mime from 'mime-types';
 
 @Controller('user')
 @ApiTags('user')
 export class UserController {
+    private readonly photoUrl: string = resolve(process.env.STORAGE_PATH, 'user', 'photo');
+
     constructor(
         private readonly userRepository: UserRepository,
         private readonly emailService: EmailService,
@@ -147,6 +154,37 @@ export class UserController {
         return this.userRepository.getAllForExcelExport();
     }
 
+    @Get('members')
+    @HttpCode(200)
+    @ApiOperation({
+        operationId: 'UserGetAllMembers',
+        summary: 'getAllMembers',
+        description: 'This call can be used to get all of the members of FPSA'
+    })
+    @ApiResponse({ status: 200, description: 'Members!', type: null })
+    public async getMembers(): Promise<MemberDTO[]> {
+        return UserTransformer.toMember(await this.userRepository.getAllMembers(false));
+    }
+
+    @Get('photo')
+    @HttpCode(200)
+    @ApiOperation({
+        operationId: 'UserGetPhoto',
+        summary: 'getPhoto',
+        description: 'This call can be used to get the photo of the specific board',
+    })
+    @ApiResponse({ status: 200, description: 'Board photo' })
+    @ApiResponse({ status: 404, description: 'This board is not found...' })
+    public async getPicture(@Query('id') id: number, @Res() res: any): Promise<void>  {
+        const item = await this.userRepository.getOne(id);
+        if (!item) {
+            throw new NotFoundException('This user is not found...');
+        }
+
+        const buffer = await new Promise<Buffer>((Resolve) => readFile(resolve(this.photoUrl, item.photoUrl), (err, data) => Resolve(data)));
+        res.type(mime.lookup(item.photoUrl)).send(buffer);
+    }
+
     @Get(':id')
     @Auth('User:Read')
     @HttpCode(200)
@@ -190,6 +228,7 @@ export class UserController {
 
     @Post()
     @Auth('User:Write')
+    @ApiConsumes('multipart/form-data')
     @HttpCode(202)
     @ApiOperation({
         operationId: 'UserCreate',
@@ -209,11 +248,21 @@ export class UserController {
         const user = await this.userRepository.save(UserTransformer.toUser(body, role));
         const confirmation = await this.userRepository.createConfirmation(user);
 
+        // Create path if needed
+        !existsSync(this.photoUrl) && mkdirSync(this.photoUrl, { recursive: true });
+
+        const stream = createWriteStream(resolve(this.photoUrl, user.photoUrl), {encoding: 'binary'});
+        stream.once('open', () => {
+            stream.write(body.photo[0].data);
+            stream.end();
+        });
+
         this.emailService.sendRegistrationConfirmation(user, confirmation);
     }
 
     @Put(':id')
     @Auth('User:Write')
+    @ApiConsumes('multipart/form-data')
     @HttpCode(202)
     @ApiOperation({
         operationId: 'UserUpdate',
@@ -240,7 +289,25 @@ export class UserController {
             }
         }
 
-        await this.userRepository.save(UserTransformer.update(body, user, role));
+        let photoUrl = user.photoUrl;
+        if (body.photo) {
+            // Delete old image to preserve storage space
+            try {
+                unlinkSync(resolve(this.photoUrl, photoUrl));
+            } catch(e) {}
+
+            // Update url name
+            photoUrl = uuid() + extname(body.photo[0].filename);
+
+            // Add new image
+            const stream = createWriteStream(resolve(this.photoUrl, photoUrl), {encoding: 'binary'});
+            stream.once('open', () => {
+                stream.write(body.photo[0].data);
+                stream.end();
+            });
+        }
+
+        await this.userRepository.save(UserTransformer.update(body, user, photoUrl, role));
     }
 
     @Delete(':id')
@@ -261,11 +328,13 @@ export class UserController {
             throw new NotFoundException('User not found...');
         }
 
+        unlinkSync(resolve(this.photoUrl, user.photoUrl));
         await this.userRepository.delete(user);
     }
 
     @Post('application')
     @HttpCode(202)
+    @ApiConsumes('multipart/form-data')
     @ApiOperation({
         operationId: 'ApplicationCreate',
         summary: 'create',
@@ -276,6 +345,15 @@ export class UserController {
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async addApplication(@Body() body: NewApplication): Promise<void> {
         const application = await this.userRepository.save(UserTransformer.toApplication(body));
+
+        // Create path if needed
+        !existsSync(this.photoUrl) && mkdirSync(this.photoUrl, { recursive: true });
+
+        const stream = createWriteStream(resolve(this.photoUrl, application.photoUrl), {encoding: 'binary'});
+        stream.once('open', () => {
+            stream.write(body.photo[0].data);
+            stream.end();
+        });
 
         await this.emailService.sendApplicationConfirmation(application);
         await this.emailService.sendApplicationToBoard(application);
@@ -340,8 +418,21 @@ export class UserController {
             throw new NotFoundException('Application could not be found...')
         }
 
+        unlinkSync(resolve(this.photoUrl, application.photoUrl));
         await this.userRepository.delete(application);
         await this.emailService.sendApplicationDeclined(application);
+    }
+
+    @Get('application/photo')
+    @HttpCode(200)
+    public async getApplicationPicture(@Query('id') id: number, @Res() res: any): Promise<void>  {
+        const item = await this.userRepository.getApplication(id);
+        if (!item) {
+            throw new NotFoundException('This application is not found...');
+        }
+
+        const buffer = await new Promise<Buffer>((Resolve) => readFile(resolve(this.photoUrl, item.photoUrl), (err, data) => Resolve(data)));
+        res.type(mime.lookup(item.photoUrl)).send(buffer);
     }
 
     @Post('contact')
@@ -370,7 +461,7 @@ export class UserController {
     @ApiResponse({ status: 400, description: 'Validation error...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async contactMembers(@Body() body: ContactMembersDTO): Promise<void> {
-        const members: User[] = await this.userRepository.getAllMembers();
+        const members: User[] = await this.userRepository.getAllMembers(false);
 
         body.message = body.message.replace(/(?:\r\n|\r|\n)/g, '<br>');
         await this.emailService.sendContactMembersEmail(body, members);

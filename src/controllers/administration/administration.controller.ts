@@ -185,7 +185,7 @@ export class AdministrationController {
         const today = new Date();
 
         // Send activity plan reminder
-        const users = await this.userRepository.getAllMembers();
+        const users = await this.userRepository.getAllMembers(true);
         users.forEach(async (user) => {
             if (user.activityPlans.length === 0) {
                 return;

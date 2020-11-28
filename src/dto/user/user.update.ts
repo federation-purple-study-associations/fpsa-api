@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 import { IsNotEmpty, Max, Min } from 'class-validator';
 
 export class UserUpdateDTO {
@@ -19,12 +20,17 @@ export class UserUpdateDTO {
     public establishment: string;
 
     @IsNotEmpty()
-    @Max(100000000)
-    @Min(0)
     @ApiProperty()
     public kvk: number;
 
     @ApiProperty()
+    public websiteUrl: string;
+
+    @ApiProperty()
     @IsNotEmpty()
     public roleId: number;
+
+    @ApiProperty({ type: 'string', format: 'binary', required: false })
+    @Exclude()
+    public photo: any[];
 }

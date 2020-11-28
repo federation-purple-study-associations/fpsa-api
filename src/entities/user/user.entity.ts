@@ -34,6 +34,13 @@ export class User extends BaseEntity {
     @ApiProperty()
     public kvk: number;
 
+    @Column()
+    @ApiProperty()
+    public websiteUrl: string;
+
+    @Column()
+    public photoUrl: string;
+
     @Column({nullable: true})
     @ApiProperty({type: String, format: 'date', required: false})
     public lastLogin: Date;

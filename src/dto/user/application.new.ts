@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsEmail, Max, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 
 export class NewApplication {
     @IsNotEmpty()
@@ -20,8 +21,13 @@ export class NewApplication {
     public establishment: string;
 
     @IsNotEmpty()
-    @Max(100000000)
-    @Min(0)
     @ApiProperty()
     public kvk: number;
+
+    @ApiProperty()
+    public websiteUrl: string;
+
+    @ApiProperty({ type: 'string', format: 'binary' })
+    @Exclude()
+    public photo: any[];
 }

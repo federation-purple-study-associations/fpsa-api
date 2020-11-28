@@ -7,6 +7,9 @@ import { Role } from '../entities/user/role.entity';
 import { UserUpdateDTO } from '../dto/user/user.update';
 import { Application } from '../entities/user/application.entity';
 import { NewApplication } from '../dto/user/application.new';
+import { v4 as uuid } from 'uuid';
+import { extname } from 'path';
+import { MemberDTO } from '../dto/user/user.members';
 
 export class UserTransformer {
     public static toJwtToken(user: User): string {
@@ -42,17 +45,21 @@ export class UserTransformer {
         user.kvk = dto.kvk;
         user.establishment = dto.establishment;
         user.memberSince = new Date();
+        user.websiteUrl = dto.websiteUrl;
+        user.photoUrl = uuid() + extname(dto.photo[0].filename);
         user.recieveEmailUpdatesEvents = true;
         
         return user;
     }
 
-    public static update(dto: UserUpdateDTO, user: User, role?: Role): User {
+    public static update(dto: UserUpdateDTO, user: User, photoUrl: string, role?: Role): User {
         user.fullName = dto.fullName;
         user.email = dto.email;
         user.academy = dto.academy;
         user.kvk = dto.kvk;
         user.establishment = dto.establishment;
+        user.photoUrl = photoUrl;
+        user.websiteUrl = dto.websiteUrl;
 
         if (role) {
             user.role = role;
@@ -87,6 +94,8 @@ export class UserTransformer {
         user.memberSince = new Date();
         user.recieveEmailUpdatesEvents = true;
         user.roleId = 2;
+        user.photoUrl = application.photoUrl;
+        user.websiteUrl = application.websiteUrl;
         
         return user;
     }
@@ -99,8 +108,14 @@ export class UserTransformer {
         application.kvk = body.kvk;
         application.establishment = body.establishment;
         application.handedIn = new Date();
+        application.websiteUrl = body.websiteUrl;
+        application.photoUrl = uuid() + extname(body.photo[0].filename);
 
         return application;
+    }
+
+    static toMember(users: User[]): MemberDTO[] {
+        return users.map(x => new MemberDTO(x.id, x.fullName, x.websiteUrl));
     }
 
 }

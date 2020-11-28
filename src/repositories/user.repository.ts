@@ -16,8 +16,13 @@ export class UserRepository {
         return User.find({ relations: ['role'], order: { roleId: 'ASC' } });
     }
 
-    public getAllMembers(): Promise<User[]> {
-        return User.find({ where: {roleId: 2}, relations: ['activityPlans'] });
+    public getAllMembers(activityPlans: boolean): Promise<User[]> {
+        const relations = [];
+        if (activityPlans) {
+            relations.push('activityPlans');
+        }
+
+        return User.find({ where: {roleId: 2}, relations });
     }
 
     public getAllForExcelExport(): Promise<User[]> {
