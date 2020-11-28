@@ -22,7 +22,7 @@ export class UserRepository {
             relations.push('activityPlans');
         }
 
-        return User.find({ where: {roleId: 2}, relations });
+        return User.find({ where: {roleId: 2}, relations, order: { fullName: 'ASC' } });
     }
 
     public getAllForExcelExport(): Promise<User[]> {
