@@ -114,7 +114,7 @@ export class UserTransformer {
         return application;
     }
 
-    static toMember(users: User[]): MemberDTO[] {
+    public static toMember(users: User[]): MemberDTO[] {
         return users.map(x => new MemberDTO(x.id, x.fullName, x.websiteUrl));
     }
 

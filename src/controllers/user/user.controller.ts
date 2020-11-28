@@ -291,6 +291,9 @@ export class UserController {
 
         let photoUrl = user.photoUrl;
         if (body.photo) {
+            // Create path if needed
+            !existsSync(this.photoUrl) && mkdirSync(this.photoUrl, { recursive: true });
+
             // Delete old image to preserve storage space
             try {
                 unlinkSync(resolve(this.photoUrl, photoUrl));
