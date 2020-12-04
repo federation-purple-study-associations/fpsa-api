@@ -428,6 +428,13 @@ export class UserController {
 
     @Get('application/photo')
     @HttpCode(200)
+    @ApiOperation({
+        operationId: 'ApplicationGetPhoto',
+        summary: 'getPhoto',
+        description: 'This call can be used to get the photo of the specific application',
+    })
+    @ApiResponse({ status: 200, description: 'Application photo' })
+    @ApiResponse({ status: 404, description: 'This application is not found...' })
     public async getApplicationPicture(@Query('id') id: number, @Res() res: any): Promise<void>  {
         const item = await this.userRepository.getApplication(id);
         if (!item) {
