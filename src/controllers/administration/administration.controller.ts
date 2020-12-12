@@ -473,8 +473,15 @@ export class AdministrationController {
             });
         }
 
+        const oldChecked = boardGrant.checked;
+
         AdministrationTransformer.updateBoardGrant(boardGrant, documentUrl);
         await this.administrationRepository.save(boardGrant);
+
+        // Only send mail when the checked was changed
+        if (boardGrant.checked && !oldChecked) {
+            await this.emailService.sendBoardGrantChecked(boardGrant);
+        }
     }
 
     @Put('boardGrant/:id/checked')

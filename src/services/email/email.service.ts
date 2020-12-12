@@ -13,6 +13,7 @@ import { ActivityPlan } from '../../entities/administration/activity.plan.entity
 import { AnnualReport } from 'src/entities/administration/annual.report.entity';
 import Mail = require('nodemailer/lib/mailer');
 import { resolve } from 'path';
+import { BoardGrant } from '../../entities/administration/board.grant.entity';
 
 @Injectable()
 export class EmailService {
@@ -278,6 +279,17 @@ export class EmailService {
             }),
             undefined,
             attachmentActivityPlan.concat(attachmentAnnualReport),
+        );
+    }
+
+    public async sendBoardGrantChecked(boardGrant: BoardGrant): Promise<void> {
+        await this.sendMail(
+            boardGrant.user.email,
+            'Update status bestuursbeurs',
+            this.handlebarTemplate({
+                template: 'boardgrant-update',
+                name: boardGrant.user.fullName
+            })
         );
     }
 
