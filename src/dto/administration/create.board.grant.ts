@@ -5,5 +5,8 @@ export class CreateBoardGrant {
 
     @ApiProperty({ type: 'string', format: 'binary', required: false })
     @Exclude()
-    public document?: any[];
+    public document: any[];
+
+    @ApiProperty({ required: false })
+    public remarks?: string;
 }

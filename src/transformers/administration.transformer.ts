@@ -43,13 +43,15 @@ export class AdministrationTransformer {
         const boardGrant = new BoardGrant();
         boardGrant.delivered = new Date();
         boardGrant.user = user;
+        boardGrant.remarks = body.remarks;
         boardGrant.documentUrl = uuid() + extname(body.document[0].filename);
 
         return boardGrant;
     }
 
-    public static updateBoardGrant(boardGrant: BoardGrant, documentUrl: string): void {
+    public static updateBoardGrant(boardGrant: BoardGrant, documentUrl: string, remarks?: string): void {
         boardGrant.documentUrl = documentUrl;
+        boardGrant.remarks = remarks;
     }
 
     public static boardGrantChecked(boardGrant: BoardGrant): void {

@@ -475,7 +475,7 @@ export class AdministrationController {
 
         const oldChecked = boardGrant.checked;
 
-        AdministrationTransformer.updateBoardGrant(boardGrant, documentUrl);
+        AdministrationTransformer.updateBoardGrant(boardGrant, documentUrl, body.remarks);
         await this.administrationRepository.save(boardGrant);
 
         // Only send mail when the checked was changed

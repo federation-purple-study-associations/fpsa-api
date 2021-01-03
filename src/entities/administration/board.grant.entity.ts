@@ -20,6 +20,10 @@ export class BoardGrant extends BaseEntity {
     @ApiProperty({type: String, format: 'date'})
     public checkedAt: Date;
 
+    @Column({nullable: true})
+    @ApiProperty({required: false})
+    public remarks?: string;
+
     @Column()
     public documentUrl: string;
 
