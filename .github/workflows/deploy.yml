@@ -38,7 +38,7 @@ jobs:
 
 # Deploy container
     - name: Deploy
-     uses: elseu/sdu-helm-deploy-action@0.0.5
+      uses: elseu/sdu-helm-deploy-action@0.0.5
       with:
         release: 'fpsa-api'
         namespace: 'fpsa'
