@@ -16,10 +16,10 @@ export class AgendaRepository {
   public getAll(language: LANGUAGE, skip: number, take: number, inPast: boolean): Promise<AgendaItem[]> {
     const select = this.getSelect();
     if(language === 'nl') {
-      select.push('titleNL', 'summaryNL');
+      select.push('titleNL', 'descriptionNL');
 
     } else {
-      select.push('titleEN', 'summaryEN');
+      select.push('titleEN', 'descriptionEN');
     }
 
     return AgendaItem.find({

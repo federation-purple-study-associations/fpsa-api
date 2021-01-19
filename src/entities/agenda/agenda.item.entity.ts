@@ -26,14 +26,6 @@ export class AgendaItem extends BaseEntity {
     @ApiProperty({ maxLength: 63 })
     public titleEN: string;
 
-    @Column({length: 255})
-    @ApiProperty({ maxLength: 255 })
-    public summaryNL: string;
-
-    @Column({length: 255})
-    @ApiProperty({ maxLength: 255 })
-    public summaryEN: string;
-
     @Column({length: 16382})
     @ApiProperty({ maxLength: 16382 })
     public descriptionNL: string;

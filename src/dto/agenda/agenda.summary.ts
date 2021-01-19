@@ -13,6 +13,6 @@ export class AgendaSummaryDTO {
     @ApiProperty({maxLength: 63})
     public title: string;
 
-    @ApiProperty({maxLength: 255})
-    public summary: string;
+    @ApiProperty({maxLength: 65535})
+    public description: string;
 }

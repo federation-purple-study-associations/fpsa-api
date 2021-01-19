@@ -13,7 +13,7 @@ export class AgendaTransformer {
             output.push({
                 id: item.id,
                 title: item.titleNL || item.titleEN,
-                summary: item.summaryNL || item.summaryEN,
+                description: item.descriptionNL || item.descriptionEN,
                 location: item.location,
                 date: item.date,
             })
@@ -38,8 +38,6 @@ export class AgendaTransformer {
         agenda.date = body.date;
         agenda.titleNL = body.titleNL;
         agenda.titleEN = body.titleEN;
-        agenda.summaryNL = body.summaryNL;
-        agenda.summaryEN = body.summaryEN;
         agenda.descriptionNL = body.descriptionNL;
         agenda.descriptionEN = body.descriptionEN;
         agenda.imageUrl = uuid() + extname(body.image[0].filename);
@@ -53,8 +51,6 @@ export class AgendaTransformer {
         agenda.date = body.date;
         agenda.titleNL = body.titleNL;
         agenda.titleEN = body.titleEN;
-        agenda.summaryNL = body.summaryNL;
-        agenda.summaryEN = body.summaryEN;
         agenda.descriptionNL = body.descriptionNL;
         agenda.descriptionEN = body.descriptionEN;
         agenda.isDraft = body.isDraft === 'true';

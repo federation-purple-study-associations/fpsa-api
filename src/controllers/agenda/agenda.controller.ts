@@ -142,7 +142,7 @@ export class AgendaController {
       stream.once('open', () => {
           stream.write(body.image[0].data);
           stream.end();
-          resolve();
+          resolve(null);
       });
     });
 
@@ -190,7 +190,7 @@ export class AgendaController {
         stream.once('open', () => {
             stream.write(body.image[0].data);
             stream.end();
-            resolve();
+            resolve(null);
         });
       });
     }

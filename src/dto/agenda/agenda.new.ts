@@ -21,16 +21,6 @@ export class NewAgendaDTO {
     @MaxLength(63)
     public titleEN: string;
 
-    @ApiProperty({maxLength: 255})
-    @IsNotEmpty()
-    @MaxLength(255)
-    public summaryNL: string;
-
-    @ApiProperty({maxLength: 255})
-    @IsNotEmpty()
-    @MaxLength(255)
-    public summaryEN: string;
-
     @ApiProperty({maxLength: 65535})
     @IsNotEmpty()
     @MaxLength(65535)
