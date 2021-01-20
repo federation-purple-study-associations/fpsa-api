@@ -287,7 +287,7 @@ export class EmailService {
             boardGrant.user.email,
             'Update status bestuursbeurs',
             this.handlebarTemplate({
-                template: 'boardgrant-update',
+                template: 'board-grant-update',
                 name: boardGrant.user.fullName
             })
         );
@@ -298,7 +298,7 @@ export class EmailService {
             '"Commissie Profileringsfonds" profileringsfonds@fontys.nl',
             'Update: Nieuwe bestuursbeurs',
             this.handlebarTemplate({
-                template: 'boardgrant-update-commission',
+                template: 'board-grant-update-commission',
                 name: boardGrant.user.fullName,
                 date: moment(boardGrant.delivered).format('DD-MM-YYYY HH:mm'),
                 checkedDate: moment(boardGrant.delivered).format('DD-MM-YYYY HH:mm')

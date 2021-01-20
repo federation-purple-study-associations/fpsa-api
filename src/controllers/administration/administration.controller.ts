@@ -502,9 +502,9 @@ export class AdministrationController {
         if (!boardGrant) {
             throw new NotFoundException('No board grant found...');
         }
-        if (boardGrant.checked) {
-            throw new BadRequestException('This boardgrant has already been checked...');
-        }
+        // if (boardGrant.checked) {
+        //     throw new BadRequestException('This boardgrant has already been checked...');
+        // }
 
         AdministrationTransformer.boardGrantChecked(boardGrant);
         await this.administrationRepository.save(boardGrant);
