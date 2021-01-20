@@ -293,6 +293,19 @@ export class EmailService {
         );
     }
 
+    public async sendBoardGrantCheckedCommission(boardGrant: BoardGrant): Promise<void> {
+        await this.sendMail(
+            '"Commissie Profileringsfonds" profileringsfonds@fontys.nl',
+            'Update: Nieuwe bestuursbeurs',
+            this.handlebarTemplate({
+                template: 'boardgrant-update-commission',
+                name: boardGrant.user.fullName,
+                date: moment(boardGrant.delivered).format('DD-MM-YYYY HH:mm'),
+                checkedDate: moment(boardGrant.delivered).format('DD-MM-YYYY HH:mm')
+            })
+        );
+    }
+
     private sendMail(to: string, subject: string, html: string, replyTo?: string, attachments?: Mail.Attachment[]): Promise<any> {
         return this.mailer.sendMail({
             from: this.defaultFromEmailAddress,

@@ -493,6 +493,7 @@ export class AdministrationController {
         description: 'This call can be used to update the status of the board grant to checked',
     })
     @ApiResponse({ status: 200, description: 'Board grant checked!' })
+    @ApiResponse({ status: 400, description: 'This boardgrant has already been checked...'})
     @ApiResponse({ status: 403, description: 'You are not allowed to update this board grant...' })
     @ApiResponse({ status: 404, description: 'No board grant found...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
@@ -501,9 +502,15 @@ export class AdministrationController {
         if (!boardGrant) {
             throw new NotFoundException('No board grant found...');
         }
+        if (boardGrant.checked) {
+            throw new BadRequestException('This boardgrant has already been checked...');
+        }
 
         AdministrationTransformer.boardGrantChecked(boardGrant);
         await this.administrationRepository.save(boardGrant);
+
+        await this.emailService.sendBoardGrantChecked(boardGrant);
+        await this.emailService.sendBoardGrantCheckedCommission(boardGrant);
     } 
 
     @Delete('boardGrant/:id')
