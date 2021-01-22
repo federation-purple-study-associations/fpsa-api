@@ -9,7 +9,7 @@ import { Application } from '../entities/user/application.entity';
 @Injectable()
 export class UserRepository {
     public login(email: string): Promise<User> {
-        return User.findOne({where: {email}, relations: ['role', 'role.scopes'], select: ['password', 'email', 'id']});
+        return User.findOne({where: `LOWER(email) = ${email.toLowerCase()}`, relations: ['role', 'role.scopes'], select: ['password', 'email', 'id']});
     }
 
     public getAll(): Promise<User[]> {
