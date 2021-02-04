@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, MaxLength } from 'class-validator';
 import { Exclude } from 'class-transformer';
+import { FileUpload } from '../file.interface';
 
 export class WriteBoardDTO {
     @ApiProperty({maxLength: 63})
@@ -25,9 +26,9 @@ export class WriteBoardDTO {
 
     @ApiProperty({ type: 'string', format: 'binary', required: false })
     @Exclude()
-    public image: any[];
+    public image: FileUpload[];
 
     @ApiProperty({ type: 'string', format: 'binary', required: false })
     @Exclude()
-    public policy: any[];
+    public policy: FileUpload[];
 }

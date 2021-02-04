@@ -14,6 +14,7 @@ import { AnnualReport } from 'src/entities/administration/annual.report.entity';
 import Mail = require('nodemailer/lib/mailer');
 import { resolve } from 'path';
 import { BoardGrant } from '../../entities/administration/board.grant.entity';
+import { from } from 'rxjs';
 
 @Injectable()
 export class EmailService {
@@ -164,6 +165,14 @@ export class EmailService {
     }
 
     public async sendContactMembersEmail(form: ContactMembersDTO, members: User[]): Promise<void> {
+        const attachments: Mail.Attachment[] = [];
+        for (const attachment of form.attachments) {
+            attachments.push({
+                filename: attachment.filename,
+                content: attachment.data,
+            });
+        }
+
         for(const member of members) {
             await this.sendMail(
                 '"' + member.fullName + '" ' + member.email,
@@ -173,6 +182,8 @@ export class EmailService {
                     message: form.message,
                     name: member.fullName,
                 }),
+                undefined,
+                attachments,
             );
         }
 
@@ -184,6 +195,8 @@ export class EmailService {
                 message: form.message,
                 name: "{STUDIE VERENIGING}",
             }),
+            undefined,
+            attachments,
         );
     }
 

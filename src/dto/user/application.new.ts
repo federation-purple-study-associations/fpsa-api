@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsEmail, Max, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
+import { FileUpload } from '../file.interface';
 
 export class NewApplication {
     @IsNotEmpty()
@@ -29,5 +30,5 @@ export class NewApplication {
 
     @ApiProperty({ type: 'string', format: 'binary' })
     @Exclude()
-    public photo: any[];
+    public photo: FileUpload[];
 }

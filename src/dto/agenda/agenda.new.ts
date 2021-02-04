@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, MaxLength } from 'class-validator';
 import { Exclude } from 'class-transformer';
+import { FileUpload } from '../file.interface';
 
 export class NewAgendaDTO {
     @ApiProperty()
@@ -37,5 +38,5 @@ export class NewAgendaDTO {
 
     @ApiProperty({ type: 'string', format: 'binary' })
     @Exclude()
-    public image: any;
+    public image: FileUpload[];
 }

@@ -461,6 +461,7 @@ export class UserController {
 
     @Post('contact/members')
     @Auth('User:Write')
+    @ApiConsumes('multipart/form-data')
     @HttpCode(200)
     @ApiOperation({
         operationId: 'ContactMembers',

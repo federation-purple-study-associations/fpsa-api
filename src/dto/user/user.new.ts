@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { IsNotEmpty, Max, Min } from 'class-validator';
+import { FileUpload } from '../file.interface';
 
 export class UserNewDTO {
     @ApiProperty()
@@ -32,5 +33,5 @@ export class UserNewDTO {
 
     @ApiProperty({ type: 'string', format: 'binary' })
     @Exclude()
-    public photo: any[];
+    public photo: FileUpload[];
 }

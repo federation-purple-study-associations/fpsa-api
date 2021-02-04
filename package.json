@@ -11,7 +11,7 @@
     "build": "rm -rf ./dist && tsc -p tsconfig.json && ./node_modules/copyfiles/copyfiles -u 1 \"**/*.hbs\" dist",
     "start": "ts-node src/main.ts",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config src/typeorm.config.ts",
-    "generate-services": "ts-node src/swagger/swagger.builder.ts && ./node_modules/@openapitools/openapi-generator-cli/bin/openapi-generator generate -g typescript-inversify -i swagger-spec.json -o ../fpsa-site/src/openapi --additional-properties=\"useRxJS6=true\""
+    "generate-services": "ts-node src/swagger/swagger.builder.ts && openapi-generator-cli generate -g typescript-inversify -i swagger-spec.json -o ../fpsa-site/src/openapi --additional-properties=\"useRxJS6=true\""
   },
   "dependencies": {
     "@nestjs/common": "^7.6.5",
