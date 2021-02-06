@@ -166,11 +166,13 @@ export class EmailService {
 
     public async sendContactMembersEmail(form: ContactMembersDTO, members: User[]): Promise<void> {
         const attachments: Mail.Attachment[] = [];
-        for (const attachment of form.attachments) {
-            attachments.push({
-                filename: attachment.filename,
-                content: attachment.data,
-            });
+        if (form.attachments && form.attachments.length > 0) {
+            for (const attachment of form.attachments) {
+                attachments.push({
+                    filename: attachment.filename,
+                    content: attachment.data,
+                });
+            }
         }
 
         for(const member of members) {
