@@ -12,7 +12,7 @@ export class ContactMembersDTO {
     @IsNotEmpty()
     public message: string;
 
-    @ApiProperty({type: 'string', format: 'binary'})
+    @ApiProperty({type: 'string', format: 'binary', required: false})
     @Exclude()
     public attachments: FileUpload[];
 }
