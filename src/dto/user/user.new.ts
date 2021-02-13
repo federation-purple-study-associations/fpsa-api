@@ -27,6 +27,9 @@ export class UserNewDTO {
     @ApiProperty()
     public websiteUrl: string;
 
+    @ApiProperty({required: false})
+    public boardTransfer: string;
+
     @ApiProperty()
     @IsNotEmpty()
     public roleId: number;

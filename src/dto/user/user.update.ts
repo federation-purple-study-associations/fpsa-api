@@ -28,6 +28,9 @@ export class UserUpdateDTO {
     public websiteUrl: string;
 
     @ApiProperty()
+    public boardTransfer: string;
+
+    @ApiProperty()
     @IsNotEmpty()
     public roleId: number;
 

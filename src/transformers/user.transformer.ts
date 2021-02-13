@@ -49,6 +49,7 @@ export class UserTransformer {
         user.websiteUrl = dto.websiteUrl;
         user.photoUrl = uuid() + extname(dto.photo[0].filename);
         user.recieveEmailUpdatesEvents = true;
+        user.boardTransfer = dto.boardTransfer ?? '';
         
         return user;
     }
@@ -61,6 +62,7 @@ export class UserTransformer {
         user.establishment = dto.establishment;
         user.photoUrl = photoUrl;
         user.websiteUrl = dto.websiteUrl;
+        user.boardTransfer = dto.boardTransfer;
 
         if (role) {
             user.role = role;
