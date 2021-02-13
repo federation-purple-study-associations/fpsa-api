@@ -36,6 +36,10 @@ export class User extends BaseEntity {
 
     @Column()
     @ApiProperty()
+    public boardTransfer: string;
+
+    @Column()
+    @ApiProperty()
     public websiteUrl: string;
 
     @Column()
