@@ -12,4 +12,7 @@ export class UserSummaryDTO {
 
     @ApiProperty()
     public role: string;
+
+    @ApiProperty()
+    public boardTransfer: string;
 }

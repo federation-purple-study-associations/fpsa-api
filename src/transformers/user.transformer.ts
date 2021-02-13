@@ -30,6 +30,7 @@ export class UserTransformer {
                 fullName: user.fullName,
                 email: user.email,
                 role: user.role.name,
+                boardTransfer: user.boardTransfer,
             });
         }
 
