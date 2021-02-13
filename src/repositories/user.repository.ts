@@ -13,7 +13,7 @@ export class UserRepository {
     }
 
     public getAll(): Promise<User[]> {
-        return User.find({ relations: ['role'], order: { roleId: 'ASC' } });
+        return User.find({ relations: ['role'], order: { roleId: 'ASC', fullName: 'DESC' } });
     }
 
     public getAllMembers(activityPlans: boolean): Promise<User[]> {
