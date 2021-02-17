@@ -38,5 +38,5 @@ export class UpdateAgendaDTO {
 
     @ApiProperty({ type: 'string', format: 'binary', required: false })
     @Exclude()
-    public image: FileUpload;
+    public image: FileUpload[];
 }

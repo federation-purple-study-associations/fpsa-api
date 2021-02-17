@@ -11,6 +11,7 @@ import { WriteBoardDTO } from '../../dto/board/board.write';
 import { Board } from '../../entities/board/board.entity';
 import * as mime from 'mime-types';
 import { v4 as uuid } from 'uuid';
+import { containsUpload } from '../../dto/file.interface';
 
 @Controller('board')
 @ApiTags('board')
@@ -110,7 +111,7 @@ export class BoardController {
     @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async createNew(@Body() body: WriteBoardDTO): Promise<void> {
-        if (body.image.length === 0) {
+        if (containsUpload(body.image)) {
             throw new BadRequestException('No image has been uploaded...');
         }
 
@@ -160,7 +161,7 @@ export class BoardController {
         let photoUrl = board.photoUrl;
         let policyUrl = board.policyPlanUrl;
 
-        if (body.image) {
+        if (containsUpload(body.image)) {
             // Delete old image to preserve storage space
             try {
                 unlinkSync(resolve(this.photoUrl, photoUrl));

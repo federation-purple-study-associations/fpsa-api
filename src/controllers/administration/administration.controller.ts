@@ -20,6 +20,7 @@ import { ResultBoardGrant } from '../../dto/administration/result.board.grant';
 import { BoardGrant } from '../../entities/administration/board.grant.entity';
 import { CreateBoardGrant } from '../../dto/administration/create.board.grant';
 import { AnnualReport } from 'src/entities/administration/annual.report.entity';
+import { containsUpload } from '../../dto/file.interface';
 
 @Controller('administration')
 @ApiTags('administration')
@@ -89,7 +90,7 @@ export class AdministrationController {
     @ApiResponse({ status: 412, description: 'Upload is not a PDF-file...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async createActivityPlan(@Body() body: CreateActivityPlan, @Me() me: User): Promise<void> {
-        if (body.document.length === 0) {
+        if (containsUpload(body.document)) {
             throw new BadRequestException('No document has been uploaded...');
         }
         this.checkMimeType(body.document[0]);
@@ -128,7 +129,7 @@ export class AdministrationController {
         const activityPlan = await this.getActivityPlan(id, me);
 
         let documentUrl = activityPlan.documentUrl;
-        if (body.document) {
+        if (containsUpload(body.document)) {
             this.checkMimeType(body.document[0]);
 
             // Delete old document to preserve storage space
@@ -273,7 +274,7 @@ export class AdministrationController {
     @ApiResponse({ status: 412, description: 'Upload is not a PDF-file...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async createAnnualReport(@Body() body: CreateAnnualReport, @Me() me: User): Promise<void> {
-        if (body.document.length === 0) {
+        if (containsUpload(body.document)) {
             throw new BadRequestException('No document has been uploaded...');
         }
         this.checkMimeType(body.document[0]);
@@ -315,7 +316,7 @@ export class AdministrationController {
         }
 
         let documentUrl = annualReport.documentUrl;
-        if (body.document) {
+        if (containsUpload(body.document)) {
             this.checkMimeType(body.document[0]);
 
             // Delete old document to preserve storage space
@@ -415,7 +416,7 @@ export class AdministrationController {
     @ApiResponse({ status: 412, description: 'Upload is not a PDF-file...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async createBoardGrant(@Body() body: CreateBoardGrant, @Me() me: User): Promise<void> {
-        if (body.document.length === 0) {
+        if (containsUpload(body.document)) {
             throw new BadRequestException('No document has been uploaded...');
         }
         this.checkMimeType(body.document[0]);
@@ -454,7 +455,7 @@ export class AdministrationController {
         const boardGrant = await this.getBoardGrant(id, me);
 
         let documentUrl = boardGrant.documentUrl;
-        if (body.document) {
+        if (containsUpload(body.document)) {
             this.checkMimeType(body.document[0]);
 
             // Delete old document to preserve storage space

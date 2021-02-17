@@ -24,6 +24,7 @@ import { createWriteStream, existsSync, mkdirSync, readFile, unlinkSync } from '
 import { v4 as uuid } from 'uuid';
 import { MemberDTO } from '../../dto/user/user.members';
 import * as mime from 'mime-types';
+import { containsUpload } from '../../dto/file.interface';
 
 @Controller('user')
 @ApiTags('user')
@@ -240,6 +241,10 @@ export class UserController {
     @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async createUser(@Body() body: UserNewDTO) {
+        if (!containsUpload(body.photo)) {
+            throw new BadRequestException('Upload needs photo...');
+        }
+
         const role = await this.userRepository.getRole(body.roleId);
         if (!role) {
             throw new BadRequestException('Invalid role...');
@@ -290,7 +295,7 @@ export class UserController {
         }
 
         let photoUrl = user.photoUrl;
-        if (body.photo) {
+        if (containsUpload(body.photo)) {
             // Create path if needed
             !existsSync(this.photoUrl) && mkdirSync(this.photoUrl, { recursive: true });
 
@@ -347,6 +352,10 @@ export class UserController {
     @ApiResponse({ status: 400, description: 'Validation error...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async addApplication(@Body() body: NewApplication): Promise<void> {
+        if (!containsUpload(body.photo)) {
+            throw new BadRequestException('Upload needs photo...');
+        }
+
         const application = await this.userRepository.save(UserTransformer.toApplication(body));
 
         // Create path if needed

@@ -18,6 +18,7 @@ import { User } from '../../entities/user/user.entity';
 import { v4 as uuid } from 'uuid';
 import { FastifyReply } from 'fastify';
 import * as mime from 'mime-types';
+import { containsUpload } from '../../dto/file.interface';
 
 @Controller('agenda')
 @ApiTags('agenda')
@@ -126,7 +127,7 @@ export class AgendaController {
   @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
   @ApiResponse({ status: 500, description: 'Internal server error...' })
   public async createNew(@Body() body: NewAgendaDTO): Promise<void> {
-    if (body.image.length === 0) {
+    if (containsUpload(body.image)) {
       throw new BadRequestException('No document has been uploaded...');
     }
 
@@ -174,7 +175,7 @@ export class AgendaController {
     }
 
     let photoUrl = agendaItem.imageUrl;
-    if (body.image) {
+    if (containsUpload(body.image)) {
       // Delete old image to preserve storage space
       const dir = resolve(process.env.STORAGE_PATH, 'agenda');
       try {
