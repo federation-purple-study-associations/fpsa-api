@@ -108,6 +108,7 @@ export class AdministrationController {
         });
 
         await this.emailService.sendActivityPlanConfirmation(me, activityPlan);
+        await this.emailService.sendBoardDocumentUpload(me, activityPlan.delivered, 'Activiteitenplan');
     }
 
     @Put('activityplan/:id')
@@ -292,6 +293,7 @@ export class AdministrationController {
         });
 
         await this.emailService.sendAnnualReportConfirmation(me);
+        await this.emailService.sendBoardDocumentUpload(me, annualReport.delivered, 'Jaarverslag');
     }
 
     @Put('annualReport/:id')
@@ -434,6 +436,7 @@ export class AdministrationController {
         });
 
         await this.emailService.sendBoardGrantConfirmation(me);
+        await this.emailService.sendBoardDocumentUpload(me, boardGrant.delivered, 'Bestuursbeurs');
     }
 
     @Put('boardGrant/:id')

@@ -257,6 +257,19 @@ export class EmailService {
         );
     }
 
+    public async sendBoardDocumentUpload(member: User, date: Date, type: 'Bestuursbeurs'|'Activiteitenplan'|'Jaarverslag'): Promise<void> {
+        await this.sendMail(
+            '"' + member.fullName + '" ' + member.email,
+            'Nieuwe upload',
+            this.handlebarTemplate({
+                template: 'recieved-document',
+                name: member.fullName,
+                date: moment(date).format('DD-MM-YYYY HH:mm:ss'),
+                type,
+            }),
+        );
+    }
+
     public async sendReportsToComission(activityPlans: ActivityPlan[], annualReports: AnnualReport[]): Promise<void> {
         const attachmentActivityPlan: Mail.Attachment[] = await this.buildAttachment(activityPlans, this.activityPlanDocumentUrl, 'activiteitenplan');
         const attachmentAnnualReport: Mail.Attachment[] = await this.buildAttachment(annualReports, this.annualReportDocumentUrl, 'jaarverslag');
