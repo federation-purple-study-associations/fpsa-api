@@ -259,12 +259,26 @@ export class EmailService {
 
     public async sendBoardDocumentUpload(member: User, date: Date, type: 'Bestuursbeurs'|'Activiteitenplan'|'Jaarverslag'): Promise<void> {
         await this.sendMail(
-            '"' + member.fullName + '" ' + member.email,
-            'Nieuwe upload',
+            this.defaultFromEmailAddress,
+            'Nieuw document',
             this.handlebarTemplate({
-                template: 'recieved-document',
+                template: 'document-received',
                 name: member.fullName,
                 date: moment(date).format('DD-MM-YYYY HH:mm:ss'),
+                type,
+            }),
+        );
+    }
+
+    public async sendBoardDocumentUpdate(member: User, date: Date, type: 'Bestuursbeurs'|'Activiteitenplan'|'Jaarverslag'): Promise<void> {
+        await this.sendMail(
+            this.defaultFromEmailAddress,
+            'Update document',
+            this.handlebarTemplate({
+                template: 'document-update',
+                name: member.fullName,
+                date: moment(date).format('DD-MM-YYYY HH:mm:ss'),
+                newDate: moment().format('DD-MM-YYYY HH:mm:ss'),
                 type,
             }),
         );

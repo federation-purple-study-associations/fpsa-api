@@ -151,6 +151,10 @@ export class AdministrationController {
 
         AdministrationTransformer.updateActivityPlan(activityPlan, body, documentUrl);
         await activityPlan.save();
+
+        if (containsUpload(body.document)) {
+            await this.emailService.sendBoardDocumentUpdate(me, activityPlan.delivered, 'Activiteitenplan');
+        }
     }
 
     @Delete('activityplan/:id')
@@ -311,7 +315,7 @@ export class AdministrationController {
     @ApiResponse({ status: 404, description: 'No annual report or activity pan found...' })
     @ApiResponse({ status: 412, description: 'Upload is not a PDF-file...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
-    public async updateAnnualReport(@Body() body: CreateAnnualReport, @Param('id') id: number): Promise<void> {
+    public async updateAnnualReport(@Body() body: CreateAnnualReport, @Param('id') id: number, @Me() me: User): Promise<void> {
         const annualReport = await this.administrationRepository.readOneAnnualReport(id);
         if (!annualReport) {
             throw new NotFoundException('No annual report found...');
@@ -339,6 +343,10 @@ export class AdministrationController {
 
         AdministrationTransformer.updateAnnualReport(annualReport, documentUrl);
         await annualReport.save();
+
+        if (containsUpload(body.document)) {
+            await this.emailService.sendBoardDocumentUpdate(me, annualReport.delivered, 'Jaarverslag');
+        }
     }
 
     @Delete('annualReport/:id')
@@ -485,6 +493,10 @@ export class AdministrationController {
         // Only send mail when the checked was changed
         if (boardGrant.checked && !oldChecked) {
             await this.emailService.sendBoardGrantChecked(boardGrant);
+        }
+
+        if (containsUpload(body.document)) {
+            await this.emailService.sendBoardDocumentUpdate(me, boardGrant.checkedAt, 'Bestuursbeurs');
         }
     }
 
