@@ -31,6 +31,9 @@ export class UserUpdateDTO {
     public boardTransfer: string;
 
     @ApiProperty()
+    public isSleeping: boolean;
+
+    @ApiProperty()
     @IsNotEmpty()
     public roleId: number;
 

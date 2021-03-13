@@ -43,6 +43,10 @@ export class User extends BaseEntity {
     public websiteUrl: string;
 
     @Column()
+    @ApiProperty()
+    public isSleeping: boolean;
+
+    @Column()
     public photoUrl: string;
 
     @Column({nullable: true})

@@ -15,4 +15,7 @@ export class UserSummaryDTO {
 
     @ApiProperty()
     public boardTransfer: string;
+
+    @ApiProperty()
+    public isSleeping: boolean;
 }

@@ -31,6 +31,7 @@ export class UserTransformer {
                 email: user.email,
                 role: user.role.name,
                 boardTransfer: user.boardTransfer,
+                isSleeping: user.isSleeping,
             });
         }
 
@@ -50,6 +51,7 @@ export class UserTransformer {
         user.photoUrl = uuid() + extname(dto.photo[0].filename);
         user.recieveEmailUpdatesEvents = true;
         user.boardTransfer = dto.boardTransfer ?? '';
+        user.isSleeping = false;
         
         return user;
     }
@@ -63,6 +65,7 @@ export class UserTransformer {
         user.photoUrl = photoUrl;
         user.websiteUrl = dto.websiteUrl;
         user.boardTransfer = dto.boardTransfer;
+        user.isSleeping = dto.isSleeping;
 
         if (role) {
             user.role = role;
