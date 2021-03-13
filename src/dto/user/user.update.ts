@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
+import { Exclude, Type } from 'class-transformer';
 import { IsNotEmpty, Max, Min } from 'class-validator';
 import { FileUpload } from '../file.interface';
 
@@ -30,8 +30,8 @@ export class UserUpdateDTO {
     @ApiProperty()
     public boardTransfer: string;
 
-    @ApiProperty()
-    public isSleeping: boolean;
+    @ApiProperty({type: Boolean})
+    public isSleeping: string;
 
     @ApiProperty()
     @IsNotEmpty()

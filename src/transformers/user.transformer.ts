@@ -65,7 +65,9 @@ export class UserTransformer {
         user.photoUrl = photoUrl;
         user.websiteUrl = dto.websiteUrl;
         user.boardTransfer = dto.boardTransfer;
-        user.isSleeping = dto.isSleeping;
+
+        // Because the request is form-data, we need to transform the string to a boolean
+        user.isSleeping = dto.isSleeping == 'true';
 
         if (role) {
             user.role = role;
