@@ -111,7 +111,7 @@ export class BoardController {
     @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async createNew(@Body() body: WriteBoardDTO): Promise<void> {
-        if (containsUpload(body.image)) {
+        if (!containsUpload(body.image)) {
             throw new BadRequestException('No image has been uploaded...');
         }
 

@@ -90,7 +90,7 @@ export class AdministrationController {
     @ApiResponse({ status: 412, description: 'Upload is not a PDF-file...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async createActivityPlan(@Body() body: CreateActivityPlan, @Me() me: User): Promise<void> {
-        if (containsUpload(body.document)) {
+        if (!containsUpload(body.document)) {
             throw new BadRequestException('No document has been uploaded...');
         }
         this.checkMimeType(body.document[0]);
@@ -279,7 +279,7 @@ export class AdministrationController {
     @ApiResponse({ status: 412, description: 'Upload is not a PDF-file...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async createAnnualReport(@Body() body: CreateAnnualReport, @Me() me: User): Promise<void> {
-        if (containsUpload(body.document)) {
+        if (!containsUpload(body.document)) {
             throw new BadRequestException('No document has been uploaded...');
         }
         this.checkMimeType(body.document[0]);
@@ -426,7 +426,8 @@ export class AdministrationController {
     @ApiResponse({ status: 412, description: 'Upload is not a PDF-file...' })
     @ApiResponse({ status: 500, description: 'Internal server error...' })
     public async createBoardGrant(@Body() body: CreateBoardGrant, @Me() me: User): Promise<void> {
-        if (containsUpload(body.document)) {
+        console.log(body);
+        if (!containsUpload(body.document)) {
             throw new BadRequestException('No document has been uploaded...');
         }
         this.checkMimeType(body.document[0]);

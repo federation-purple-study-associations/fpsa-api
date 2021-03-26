@@ -127,7 +127,7 @@ export class AgendaController {
   @ApiResponse({ status: 403, description: 'You do not have the permission to perform this action...' })
   @ApiResponse({ status: 500, description: 'Internal server error...' })
   public async createNew(@Body() body: NewAgendaDTO): Promise<void> {
-    if (containsUpload(body.image)) {
+    if (!containsUpload(body.image)) {
       throw new BadRequestException('No document has been uploaded...');
     }
 
