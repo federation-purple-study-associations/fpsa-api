@@ -4,6 +4,7 @@ import { Role } from './role.entity';
 import { Confirmation } from './confirmation.entity';
 import { ActivityPlan } from '../administration/activity.plan.entity';
 import { AnnualReport } from '../administration/annual.report.entity';
+import { Nationality } from './nationality.enum';
 
 @Entity()
 export class User extends BaseEntity {
@@ -48,6 +49,10 @@ export class User extends BaseEntity {
 
     @Column()
     public photoUrl: string;
+
+    @Column({default: Nationality.DUTCH})
+    @ApiProperty({enum: Nationality})
+    public nationality: Nationality;
 
     @Column({nullable: true})
     @ApiProperty({type: String, format: 'date', required: false})
