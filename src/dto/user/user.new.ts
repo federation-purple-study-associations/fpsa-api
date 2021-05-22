@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { IsNotEmpty, Max, Min } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
+import { Nationality } from '../../entities/user/nationality.enum';
 import { FileUpload } from '../file.interface';
 
 export class UserNewDTO {
@@ -29,6 +30,9 @@ export class UserNewDTO {
 
     @ApiProperty({required: false})
     public boardTransfer: string;
+
+    @ApiProperty({enum: Nationality})
+    public nationality: Nationality;
 
     @ApiProperty()
     @IsNotEmpty()

@@ -10,6 +10,7 @@ import { NewApplication } from '../dto/user/application.new';
 import { v4 as uuid } from 'uuid';
 import { extname } from 'path';
 import { MemberDTO } from '../dto/user/user.members';
+import { Nationality } from '../entities/user/nationality.enum';
 
 export class UserTransformer {
     public static toJwtToken(user: User): string {
@@ -52,6 +53,7 @@ export class UserTransformer {
         user.recieveEmailUpdatesEvents = true;
         user.boardTransfer = dto.boardTransfer ?? '';
         user.isSleeping = false;
+        user.nationality = dto.nationality;
         
         return user;
     }
@@ -65,6 +67,7 @@ export class UserTransformer {
         user.photoUrl = photoUrl;
         user.websiteUrl = dto.websiteUrl;
         user.boardTransfer = dto.boardTransfer;
+        user.nationality = dto.nationality;
 
         // Because the request is form-data, we need to transform the string to a boolean
         user.isSleeping = dto.isSleeping == 'true';
@@ -88,7 +91,7 @@ export class UserTransformer {
     }
 
     public static hasScope(token: string, scope: string): boolean {
-        const decodeToken: JwtPayload = jwt.verify(token, process.env.JWT_SECRET);
+        const decodeToken: JwtPayload = this.decodeJwt(token);
         return decodeToken.scopes.includes(scope);
     }
 
@@ -104,6 +107,7 @@ export class UserTransformer {
         user.roleId = 2;
         user.photoUrl = application.photoUrl;
         user.websiteUrl = application.websiteUrl;
+        user.nationality = Nationality.DUTCH;
         
         return user;
     }

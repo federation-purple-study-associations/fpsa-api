@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Type } from 'class-transformer';
 import { IsNotEmpty, Max, Min } from 'class-validator';
+import { Nationality } from '../../entities/user/nationality.enum';
 import { FileUpload } from '../file.interface';
 
 export class UserUpdateDTO {
@@ -32,6 +33,9 @@ export class UserUpdateDTO {
 
     @ApiProperty({type: Boolean})
     public isSleeping: string;
+
+    @ApiProperty({enum: Nationality})
+    public nationality: Nationality;
 
     @ApiProperty()
     @IsNotEmpty()
