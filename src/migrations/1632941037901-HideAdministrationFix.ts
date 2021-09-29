@@ -1,9 +1,9 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class HideAdministration1632939769341 implements MigrationInterface {
+export class HideAdministrationFix1632941037901 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      'DELETE FROM role_scopes_scope WHERE roleId = 14 AND roleId = 2',
+      'DELETE FROM role_scopes_scope WHERE scopeId = 14 AND roleId = 2',
     );
   }
 
