@@ -336,7 +336,10 @@ export class UserController {
             throw new NotFoundException('User not found...');
         }
 
-        unlinkSync(resolve(this.photoUrl, user.photoUrl));
+        if (user.photoUrl !== '') {
+            unlinkSync(resolve(this.photoUrl, user.photoUrl));
+        }
+
         await this.userRepository.delete(user);
     }
 
